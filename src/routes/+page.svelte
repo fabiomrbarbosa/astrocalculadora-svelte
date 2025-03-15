@@ -1,24 +1,8 @@
 <script>
-	import { calculateFortune } from '$lib/utils';
+	import { calculateFortune, checkSignParam } from '$lib/utils';
 	import { chartData } from '$lib/store.svelte';
 	$effect(() => {
-		const params = new URLSearchParams(window.location.search);
-
-		// Iterate over all planets
-		Object.keys(chartData.planets).forEach((planetKey) => {
-			const param = params.get(`${planetKey}Sign`);
-			if (param && chartData.signs[param]) {
-				chartData.planets[planetKey].sign = param;
-			}
-		});
-
-		// Iterate over all points
-		Object.keys(chartData.points).forEach((pointKey) => {
-			const param = params.get(`${pointKey}Sign`);
-			if (param && chartData.signs[param]) {
-				chartData.points[pointKey].sign = param;
-			}
-		});
+		checkSignParam();
 	});
 </script>
 

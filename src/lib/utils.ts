@@ -1,5 +1,30 @@
 import { chartData } from './store.svelte';
 
+export function checkSignParam() {
+	const params = new URLSearchParams(window.location.search);
+
+	// Ensure TypeScript knows these are indexable objects
+	const planets = chartData.planets as Record<string, { sign: string }>;
+	const points = chartData.points as Record<string, { sign: string }>;
+	const signs = chartData.signs as Record<string, unknown>;
+
+	// Iterate over all planets
+	Object.keys(planets).forEach((planetKey) => {
+		const param = params.get(`${planetKey}Sign`);
+		if (param && signs[param]) {
+			planets[planetKey].sign = param;
+		}
+	});
+
+	// Iterate over all points
+	Object.keys(points).forEach((pointKey) => {
+		const param = params.get(`${pointKey}Sign`);
+		if (param && signs[param]) {
+			points[pointKey].sign = param;
+		}
+	});
+}
+
 /** Get the value of a nested property in chartData */
 export function getSignifierValue(path: string): any {
 	let value = path.split('.').reduce((obj: any, key: string) => obj?.[key], chartData) || null;
