@@ -1,23 +1,15 @@
-import {
-	metadata,
-	planets,
-	points,
-	signs,
-	houses,
-	aspects,
-	dignities,
-	hylegicPoints,
-	resourceSignifiers,
-	results
-} from './stores.svelte';
+import { astroData } from './store.svelte';
 
 /** Get the value of a nested property in astroData */
 export function getSignifierValue(path: string): any {
-	let value = path.split('.').reduce((obj: any, key: string) => obj?.[key]) || null;
+	let value = path.split('.').reduce((obj: any, key: string) => obj?.[key], astroData) || null;
 
-	// Fix: Explicitly define `planets` as a Record<string, PlanetType>
-	if (typeof value === 'string' && (planets as Record<string, typeof planets.moon>)[value]) {
-		return (planets as Record<string, typeof planets.moon>)[value]; // Return planet object
+	// Fix: Explicitly define `astroData.planets` as a Record<string, PlanetType>
+	if (
+		typeof value === 'string' &&
+		(astroData.planets as Record<string, typeof astroData.planets.moon>)[value]
+	) {
+		return (astroData.planets as Record<string, typeof astroData.planets.moon>)[value]; // Return planet object
 	}
 
 	return value;
@@ -27,10 +19,13 @@ export function getSignifierValue(path: string): any {
 export function getSignData(
 	sign: string
 ): { value: string; label: string; icon: string; degrees: number } | undefined {
-	// Explicitly cast signs as a record with string keys
-	return (signs as Record<string, { value: string; label: string; icon: string; degrees: number }>)[
-		sign.toLowerCase()
-	];
+	// Explicitly cast astroData.signs as a record with string keys
+	return (
+		astroData.signs as Record<
+			string,
+			{ value: string; label: string; icon: string; degrees: number }
+		>
+	)[sign.toLowerCase()];
 }
 
 /** Calculate absolute zodiac position (0-360°) */
@@ -52,7 +47,7 @@ export function convertPositionToSignAndDegrees(position: number): {
 	if (position < 0) position += 360;
 	else if (position >= 360) position -= 360;
 
-	const [resultKey, resultSign] = Object.entries(signs).find(
+	const [resultKey, resultSign] = Object.entries(astroData.signs).find(
 		([_, s]) => position >= s.degrees && position < s.degrees + 30
 	) || [null, null];
 
@@ -80,7 +75,7 @@ export function processDignities(
 ): void {
 	if (!pos?.sign) return;
 
-	const signDignity = dignities[pos.sign.toLowerCase()];
+	const signDignity = astroData.dignities[pos.sign.toLowerCase()];
 	if (!signDignity) return; // Ensure dignity data exists
 
 	const degree = pos.degrees;
@@ -143,25 +138,33 @@ export function getHouseScore(house: number): number {
 
 /** Calculate Part of Fortune */
 export function calculateFortune(): void {
-	const sunPos = calculatePosition(planets.sun.sign, planets.sun.degrees, planets.sun.minutes);
-	const moonPos = calculatePosition(planets.moon.sign, planets.moon.degrees, planets.moon.minutes);
+	const sunPos = calculatePosition(
+		astroData.planets.sun.sign,
+		astroData.planets.sun.degrees,
+		astroData.planets.sun.minutes
+	);
+	const moonPos = calculatePosition(
+		astroData.planets.moon.sign,
+		astroData.planets.moon.degrees,
+		astroData.planets.moon.minutes
+	);
 	const ascPos = calculatePosition(
-		points.ascendant.sign,
-		points.ascendant.degrees,
-		points.ascendant.minutes
+		astroData.points.ascendant.sign,
+		astroData.points.ascendant.degrees,
+		astroData.points.ascendant.minutes
 	);
 
 	let fortunePos =
-		metadata.dayNight === 'day' ? ascPos + (moonPos - sunPos) : ascPos + (sunPos - moonPos);
+		astroData.dayNight === 'day' ? ascPos + (moonPos - sunPos) : ascPos + (sunPos - moonPos);
 
 	// Convert result into structured object
 	const fortuneData = convertPositionToSignAndDegrees(fortunePos);
 
 	// Store structured data in parts.fortune
-	points.fortune.degrees = fortuneData.degrees;
-	points.fortune.minutes = fortuneData.minutes;
-	points.fortune.sign = fortuneData.sign;
+	astroData.points.fortune.degrees = fortuneData.degrees;
+	astroData.points.fortune.minutes = fortuneData.minutes;
+	astroData.points.fortune.sign = fortuneData.sign;
 
 	// Store formatted result in results.fortune
-	results.fortune = `Parte da Fortuna: ${fortuneData.degrees}°${fortuneData.minutes}' em ${fortuneData.icon} ${fortuneData.label}`;
+	astroData.results.fortune = `Parte da Fortuna: ${fortuneData.degrees}°${fortuneData.minutes}' em ${fortuneData.icon} ${fortuneData.label}`;
 }
