@@ -1,8 +1,8 @@
 <script>
-	import { calculateFortune, checkSignParam } from '$lib/utils';
+	import { calculateFortune, checkQueryParams } from '$lib/utils';
 	import { chartData } from '$lib/store.svelte';
 	$effect(() => {
-		checkSignParam();
+		checkQueryParams();
 	});
 </script>
 

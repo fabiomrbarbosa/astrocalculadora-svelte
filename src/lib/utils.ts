@@ -1,12 +1,22 @@
 import { chartData } from './store.svelte';
 
-export function checkSignParam() {
+export function checkQueryParams() {
 	const params = new URLSearchParams(window.location.search);
 
 	// Ensure TypeScript knows these are indexable objects
 	const planets = chartData.planets as Record<string, { sign: string }>;
 	const points = chartData.points as Record<string, { sign: string }>;
 	const signs = chartData.signs as Record<string, unknown>;
+
+	const dayNightParam = params.get('selectDayNight');
+	if (dayNightParam) {
+		chartData.dayNight = dayNightParam;
+	}
+
+	const maleFemaleParam = params.get('selectMaleFemale');
+	if (maleFemaleParam) {
+		chartData.maleFemale = maleFemaleParam;
+	}
 
 	// Iterate over all planets
 	Object.keys(planets).forEach((planetKey) => {
