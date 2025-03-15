@@ -1,14 +1,14 @@
 <script>
 	import { calculateFortune } from '$lib/utils';
-	import { astroData } from '$lib/store.svelte';
+	import { metadata, signs, planets, results } from '$lib/stores.svelte';
 
 	$effect(() => {
 		const params = new URLSearchParams(window.location.search);
 		const sunSignParam = params.get('sunSign');
 
 		// Only update if the param exists and is a valid sign key
-		if (sunSignParam && astroData.signs[sunSignParam]) {
-			astroData.planets.sun.sign = sunSignParam;
+		if (sunSignParam && signs[sunSignParam]) {
+			planets.sun.sign = sunSignParam;
 		}
 	});
 </script>
@@ -19,7 +19,7 @@
 		<!-- Day/Night Input -->
 		<div>
 			<label class="label" for="selectDayNight">O mapa natal é diurno ou noturno?</label>
-			<select name="selectDayNight" bind:value={astroData.dayNight} class="select">
+			<select name="selectDayNight" bind:value={metadata.dayNight} class="select">
 				<option value="day">Diurno</option>
 				<option value="night">Noturno</option>
 			</select>
@@ -32,7 +32,7 @@
 			<input
 				name="sunDegrees"
 				type="number"
-				bind:value={astroData.planets.sun.degrees}
+				bind:value={planets.sun.degrees}
 				max="29"
 				min="0"
 				placeholder="Graus"
@@ -44,7 +44,7 @@
 			<input
 				name="sunMinutes"
 				type="number"
-				bind:value={astroData.planets.sun.minutes}
+				bind:value={planets.sun.minutes}
 				max="59"
 				min="0"
 				placeholder="Minutos"
@@ -54,8 +54,8 @@
 			/>
 
 			<label for="sunSign">Signo</label>
-			<select name="sunSign" bind:value={astroData.planets.sun.sign} class="select">
-				{#each Object.entries(astroData.signs) as [signKey, sign]}
+			<select name="sunSign" bind:value={planets.sun.sign} class="select">
+				{#each Object.entries(signs) as [signKey, sign]}
 					<option value={signKey}>
 						{sign.icon}
 						{sign.label}
@@ -67,5 +67,5 @@
 		<button class="submit"> Calcular Parte da Fortuna </button>
 	</form>
 	<!-- Result -->
-	<div id="fortuneResult" class="result">{astroData.results.fortune}</div>
+	<div id="fortuneResult" class="result">{results.fortune}</div>
 </div>
