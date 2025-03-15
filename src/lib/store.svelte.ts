@@ -1,4 +1,4 @@
-export let store = $state({
+export let astroData = $state({
 	activeTab: 'aspects',
 	dayNight: 'day',
 	maleFemale: 'male',
