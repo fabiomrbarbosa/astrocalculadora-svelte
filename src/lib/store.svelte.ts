@@ -83,14 +83,14 @@ export let chartData = $state({
 			minutes: 0,
 			sign: 'aries'
 		},
-		fortune: {
+		partFortune: {
 			label: 'Parte da Fortuna',
 			degrees: 0,
 			minutes: 0,
 			sign: 'aries',
 			dispositor: 'mars'
 		},
-		substance: {
+		partSubstance: {
 			label: 'Parte da Substância',
 			degrees: 0,
 			minutes: 0,
@@ -415,8 +415,8 @@ export let chartData = $state({
 			label: 'Ascendente'
 		},
 		{
-			key: 'fortune',
-			source: 'points.fortune',
+			key: 'partFortune',
+			source: 'points.partFortune',
 			label: 'Parte da Fortuna'
 		},
 		{
@@ -428,38 +428,38 @@ export let chartData = $state({
 
 	resourceSignifiers: [
 		{
-			key: 'house2_cusp',
+			key: 'house2Cusp',
 			source: 'houses.house2.cusp',
 			label: 'Cúspide da Casa 2'
 		},
 		{
-			key: 'house2_ruler',
+			key: 'house2Ruler',
 			source: 'houses.house2.ruler',
 			label: 'Regente da Casa 2'
 		},
 		{
-			key: 'house2_planets',
+			key: 'house2Planets',
 			source: 'houses.house2.planets',
 			label: 'Planetas na Casa 2'
 		},
 		{
 			key: 'fortune',
-			source: 'points.fortune',
+			source: 'points.partFortune',
 			label: 'Parte da Fortuna'
 		},
 		{
 			key: 'fortune_dispositor',
-			source: 'points.fortune.dispositor',
+			source: 'points.partFortune.dispositor',
 			label: 'Dispositor da Parte da Fortuna'
 		},
 		{
 			key: 'substance',
-			source: 'points.substance',
+			source: 'points.partSubstance',
 			label: 'Parte da Substância'
 		},
 		{
 			key: 'substance_dispositor',
-			source: 'points.substance.dispositor',
+			source: 'points.partSubstance.dispositor',
 			label: 'Dispositor da Parte da Substância'
 		},
 		{ key: 'jupiter', source: 'planets.jupiter', label: 'Júpiter' }
@@ -494,12 +494,12 @@ export let chartData = $state({
 				saturn: []
 			}
 		},
-		fortune: '',
-		substance: '',
-		marriage: '',
-		children: '',
-		friends: '',
-		enemies: '',
-		religion: ''
+		partFortune: '',
+		partSubstance: '',
+		partMarriage: '',
+		partChildren: '',
+		partFriends: '',
+		partEnemies: '',
+		partReligion: ''
 	}
 });

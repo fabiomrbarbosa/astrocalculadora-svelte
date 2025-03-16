@@ -1,12 +1,12 @@
 <script>
-	import { calculateFortune } from '$lib/utils';
+	import { calculatePartFortune } from '$lib/calcs';
 	import { chartData } from '$lib/store.svelte';
 	import AstroInput from '$lib/components/AstroInput.svelte';
 </script>
 
 <!-- Fortune Form -->
 <div class="panel">
-	<form class="form" onsubmit={calculateFortune}>
+	<form class="form" onsubmit={calculatePartFortune}>
 		<!-- Day/Night Input -->
 		<div>
 			<label class="label" for="selectDayNight">O mapa natal é diurno ou noturno?</label>
@@ -23,5 +23,5 @@
 		<button class="submit"> Calcular Parte da Fortuna </button>
 	</form>
 	<!-- Result -->
-	<div id="fortuneResult" class="result">{chartData.results.fortune}</div>
+	<div id="fortuneResult" class="result">{chartData.results.partFortune}</div>
 </div>
