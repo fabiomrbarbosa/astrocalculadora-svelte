@@ -1,40 +1,5 @@
 import { chartData } from './store.svelte';
 
-export function checkQueryParams() {
-	const params = new URLSearchParams(window.location.search);
-
-	// Ensure TypeScript knows these are indexable objects
-	const planets = chartData.planets as Record<string, { sign: string }>;
-	const points = chartData.points as Record<string, { sign: string }>;
-	const signs = chartData.signs as Record<string, unknown>;
-
-	const dayNightParam = params.get('selectDayNight');
-	if (dayNightParam) {
-		chartData.dayNight = dayNightParam;
-	}
-
-	const maleFemaleParam = params.get('selectMaleFemale');
-	if (maleFemaleParam) {
-		chartData.maleFemale = maleFemaleParam;
-	}
-
-	// Iterate over all planets
-	Object.keys(planets).forEach((planetKey) => {
-		const param = params.get(`${planetKey}Sign`);
-		if (param && signs[param]) {
-			planets[planetKey].sign = param;
-		}
-	});
-
-	// Iterate over all points
-	Object.keys(points).forEach((pointKey) => {
-		const param = params.get(`${pointKey}Sign`);
-		if (param && signs[param]) {
-			points[pointKey].sign = param;
-		}
-	});
-}
-
 /** Get the value of a nested property in chartData */
 export function getSignifierValue(path: string): any {
 	let value = path.split('.').reduce((obj: any, key: string) => obj?.[key], chartData) || null;
@@ -202,4 +167,30 @@ export function calculateFortune(): void {
 
 	// Store formatted result in results.fortune
 	chartData.results.fortune = `Parte da Fortuna: ${fortuneData.degrees}°${fortuneData.minutes}' em ${fortuneData.icon} ${fortuneData.label}`;
+}
+
+export function calculateSubstance(): void {
+	const ruler2 = chartData.planets[chartData.houses.house2.ruler];
+	const ruler2Pos = calculatePosition(ruler2.sign, ruler2.degrees, ruler2.minutes);
+	const cusp2Pos = calculatePosition(
+		chartData.houses.house2.cusp.sign,
+		chartData.houses.house2.cusp.degrees,
+		chartData.houses.house2.cusp.minutes
+	);
+	const ascPos = calculatePosition(
+		chartData.points.ascendant.sign,
+		chartData.points.ascendant.degrees,
+		chartData.points.ascendant.minutes
+	);
+
+	// Convert result into structured object
+	const substanceData = convertPositionToSignAndDegrees(ascPos + (cusp2Pos - ruler2Pos));
+
+	// Store structured data in parts.substance
+	chartData.points.substance.degrees = substanceData.degrees;
+	chartData.points.substance.minutes = substanceData.minutes;
+	chartData.points.substance.sign = substanceData.sign;
+
+	// Store formatted result in results.substance
+	chartData.results.substance = `Parte da Substância: ${substanceData.degrees}°${substanceData.minutes}' em ${substanceData.icon} ${substanceData.label}`;
 }

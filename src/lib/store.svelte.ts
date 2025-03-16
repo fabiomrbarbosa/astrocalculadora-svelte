@@ -13,8 +13,7 @@ export let chartData = $state({
 			minutes: 0,
 			sign: 'aries',
 			house: '1',
-			orb: 12,
-			retrograde: false
+			orb: 12
 		},
 		mercury: {
 			label: 'Mercúrio',
@@ -43,8 +42,7 @@ export let chartData = $state({
 			minutes: 0,
 			sign: 'aries',
 			house: '1',
-			orb: 15,
-			retrograde: false
+			orb: 15
 		},
 		mars: {
 			label: 'Marte',
