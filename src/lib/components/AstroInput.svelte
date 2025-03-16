@@ -9,7 +9,7 @@
 	const isRuler = typeof data === 'string';
 </script>
 
-<fieldset class="fieldset bg-base border-base-300 rounded-box w-xs border p-4">
+<fieldset class="fieldset border-base-300 rounded-box w-xs border bg-white p-4">
 	<legend class="fieldset-legend">
 		{isRuler ? `Regente da ${keyName.replace('Ruler', '')}ª Casa` : data.label}
 	</legend>
