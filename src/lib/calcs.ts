@@ -134,13 +134,13 @@ export function calculateAlmutemFiguris(): void {
 	// 🎯 Step 4: Bonus for Ruler of Day/Night
 	if (chartData.rulerOfDay) {
 		scores[chartData.rulerOfDay] += 7;
-		scoreBreakdown[chartData.rulerOfDay].push(`+7 (Regente do Dia/da Noite)`);
+		scoreBreakdown[chartData.rulerOfDay].push(`Regente do Dia/da Noite +7`);
 	}
 
 	// 🎯 Step 5: Bonus for Ruler of Hour
 	if (chartData.rulerOfHour) {
 		scores[chartData.rulerOfHour] += 6;
-		scoreBreakdown[chartData.rulerOfHour].push(`+6 (Regente da Hora)`);
+		scoreBreakdown[chartData.rulerOfHour].push(`Regente da Hora +6`);
 	}
 
 	// 🎯 Store Final Results in Chart Data
