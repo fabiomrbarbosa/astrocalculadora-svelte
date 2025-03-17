@@ -9,7 +9,6 @@
 
 	// Reverse planet keys for proper column order
 	const planetKeys = Object.keys(chartData.planets).reverse();
-	$inspect(chartData.results.almutemSubstance.scoreBreakdown);
 </script>
 
 <!-- Almutem of Substance Form -->
@@ -41,7 +40,7 @@
 				</thead>
 				<tbody>
 					<!-- Iterate over all resourceSignifiers dynamically -->
-					{#each Object.entries(resourceSignifiers) as [key, { label, source }]}
+					{#each Object.entries(resourceSignifiers) as [key, { label }]}
 						{#if key === 'house2Planets'}
 							<!-- Special handling for multiple planets in House 2 -->
 							{#each chartData.houses.house2.planets as planet}
