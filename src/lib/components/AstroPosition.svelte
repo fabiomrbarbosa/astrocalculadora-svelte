@@ -1,5 +1,5 @@
 <script>
-	import { chartData } from '$lib/store.svelte.ts';
+	import { chartData } from '$lib/store.svelte';
 
 	export let keyName; // e.g., "sun", "house2Cusp"
 	export let data; // The object (planet, point, cusp)
