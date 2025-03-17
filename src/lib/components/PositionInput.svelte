@@ -26,7 +26,7 @@
 	}
 </script>
 
-<div class="astro-position">
+<div class="astro-position flex flex-col">
 	<label class="fieldset-label" for="{keyName}Degrees">Graus</label>
 	<input
 		id="{keyName}Degrees"

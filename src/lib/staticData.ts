@@ -311,7 +311,7 @@ export const resourceSignifiers: ResourceSignifiers = {
 		label: 'Parte da Fortuna'
 	},
 	partFortuneDispositor: {
-		source: 'points.partFortune.dispositor',
+		source: 'partFortuneDispositor',
 		label: 'Dispositor da Parte da Fortuna'
 	},
 	partSubstance: {
@@ -319,7 +319,7 @@ export const resourceSignifiers: ResourceSignifiers = {
 		label: 'Parte da Substância'
 	},
 	partSubstanceDispositor: {
-		source: 'points.partSubstance.dispositor',
+		source: 'partSubstanceDispositor',
 		label: 'Dispositor da Parte da Substância'
 	},
 	jupiter: { source: 'planets.jupiter', label: 'Júpiter' }

@@ -1,11 +1,7 @@
 <script lang="ts">
 	import { calculateAlmutemSubstance } from '$lib/calcs';
-	import {
-		chartData,
-		getPartFortuneDispositor,
-		getPartSubstanceDispositor
-	} from '$lib/chartData.svelte';
-	import { resourceSignifiers } from '$lib/staticData';
+	import { chartData } from '$lib/chartData.svelte';
+	import { resourceSignifiers, signs } from '$lib/staticData';
 
 	import AstroInput from '$lib/components/AstroInput.svelte';
 	import usePreventDefault from '$lib/actions/usePreventDefault';
@@ -13,6 +9,7 @@
 
 	// Reverse planet keys for proper column order
 	const planetKeys = Object.keys(chartData.planets).reverse();
+	$inspect(chartData.results.almutemSubstance.scoreBreakdown);
 </script>
 
 <!-- Almutem of Substance Form -->
@@ -22,9 +19,9 @@
 		<AstroInput keyName="house2Ruler" data={chartData.houses.house2.ruler} />
 		<AstroInput keyName="house2Planets" data={chartData.houses.house2.planets} />
 		<AstroInput keyName="partFortune" data={chartData.points.partFortune} />
-		<AstroInput keyName="partFortuneDispositor" data={getPartFortuneDispositor()} />
+		<AstroInput keyName="partFortuneDispositor" data={chartData.partFortuneDispositor} />
 		<AstroInput keyName="partSubstance" data={chartData.points.partSubstance} />
-		<AstroInput keyName="partSubstanceDispositor" data={getPartSubstanceDispositor()} />
+		<AstroInput keyName="partSubstanceDispositor" data={chartData.partSubstanceDispositor} />
 		<AstroInput keyName="jupiter" data={chartData.planets.jupiter} />
 
 		<button class="submit">Calcular Almutem da Substância</button>

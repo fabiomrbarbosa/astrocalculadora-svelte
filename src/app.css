@@ -18,27 +18,6 @@ body {
 	@apply mx-auto mb-16 max-w-4xl rounded bg-white p-6 shadow;
 }
 
-.tab-wrapper {
-	@apply mb-4 border-b border-gray-200 text-center text-sm font-medium text-gray-500;
-}
-
-.tab-container {
-	@apply -mb-px flex flex-wrap;
-}
-
-.tab {
-	@apply inline-block p-2;
-	cursor: pointer;
-}
-
-.tab--inactive {
-	@apply rounded-t-lg border-b-2 border-transparent hover:border-gray-300 hover:text-gray-600;
-}
-
-.tab--active {
-	@apply rounded-t-lg border-b-2 border-blue-600 text-blue-600;
-}
-
 .title {
 	@apply mb-4 text-2xl font-bold;
 }

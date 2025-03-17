@@ -1,5 +1,5 @@
 <script lang="ts">
-	import AstroPosition from './AstroPosition.svelte';
+	import PositionInput from './PositionInput.svelte';
 
 	const { keyName, data, showRetrograde = false } = $props();
 </script>
@@ -7,6 +7,6 @@
 <fieldset class="fieldset rounded border p-2">
 	<legend>{data.label}</legend>
 
-	<!-- Reuse AstroPosition for degrees, minutes, and signs -->
-	<AstroPosition {keyName} {data} />
+	<!-- Reuse PositionInput for degrees, minutes, and signs -->
+	<PositionInput {keyName} {data} />
 </fieldset>

@@ -10,6 +10,8 @@ export type ChartData = {
 	points: Record<string, any>;
 	houses: Record<string, any>;
 	results: Record<string, any>; // Loose typing for deep nesting
+	partFortuneDispositor: string;
+	partSubstanceDispositor: string;
 };
 
 export let chartData: ChartData = $state({
@@ -139,6 +141,14 @@ export let chartData: ChartData = $state({
 		}
 	},
 
+	get partFortuneDispositor() {
+		return signs[this.points.partFortune.sign]?.dignities.domicile;
+	},
+
+	get partSubstanceDispositor() {
+		return signs[this.points.partSubstance.sign]?.dignities.domicile;
+	},
+
 	results: {
 		aspects: [],
 		aspectTable: {},
@@ -161,11 +171,3 @@ export let chartData: ChartData = $state({
 		partReligion: ''
 	}
 });
-
-export function getPartFortuneDispositor() {
-	return signs[chartData.points.partFortune.sign]?.dignities.domicile || '';
-}
-
-export function getPartSubstanceDispositor() {
-	return signs[chartData.points.partSubstance.sign]?.dignities.domicile || '';
-}

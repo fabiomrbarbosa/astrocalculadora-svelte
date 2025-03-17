@@ -1,10 +1,6 @@
 <script lang="ts">
-	import {
-		chartData,
-		getPartFortuneDispositor,
-		getPartSubstanceDispositor
-	} from '$lib/chartData.svelte';
-	import AstroPosition from './AstroPosition.svelte';
+	import { chartData } from '$lib/chartData.svelte';
+	import PositionInput from './PositionInput.svelte';
 	import PlanetInput from './PlanetInput.svelte';
 	import RetrogradeInput from './RetrogradeInput.svelte';
 
@@ -21,7 +17,7 @@
 	let selectedPlanet = $state('');
 </script>
 
-<fieldset class="fieldset border-base-300 rounded-box bg-base-100 w-xs border p-4">
+<fieldset class="fieldset border-base-300 rounded-box bg-base-100 border p-4">
 	<legend class="fieldset-legend">
 		{#if isCusp}Cúspide da {keyName.replace('Cusp', '').replace('house', '')}ª Casa
 		{:else if isRuler}Regente da {keyName.replace('Ruler', '').replace('house', '')}ª Casa
@@ -96,12 +92,12 @@
 			{keyName}
 			data={chartData.planets[
 				keyName === 'partFortuneDispositor'
-					? getPartFortuneDispositor()
-					: getPartSubstanceDispositor()
+					? chartData.partFortuneDispositor
+					: chartData.partSubstanceDispositor
 			]}
 		/>
 	{:else}
-		<AstroPosition {keyName} {data} />
+		<PositionInput {keyName} {data} />
 		{#if isPlanet}
 			<RetrogradeInput {showRetrograde} {keyName} {data} />
 		{/if}

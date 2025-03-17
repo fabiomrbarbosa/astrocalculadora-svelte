@@ -115,7 +115,7 @@ export function getBreakdownScores(
 	if (!breakdown) return '';
 
 	return breakdown
-		.filter((b: string) => b.includes(keyPrefix))
+		.filter((b: string) => b.includes(keyPrefix + ' '))
 		.map((b: string) => b.match(/\+\d+/g)?.join(' ') ?? '') // Ensure match is handled safely
 		.join(' ');
 }

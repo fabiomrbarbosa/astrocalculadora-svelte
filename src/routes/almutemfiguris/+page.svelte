@@ -22,7 +22,7 @@
 
 		<!-- Positions per House -->
 		<div class="house-placements">
-			<label for="housePlacements" class="label">Posições por Casa</label>
+			<label for="housePlacements" class="fieldset-label">Posições por Casa</label>
 			<fieldset id="housePlacements" class="house-placements-fields">
 				{#each Object.entries(chartData.planets) as [planet]}
 					<div class="flex gap-2">
@@ -37,31 +37,33 @@
 			</fieldset>
 		</div>
 
-		<!-- Rulers of Day/Night -->
-		<div class="rulers-of-day-hour">
-			<label for="rulerOfDayNight" class="label">Regente do Dia/da Noite</label>
-			<div id="rulerOfDayNight">
-				<select bind:value={chartData.rulerOfDay} class="select">
-					{#each Object.entries(chartData.planets) as [planetKey, planet]}
-						<option value={planetKey}>{planet.icon} {planet.label}</option>
-					{/each}
-				</select>
-			</div>
-
-			<!-- Ruler of the Hour -->
+		<fieldset class="fieldset">
+			<!-- Rulers of Day/Night -->
 			<div class="rulers-of-day-hour">
-				<label for="rulerOfHour" class="label">Regente da Hora</label>
-				<div id="rulerOfHour">
-					<select bind:value={chartData.rulerOfHour} class="select">
+				<label for="rulerOfDayNight" class="fieldset-label">Regente do Dia/da Noite</label>
+				<div id="rulerOfDayNight">
+					<select bind:value={chartData.rulerOfDay} class="select">
 						{#each Object.entries(chartData.planets) as [planetKey, planet]}
 							<option value={planetKey}>{planet.icon} {planet.label}</option>
 						{/each}
 					</select>
 				</div>
 
-				<button class="submit">Calcular Almutem Figuris</button>
+				<!-- Ruler of the Hour -->
+				<div class="rulers-of-day-hour">
+					<label for="rulerOfHour" class="fieldset-label">Regente da Hora</label>
+					<div id="rulerOfHour">
+						<select bind:value={chartData.rulerOfHour} class="select">
+							{#each Object.entries(chartData.planets) as [planetKey, planet]}
+								<option value={planetKey}>{planet.icon} {planet.label}</option>
+							{/each}
+						</select>
+					</div>
+				</div>
 			</div>
-		</div>
+		</fieldset>
+
+		<button class="submit">Calcular Almutem Figuris</button>
 	</form>
 
 	<!-- Result -->

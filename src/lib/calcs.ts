@@ -1,8 +1,4 @@
-import {
-	chartData,
-	getPartFortuneDispositor,
-	getPartSubstanceDispositor
-} from './chartData.svelte';
+import { chartData } from './chartData.svelte';
 import { aspects, signs, hylegicPoints, resourceSignifiers } from './staticData';
 import {
 	calculatePosition,
@@ -160,7 +156,7 @@ export function calculateAlmutemFiguris(): void {
 
 /* Calculate Almutem of Substance */
 export function calculateAlmutemSubstance(): void {
-	let scores = {
+	let scores: Record<string, number> = {
 		moon: 0,
 		mercury: 0,
 		venus: 0,
@@ -170,7 +166,7 @@ export function calculateAlmutemSubstance(): void {
 		saturn: 0
 	};
 
-	let scoreBreakdown = {
+	let scoreBreakdown: Record<string, string[]> = {
 		moon: [],
 		mercury: [],
 		venus: [],
@@ -185,11 +181,11 @@ export function calculateAlmutemSubstance(): void {
 		let pos = getSignifierValue(source);
 		if (!pos) return;
 
-		// 🎯 Handle dynamically derived dispositors
+		// 🎯 Handle dynamically derived dispositors using getters
 		if (key === 'partFortuneDispositor') {
-			pos = getPartFortuneDispositor();
+			pos = chartData.partFortuneDispositor;
 		} else if (key === 'partSubstanceDispositor') {
-			pos = getPartSubstanceDispositor();
+			pos = chartData.partSubstanceDispositor;
 		}
 
 		// Convert string references to planet objects
