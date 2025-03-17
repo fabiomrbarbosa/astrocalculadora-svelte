@@ -2,11 +2,12 @@
 	import { calculatePartFortune } from '$lib/calcs';
 	import { chartData } from '$lib/store.svelte';
 	import AstroInput from '$lib/components/AstroInput.svelte';
+	import usePreventDefault from '$lib/actions/usePreventDefault';
 </script>
 
 <!-- Fortune Form -->
 <div class="panel">
-	<form class="form" onsubmit={calculatePartFortune}>
+	<form class="form" onsubmit={calculatePartFortune} use:usePreventDefault>
 		<!-- Day/Night Input -->
 		<div>
 			<label class="label" for="selectDayNight">O mapa natal é diurno ou noturno?</label>

@@ -2,11 +2,12 @@
 	import { calculatePartMarriage } from '$lib/calcs';
 	import { chartData } from '$lib/store.svelte';
 	import AstroInput from '$lib/components/AstroInput.svelte';
+	import usePreventDefault from '$lib/actions/usePreventDefault';
 </script>
 
 <!-- Fortune Form -->
 <div class="panel">
-	<form class="form" onsubmit={calculatePartMarriage}>
+	<form class="form" onsubmit={calculatePartMarriage} use:usePreventDefault>
 		<AstroInput keyName="house2Ruler" data={chartData.houses.house2.ruler} />
 		<AstroInput keyName="house2Cusp" data={chartData.houses.house2.cusp} />
 		<AstroInput keyName="ascendant" data={chartData.points.ascendant} />

@@ -1,4 +1,20 @@
-export let chartData = $state({
+export type ChartData = {
+	activeTab: string;
+	dayNight: string;
+	maleFemale: string;
+	rulerOfDay: string;
+	rulerOfHour: string;
+	planets: Record<string, any>; // Allow flexibility
+	points: Record<string, any>;
+	houses: Record<string, any>;
+	signs: Record<string, any>;
+	aspects: any[]; // Loose typing for an array
+	hylegicPoints: any[]; // Loose typing for an array
+	resourceSignifiers: any[]; // Loose typing for an array
+	results: Record<string, any>; // Loose typing for deep nesting
+};
+
+export let chartData: ChartData = $state({
 	activeTab: 'aspects',
 	dayNight: 'day',
 	maleFemale: 'male',
@@ -87,15 +103,13 @@ export let chartData = $state({
 			label: 'Parte da Fortuna',
 			degrees: 0,
 			minutes: 0,
-			sign: 'aries',
-			dispositor: 'mars'
+			sign: 'aries'
 		},
 		partSubstance: {
 			label: 'Parte da Substância',
 			degrees: 0,
 			minutes: 0,
-			sign: 'aries',
-			dispositor: 'mars'
+			sign: 'aries'
 		},
 		syzygy: {
 			label: 'Sizígia Pré-Natal',
@@ -503,3 +517,11 @@ export let chartData = $state({
 		partReligion: ''
 	}
 });
+
+export function getPartFortuneDispositor() {
+	return chartData.signs[chartData.points.partFortune.sign]?.dignities.domicile || '';
+}
+
+export function getPartSubstanceDispositor() {
+	return chartData.signs[chartData.points.partSubstance.sign]?.dignities.domicile || '';
+}

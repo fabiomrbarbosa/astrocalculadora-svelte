@@ -1,26 +1,27 @@
-<script>
+<script lang="ts">
 	import { chartData } from '$lib/store.svelte';
-
-	export let keyName; // e.g., "sun", "house2Cusp"
-	export let data; // The object (planet, point, cusp)
+	const { keyName, data } = $props();
 
 	// Function to handle input (allows typing freely)
-	function handleInput(event, type) {
-		let value = event.target.value.replace(/^0+(?=\d)/, ''); // Remove leading zeros
+	function handleInput(event: Event, type: keyof typeof data) {
+		const target = event.target as HTMLInputElement;
+		let value = target.value.replace(/^0+(?=\d)/, ''); // Remove leading zeros
+
 		if (value === '' || /^\d+$/.test(value)) {
-			data[type] = value;
+			data[type] = parseInt(value, 10) || 0; // Ensure it's a number
 		}
 	}
 
 	// Function to enforce valid range when user leaves the input
-	function enforceRange(type, min, max) {
-		let value = parseInt(data[type], 10);
+	function enforceRange(type: keyof typeof data, min: number, max: number) {
+		let value = parseInt(data[type] as unknown as string, 10);
+
 		if (isNaN(value) || value < min) {
 			data[type] = min;
 		} else if (value > max) {
 			data[type] = max;
 		} else {
-			data[type] = value;
+			data[type] = value; // Ensure it remains a number
 		}
 	}
 </script>
@@ -38,8 +39,8 @@
 		class="input"
 		inputmode="numeric"
 		required
-		on:input={(e) => handleInput(e, 'degrees')}
-		on:blur={() => enforceRange('degrees', 0, 29)}
+		oninput={(e) => handleInput(e, 'degrees')}
+		onblur={() => enforceRange('degrees', 0, 29)}
 	/>
 
 	<label class="fieldset-label" for="{keyName}Minutes">Minutos</label>
@@ -54,8 +55,8 @@
 		class="input"
 		inputmode="numeric"
 		required
-		on:input={(e) => handleInput(e, 'minutes')}
-		on:blur={() => enforceRange('minutes', 0, 59)}
+		oninput={(e) => handleInput(e, 'minutes')}
+		onblur={() => enforceRange('minutes', 0, 59)}
 	/>
 
 	<label class="fieldset-label" for="{keyName}Sign">Signo</label>

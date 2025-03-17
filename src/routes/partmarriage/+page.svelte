@@ -2,11 +2,12 @@
 	import { calculatePartSubstance } from '$lib/calcs';
 	import { chartData } from '$lib/store.svelte';
 	import AstroInput from '$lib/components/AstroInput.svelte';
+	import usePreventDefault from '$lib/actions/usePreventDefault';
 </script>
 
 <!-- Fortune Form -->
 <div class="panel">
-	<form class="form" onsubmit={calculatePartSubstance}>
+	<form class="form" onsubmit={calculatePartSubstance} use:usePreventDefault>
 		<!-- Day/Night Input -->
 		<div>
 			<label class="label" for="selectMaleFemale">O mapa natal é masculino ou feminino?</label>

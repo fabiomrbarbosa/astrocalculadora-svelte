@@ -1,8 +1,6 @@
-<script>
+<script lang="ts">
 	import AstroPosition from './AstroPosition.svelte';
-
-	export let keyName;
-	export let data; // Planet object
+	const { keyName, data } = $props();
 </script>
 
 <fieldset class="fieldset rounded border p-2">

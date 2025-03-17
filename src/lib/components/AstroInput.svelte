@@ -1,10 +1,13 @@
-<script>
-	import { chartData } from '$lib/store.svelte';
+<script lang="ts">
+	import {
+		chartData,
+		getPartFortuneDispositor,
+		getPartSubstanceDispositor
+	} from '$lib/store.svelte';
 	import PlanetInput from './PlanetInput.svelte';
 	import AstroPosition from './AstroPosition.svelte';
 
-	export let keyName; // e.g., "house2Cusp", "house2Ruler", "house2Planets", "partFortune"
-	export let data; // The actual object (cusp, ruler, planets[], point, dispositor)
+	const { keyName, data } = $props();
 
 	// Check what kind of data we're dealing with based on the `keyName`
 	const isCusp = keyName.includes('Cusp'); // House cusps
@@ -13,15 +16,21 @@
 	const isDispositor = keyName.includes('Dispositor'); // Precomputed ruler (read-only)
 	const isPlanet = keyName in chartData.planets; // A single planet
 	const isPoint = keyName in chartData.points; // A single calculated point
+
+	let selectedPlanet = $state('');
 </script>
 
 <fieldset class="fieldset border-base-300 rounded-box bg-base-100 w-xs border p-4">
 	<legend class="fieldset-legend">
-		{#if isCusp}Cúspide da {keyName.replace('Cusp', '').replace('house', '')}ª Casa{/if}
-		{#if isRuler}Regente da {keyName.replace('Ruler', '').replace('house', '')}ª Casa{/if}
-		{#if isPlanetArray}Planetas na {keyName.replace('Planets', '').replace('house', '')}ª Casa{/if}
-		{#if isPlanet || isPoint}{data.label}{/if}
-		{#if isDispositor}Dispositor da {keyName.replace('Dispositor', '')}{/if}
+		{#if isCusp}Cúspide da {keyName.replace('Cusp', '').replace('house', '')}ª Casa
+		{:else if isRuler}Regente da {keyName.replace('Ruler', '').replace('house', '')}ª Casa
+		{:else if isPlanetArray}Planetas na {keyName.replace('Planets', '').replace('house', '')}ª Casa
+		{:else if isDispositor}Dispositor da {chartData.points[keyName.replace('Dispositor', '')].label}
+		{:else if isPoint}
+			{chartData.points[keyName].label}
+		{:else if isPlanet}
+			{chartData.planets[keyName].label}
+		{/if}
 	</legend>
 
 	{#if isRuler}
@@ -51,15 +60,15 @@
 		{#each data as planetKey, index}
 			<div class="flex items-center gap-2">
 				<PlanetInput keyName={planetKey} data={chartData.planets[planetKey]} />
-				<button type="button" class="submit submit--danger" on:click={() => data.splice(index, 1)}
-					>✕</button
-				>
+				<button type="button" class="submit submit--danger" onclick={() => data.splice(index, 1)}>
+					✕
+				</button>
 			</div>
 		{/each}
 
 		<!-- Add Planet Dropdown -->
 		<div class="flex gap-2">
-			<select bind:value={chartData.newPlanet} class="select">
+			<select bind:value={selectedPlanet} class="select">
 				<option value="" disabled selected>Adicionar um planeta</option>
 				{#each Object.entries(chartData.planets) as [planetKey, planet]}
 					{#if !data.includes(planetKey)}
@@ -70,20 +79,27 @@
 			<button
 				type="button"
 				class="button submit"
-				on:click={() => chartData.newPlanet && data.push(chartData.newPlanet)}>Adicionar</button
+				onclick={() => {
+					if (selectedPlanet && Array.isArray(data) && !data.includes(selectedPlanet)) {
+						data.push(selectedPlanet);
+						selectedPlanet = ''; // Reset after adding
+					}
+				}}
 			>
+				Adicionar
+			</button>
 		</div>
-	{:else if isPlanet || isPoint}
-		<!-- If it's a Planet or Calculated Point -->
-		<PlanetInput {keyName} {data} />
 	{:else if isDispositor}
-		<!-- Dispositor Dropdown  -->
+		<!-- Automatically update the dispositor based on the current sign -->
 		<PlanetInput
 			{keyName}
-			data={chartData.planets[chartData.points[keyName.replace('Dispositor', '')].dispositor]}
+			data={chartData.planets[
+				keyName === 'partFortuneDispositor'
+					? getPartFortuneDispositor()
+					: getPartSubstanceDispositor()
+			]}
 		/>
-	{:else if isCusp}
-		<!-- House Cusp -->
+	{:else}
 		<AstroPosition {keyName} {data} />
 	{/if}
 </fieldset>
