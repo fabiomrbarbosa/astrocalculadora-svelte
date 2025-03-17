@@ -1,31 +1,26 @@
-import { chartData } from './store.svelte';
+import { chartData } from './chartData.svelte';
+import { signs } from './staticData';
+
+/** Type Definitions */
+type PlanetKey = keyof typeof chartData.planets;
+type SignKey = keyof typeof signs;
 
 /** Get the value of a nested property in chartData */
 export function getSignifierValue(path: string): any {
-	let value = path.split('.').reduce((obj: any, key: string) => obj?.[key], chartData) || null;
+	const value = path.split('.').reduce((obj: any, key: string) => obj?.[key], chartData) || null;
 
-	// Fix: Explicitly define `chartData.planets` as a Record<string, PlanetType>
-	if (
-		typeof value === 'string' &&
-		(chartData.planets as Record<string, typeof chartData.planets.moon>)[value]
-	) {
-		return (chartData.planets as Record<string, typeof chartData.planets.moon>)[value]; // Return planet object
+	// Ensure we return a planet object if the value is a string reference to a planet
+	if (typeof value === 'string' && value in chartData.planets) {
+		return chartData.planets[value as PlanetKey]; // Return planet object
 	}
 
 	return value;
 }
 
 /** Get sign data by sign key */
-export function getSignData(
-	sign: string
-): { value: string; label: string; icon: string; degrees: number } | undefined {
-	// Explicitly cast chartData.signs as a record with string keys
-	return (
-		chartData.signs as Record<
-			string,
-			{ value: string; label: string; icon: string; degrees: number }
-		>
-	)[sign.toLowerCase()];
+export function getSignData(sign: string) {
+	const signKey = sign.toLowerCase() as SignKey;
+	return signs[signKey];
 }
 
 /** Calculate absolute zodiac position (0-360°) */
@@ -37,32 +32,25 @@ export function calculatePosition(sign: string, degrees: number, minutes: number
 }
 
 /** Convert absolute position back to sign, degrees, and minutes */
-export function convertPositionToSignAndDegrees(position: number): {
-	degrees: number;
-	minutes: number;
-	sign: string;
-	icon: string;
-	label: string;
-} {
-	if (position < 0) position += 360;
-	else if (position >= 360) position -= 360;
+export function convertPositionToSignAndDegrees(position: number) {
+	position = ((position % 360) + 360) % 360; // Normalize between 0-360
 
-	const [resultKey, resultSign] = Object.entries(chartData.signs).find(
+	const [signKey, signData] = Object.entries(signs).find(
 		([_, s]) => position >= s.degrees && position < s.degrees + 30
-	) || [null, null];
+	) as [SignKey, (typeof signs)[SignKey]];
 
-	if (!resultKey || !resultSign) throw new Error(`Invalid position: ${position}`);
+	if (!signKey || !signData) throw new Error(`Invalid position: ${position}`);
 
-	const resultDegrees = position - resultSign.degrees;
+	const resultDegrees = position - signData.degrees;
 	const degrees = Math.floor(resultDegrees);
 	const minutes = Math.round((resultDegrees - degrees) * 60);
 
 	return {
 		degrees,
 		minutes,
-		sign: resultKey,
-		icon: resultSign.icon,
-		label: resultSign.label
+		sign: signKey,
+		icon: signData.icon,
+		label: signData.label
 	};
 }
 
@@ -70,32 +58,32 @@ export function convertPositionToSignAndDegrees(position: number): {
 export function processDignities(
 	pos: { sign: string; degrees: number } | null,
 	label: string,
-	scores: Record<string, number>,
-	scoreBreakdown: Record<string, string[]>
+	scores: Record<PlanetKey, number>,
+	scoreBreakdown: Record<PlanetKey, string[]>
 ): void {
 	if (!pos?.sign) return;
 
-	const signDignity = chartData.signs[pos.sign.toLowerCase()].dignities;
-	if (!signDignity) return; // Ensure dignity data exists
+	const signKey = pos.sign.toLowerCase() as SignKey;
+	const signDignity = signs[signKey]?.dignities;
+	if (!signDignity) return;
 
 	const degree = pos.degrees;
 
-	const addScore = (planet: string | null, score: number, dignityType: string) => {
+	const addScore = (planet: string | null, score: number) => {
 		if (!planet || isNaN(score)) return;
-		scores[planet] = (scores[planet] || 0) + score;
-		scoreBreakdown[planet] = scoreBreakdown[planet] || [];
-		scoreBreakdown[planet].push(`${label} +${score} (${dignityType})`);
+		const planetKey = planet as PlanetKey;
+		scores[planetKey] = (scores[planetKey] || 0) + score;
+		scoreBreakdown[planetKey] = scoreBreakdown[planetKey] || [];
+		scoreBreakdown[planetKey].push(`${label} +${score}`);
 	};
 
-	// Domicile
-	addScore(signDignity.domicile, 5, 'Domicílio');
-
-	// Exaltation
-	addScore(signDignity.exaltation, 4, 'Exaltação');
+	// Assign Dignities (without labels)
+	addScore(signDignity.domicile, 5);
+	addScore(signDignity.exaltation, 4);
 
 	// Triplicity
-	signDignity.triplicities.forEach((triplicityRuler: string) => {
-		addScore(triplicityRuler, 3, 'Triplicidade');
+	signDignity.triplicities.forEach((triplicityRuler) => {
+		addScore(triplicityRuler, 3);
 	});
 
 	// Term
@@ -104,7 +92,7 @@ export function processDignities(
 		.reverse()
 		.find((d) => degree >= d);
 	if (termRuler !== undefined) {
-		addScore(signDignity.terms[termRuler], 2, 'Termo');
+		addScore(signDignity.terms[termRuler], 2);
 	}
 
 	// Face
@@ -113,8 +101,23 @@ export function processDignities(
 		.reverse()
 		.find((d) => degree >= d);
 	if (faceRuler !== undefined) {
-		addScore(signDignity.faces[faceRuler], 1, 'Face');
+		addScore(signDignity.faces[faceRuler], 1);
 	}
+}
+
+export function getBreakdownScores(
+	planetKey: string,
+	keyPrefix: string,
+	type: 'almutemFiguris' | 'almutemSubstance'
+): string {
+	const breakdown = chartData.results?.[type]?.scoreBreakdown?.[planetKey];
+
+	if (!breakdown) return '';
+
+	return breakdown
+		.filter((b: string) => b.includes(keyPrefix))
+		.map((b: string) => b.match(/\+\d+/g)?.join(' ') ?? '') // Ensure match is handled safely
+		.join(' ');
 }
 
 /** Get a house strength score based on traditional rulership */

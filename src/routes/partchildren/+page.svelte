@@ -1,13 +1,13 @@
 <script>
-	import { calculatePartFortune } from '$lib/calcs';
+	import { calculatePartChildren } from '$lib/calcs';
 	import { chartData } from '$lib/chartData.svelte';
 	import AstroInput from '$lib/components/AstroInput.svelte';
 	import usePreventDefault from '$lib/actions/usePreventDefault';
 </script>
 
-<!-- Part of Fortune Form -->
+<!-- Part of Children Form -->
 <div class="panel">
-	<form class="form" onsubmit={calculatePartFortune} use:usePreventDefault>
+	<form class="form" onsubmit={calculatePartChildren} use:usePreventDefault>
 		<!-- Day/Night Input -->
 		<div>
 			<label class="label" for="selectDayNight">O mapa natal é diurno ou noturno?</label>
@@ -17,12 +17,13 @@
 			</select>
 		</div>
 
-		<AstroInput keyName="sun" data={chartData.planets.sun} />
-		<AstroInput keyName="moon" data={chartData.planets.moon} />
+		<AstroInput keyName="jupiter" data={chartData.planets.jupiter} />
+		<AstroInput keyName="saturn" data={chartData.planets.saturn} />
 		<AstroInput keyName="ascendant" data={chartData.points.ascendant} />
 
-		<button class="submit">Calcular Parte da Fortuna </button>
+		<button class="submit">Calcular Parte dos Filhos</button>
 	</form>
+
 	<!-- Result -->
-	<div id="partFortuneResults" class="result">{chartData.results.partFortune}</div>
+	<div id="partChildrenResults" class="result">{chartData.results.partChildren}</div>
 </div>

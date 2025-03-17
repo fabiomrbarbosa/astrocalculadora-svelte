@@ -23,20 +23,32 @@
 				</svg>
 			</div>
 			<ul class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+				<li><a href="/aspects">Aspectos</a></li>
+				<li><a href="/almutemfiguris">Almutem Figuris</a></li>
 				<li><a href="/almutemsubstance">Almutem da Substância</a></li>
 				<li><a href="/partfortune">Parte da Fortuna</a></li>
 				<li><a href="/partsubstance">Parte da Substância</a></li>
 				<li><a href="/partmarriage">Parte do Casamento</a></li>
+				<li><a href="/partchildren">Parte dos Filhos</a></li>
+				<li><a href="/partfriends">Parte dos Amigos</a></li>
+				<li><a href="/partenemies">Parte dos Inimigos</a></li>
+				<li><a href="/partreligion">Parte da Religião</a></li>
 			</ul>
 		</div>
 		<a href="/" class="btn btn-ghost text-xl">Cazimi App</a>
 	</div>
 	<div class="navbar-center hidden lg:flex">
 		<ul class="menu menu-horizontal px-1">
+			<li><a href="/aspects">Aspectos</a></li>
+			<li><a href="/almutemfiguris">Almutem Figuris</a></li>
 			<li><a href="/almutemsubstance">Almutem da Substância</a></li>
 			<li><a href="/partfortune">Parte da Fortuna</a></li>
 			<li><a href="/partsubstance">Parte da Substância</a></li>
 			<li><a href="/partmarriage">Parte do Casamento</a></li>
+			<li><a href="/partchildren">Parte dos Filhos</a></li>
+			<li><a href="/partfriends">Parte dos Amigos</a></li>
+			<li><a href="/partenemies">Parte dos Inimigos</a></li>
+			<li><a href="/partreligion">Parte da Religião</a></li>
 		</ul>
 	</div>
 </div>

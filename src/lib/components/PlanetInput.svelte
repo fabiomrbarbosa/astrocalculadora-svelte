@@ -1,6 +1,7 @@
 <script lang="ts">
 	import AstroPosition from './AstroPosition.svelte';
-	const { keyName, data } = $props();
+
+	const { keyName, data, showRetrograde = false } = $props();
 </script>
 
 <fieldset class="fieldset rounded border p-2">
@@ -8,17 +9,4 @@
 
 	<!-- Reuse AstroPosition for degrees, minutes, and signs -->
 	<AstroPosition {keyName} {data} />
-
-	{#if 'retrograde' in data}
-		<label class="fieldset-label" for="{keyName}Retrograde">Movimento</label>
-		<select
-			id="{keyName}Retrograde"
-			name="{keyName}Retrograde"
-			class="select"
-			bind:value={data.retrograde}
-		>
-			<option value={false}>Directo</option>
-			<option value={true}>Retrógrado</option>
-		</select>
-	{/if}
 </fieldset>

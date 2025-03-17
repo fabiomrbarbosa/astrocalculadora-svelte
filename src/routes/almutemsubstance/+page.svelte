@@ -1,17 +1,23 @@
-<script>
-	import { calculatePartMarriage } from '$lib/calcs';
+<script lang="ts">
+	import { calculateAlmutemSubstance } from '$lib/calcs';
 	import {
 		chartData,
 		getPartFortuneDispositor,
 		getPartSubstanceDispositor
-	} from '$lib/store.svelte';
+	} from '$lib/chartData.svelte';
+	import { resourceSignifiers } from '$lib/staticData';
+
 	import AstroInput from '$lib/components/AstroInput.svelte';
 	import usePreventDefault from '$lib/actions/usePreventDefault';
+	import { getBreakdownScores } from '$lib/utils';
+
+	// Reverse planet keys for proper column order
+	const planetKeys = Object.keys(chartData.planets).reverse();
 </script>
 
-<!-- Fortune Form -->
+<!-- Almutem of Substance Form -->
 <div class="panel">
-	<form class="form" onsubmit={calculatePartMarriage} use:usePreventDefault>
+	<form class="form" onsubmit={calculateAlmutemSubstance} use:usePreventDefault>
 		<AstroInput keyName="house2Cusp" data={chartData.houses.house2.cusp} />
 		<AstroInput keyName="house2Ruler" data={chartData.houses.house2.ruler} />
 		<AstroInput keyName="house2Planets" data={chartData.houses.house2.planets} />
@@ -21,8 +27,59 @@
 		<AstroInput keyName="partSubstanceDispositor" data={getPartSubstanceDispositor()} />
 		<AstroInput keyName="jupiter" data={chartData.planets.jupiter} />
 
-		<button class="submit"> Calcular Almutem da Substância</button>
+		<button class="submit">Calcular Almutem da Substância</button>
 	</form>
 	<!-- Result -->
-	<div id="fortuneResult" class="result">{chartData.results.partMarriage}</div>
+
+	{#if Object.keys(chartData.results.almutemSubstance.scores).length > 0}
+		<div id="almutemSubstanceResults" class="result">
+			<table class="almutem-table almutem-table--substance">
+				<thead>
+					<tr>
+						<th>Significadores</th>
+						{#each planetKeys as planetKey}
+							<th>{chartData.planets[planetKey].icon}</th>
+						{/each}
+					</tr>
+				</thead>
+				<tbody>
+					<!-- Iterate over all resourceSignifiers dynamically -->
+					{#each Object.entries(resourceSignifiers) as [key, { label, source }]}
+						{#if key === 'house2Planets'}
+							<!-- Special handling for multiple planets in House 2 -->
+							{#each chartData.houses.house2.planets as planet}
+								<tr>
+									<td>{chartData.planets[planet].label} (Casa 2)</td>
+									{#each planetKeys as planetKey}
+										<td
+											>{getBreakdownScores(
+												planetKey,
+												`${planet}_house2_planets`,
+												'almutemSubstance'
+											)}</td
+										>
+									{/each}
+								</tr>
+							{/each}
+						{:else}
+							<tr>
+								<td>{label}</td>
+								{#each planetKeys as planetKey}
+									<td>{getBreakdownScores(planetKey, key, 'almutemSubstance')}</td>
+								{/each}
+							</tr>
+						{/if}
+					{/each}
+
+					<!-- Grand Total -->
+					<tr>
+						<td><strong>Total</strong></td>
+						{#each planetKeys as planetKey}
+							<td>{chartData.results.almutemSubstance.scores?.[planetKey] || ''}</td>
+						{/each}
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	{/if}
 </div>

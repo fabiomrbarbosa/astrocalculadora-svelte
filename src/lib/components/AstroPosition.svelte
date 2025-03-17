@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { chartData } from '$lib/store.svelte';
+	import { signs } from '$lib/staticData';
 	const { keyName, data } = $props();
 
 	// Function to handle input (allows typing freely)
@@ -61,7 +61,7 @@
 
 	<label class="fieldset-label" for="{keyName}Sign">Signo</label>
 	<select id="{keyName}Sign" name="{keyName}Sign" bind:value={data.sign} class="select">
-		{#each Object.entries(chartData.signs) as [signKey, sign]}
+		{#each Object.entries(signs) as [signKey, sign]}
 			<option value={signKey}>{sign.icon} {sign.label}</option>
 		{/each}
 	</select>

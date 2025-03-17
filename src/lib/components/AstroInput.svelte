@@ -3,11 +3,12 @@
 		chartData,
 		getPartFortuneDispositor,
 		getPartSubstanceDispositor
-	} from '$lib/store.svelte';
-	import PlanetInput from './PlanetInput.svelte';
+	} from '$lib/chartData.svelte';
 	import AstroPosition from './AstroPosition.svelte';
+	import PlanetInput from './PlanetInput.svelte';
+	import RetrogradeInput from './RetrogradeInput.svelte';
 
-	const { keyName, data } = $props();
+	const { keyName, showRetrograde = false, data } = $props();
 
 	// Check what kind of data we're dealing with based on the `keyName`
 	const isCusp = keyName.includes('Cusp'); // House cusps
@@ -101,5 +102,8 @@
 		/>
 	{:else}
 		<AstroPosition {keyName} {data} />
+		{#if isPlanet}
+			<RetrogradeInput {showRetrograde} {keyName} {data} />
+		{/if}
 	{/if}
 </fieldset>

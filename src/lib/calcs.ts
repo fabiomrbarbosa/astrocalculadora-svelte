@@ -1,5 +1,227 @@
-import { chartData } from './store.svelte';
-import { calculatePosition, convertPositionToSignAndDegrees } from './utils';
+import {
+	chartData,
+	getPartFortuneDispositor,
+	getPartSubstanceDispositor
+} from './chartData.svelte';
+import { aspects, signs, hylegicPoints, resourceSignifiers } from './staticData';
+import {
+	calculatePosition,
+	convertPositionToSignAndDegrees,
+	getHouseScore,
+	getSignifierValue,
+	processDignities
+} from './utils';
+
+export function calculateAspects() {
+	// Reset results
+	chartData.results.aspects = [];
+	chartData.results.aspectTable = {};
+
+	const planetKeys = Object.keys(chartData.planets);
+	const signKeys = Object.keys(signs);
+
+	// Initialize aspect table with **columns as initiators**
+	planetKeys.forEach((initiator) => {
+		chartData.results.aspectTable[initiator] = {};
+	});
+
+	// Compare each planet with every other planet
+	for (let i = 0; i < planetKeys.length; i++) {
+		for (let j = i + 1; j < planetKeys.length; j++) {
+			const fastPlanet = chartData.planets[planetKeys[i]];
+			const slowPlanet = chartData.planets[planetKeys[j]];
+
+			const fastPos = calculatePosition(fastPlanet.sign, fastPlanet.degrees, fastPlanet.minutes);
+			const slowPos = calculatePosition(slowPlanet.sign, slowPlanet.degrees, slowPlanet.minutes);
+
+			// Calculate the absolute angular difference
+			let angle = (slowPos - fastPos + 360) % 360;
+			if (angle > 180) angle = 360 - angle;
+
+			for (const aspect of Object.values(aspects)) {
+				const orb = Math.max(fastPlanet.orb, slowPlanet.orb);
+				let orbDiff = Math.abs(angle - aspect.angle);
+
+				if (orbDiff <= orb) {
+					// Determine sign difference
+					const fastSignIndex = signKeys.indexOf(fastPlanet.sign.toLowerCase());
+					const slowSignIndex = signKeys.indexOf(slowPlanet.sign.toLowerCase());
+					const signDiff = (slowSignIndex - fastSignIndex + 12) % 12;
+
+					let outOfSign = !aspect.signsApart.includes(signDiff);
+
+					// Determine whether the aspect is **applying or separating**
+					let isApplying = 'Ap';
+					const projectedFastDegrees =
+						outOfSign && slowPlanet.degrees > fastPlanet.degrees
+							? fastPlanet.degrees + 30
+							: fastPlanet.degrees;
+
+					const projectedSlowDegrees =
+						outOfSign && fastPlanet.degrees > slowPlanet.degrees
+							? slowPlanet.degrees + 30
+							: slowPlanet.degrees;
+
+					if (!fastPlanet.retrograde) {
+						isApplying = projectedFastDegrees < projectedSlowDegrees ? 'Ap' : 'Sp';
+					} else {
+						isApplying = projectedFastDegrees > projectedSlowDegrees ? 'Ap' : 'Sp';
+					}
+
+					// Add the aspect to results
+					chartData.results.aspects.push({
+						planet1: fastPlanet.label + (fastPlanet.retrograde ? ' ℞' : ''),
+						planet2: slowPlanet.label + (slowPlanet.retrograde ? ' ℞' : ''),
+						aspect: aspect.name,
+						icon: aspect.icon,
+						orb: `${Math.floor(orbDiff)}°${Math.round((orbDiff - Math.floor(orbDiff)) * 60)}'`,
+						applying: isApplying,
+						outOfSign: outOfSign
+					});
+
+					// Store aspect in table
+					chartData.results.aspectTable[planetKeys[j]][planetKeys[i]] =
+						`${aspect.icon} ${Math.floor(orbDiff)}°${Math.round((orbDiff - Math.floor(orbDiff)) * 60)}' ${isApplying}${outOfSign ? 'D' : ''}`;
+				}
+			}
+		}
+	}
+}
+
+/* Calculate Almutem Figuris */
+export function calculateAlmutemFiguris(): void {
+	// 🎯 Initialize planetary scores
+	let scores: Record<string, number> = {
+		moon: 0,
+		mercury: 0,
+		venus: 0,
+		sun: 0,
+		mars: 0,
+		jupiter: 0,
+		saturn: 0
+	};
+
+	let scoreBreakdown: Record<string, string[]> = {
+		moon: [],
+		mercury: [],
+		venus: [],
+		sun: [],
+		mars: [],
+		jupiter: [],
+		saturn: []
+	};
+
+	let houseScores = { ...scores };
+	let dignitySubtotal = { ...scores };
+
+	// 🎯 Step 1: Process Hylegic Points
+	Object.entries(hylegicPoints).forEach(([key, { source }]) => {
+		let pos = getSignifierValue(source);
+		if (pos) {
+			processDignities(pos, key, scores, scoreBreakdown);
+		}
+	});
+
+	// 🎯 Step 2: Store Dignity Totals Before House Score Adjustment
+	dignitySubtotal = { ...scores };
+
+	// 🎯 Step 3: Assign House Strength Scores
+	Object.entries(chartData.planets).forEach(([planetKey, planetData]) => {
+		if (planetData.house) {
+			const houseScore = getHouseScore(parseInt(planetData.house, 10));
+			scores[planetKey] += houseScore;
+			houseScores[planetKey] = houseScore;
+			scoreBreakdown[planetKey].push(`Casa ${planetData.house} +${houseScore}`);
+		}
+	});
+
+	// 🎯 Step 4: Bonus for Ruler of Day/Night
+	if (chartData.rulerOfDay) {
+		scores[chartData.rulerOfDay] += 7;
+		scoreBreakdown[chartData.rulerOfDay].push(`+7 (Regente do Dia/da Noite)`);
+	}
+
+	// 🎯 Step 5: Bonus for Ruler of Hour
+	if (chartData.rulerOfHour) {
+		scores[chartData.rulerOfHour] += 6;
+		scoreBreakdown[chartData.rulerOfHour].push(`+6 (Regente da Hora)`);
+	}
+
+	// 🎯 Store Final Results in Chart Data
+	chartData.results.almutemFiguris = {
+		scores,
+		scoreBreakdown,
+		dignitySubtotal,
+		houseScores,
+		rulerOfDay: chartData.rulerOfDay,
+		rulerOfHour: chartData.rulerOfHour
+	};
+}
+
+/* Calculate Almutem of Substance */
+export function calculateAlmutemSubstance(): void {
+	let scores = {
+		moon: 0,
+		mercury: 0,
+		venus: 0,
+		sun: 0,
+		mars: 0,
+		jupiter: 0,
+		saturn: 0
+	};
+
+	let scoreBreakdown = {
+		moon: [],
+		mercury: [],
+		venus: [],
+		sun: [],
+		mars: [],
+		jupiter: [],
+		saturn: []
+	};
+
+	// Iterate over the resourceSignifiers object
+	Object.entries(resourceSignifiers).forEach(([key, { source }]) => {
+		let pos = getSignifierValue(source);
+		if (!pos) return;
+
+		// 🎯 Handle dynamically derived dispositors
+		if (key === 'partFortuneDispositor') {
+			pos = getPartFortuneDispositor();
+		} else if (key === 'partSubstanceDispositor') {
+			pos = getPartSubstanceDispositor();
+		}
+
+		// Convert string references to planet objects
+		if (typeof pos === 'string' && chartData.planets[pos]) {
+			pos = chartData.planets[pos];
+		}
+
+		// 🎯 Step 1: Process multiple planets in a house first
+		if (Array.isArray(pos)) {
+			pos.forEach((planetName) => {
+				if (chartData.planets[planetName]) {
+					processDignities(
+						chartData.planets[planetName],
+						`${planetName}_house2_planets`, // Labeling properly
+						scores,
+						scoreBreakdown
+					);
+				}
+			});
+			return; // Skip further processing for this case
+		}
+
+		// 🎯 Process the main point **without dispositors**
+		processDignities(pos, key, scores, scoreBreakdown);
+	});
+
+	// 🎯 Store the final results properly
+	chartData.results.almutemSubstance = {
+		scores,
+		scoreBreakdown
+	};
+}
 
 /** Calculate Part of Fortune */
 export function calculatePartFortune(): void {
@@ -31,7 +253,7 @@ export function calculatePartFortune(): void {
 		degrees: fortuneData.degrees,
 		minutes: fortuneData.minutes,
 		sign: fortuneData.sign,
-		dispositor: chartData.signs[fortuneData.sign]?.dignities.domicile || ''
+		dispositor: signs[fortuneData.sign]?.dignities.domicile || ''
 	};
 
 	// Store formatted result in results.fortune
@@ -61,7 +283,7 @@ export function calculatePartSubstance(): void {
 		degrees: substanceData.degrees,
 		minutes: substanceData.minutes,
 		sign: substanceData.sign,
-		dispositor: chartData.signs[substanceData.sign]?.dignities.domicile || ''
+		dispositor: signs[substanceData.sign]?.dignities.domicile || ''
 	};
 
 	// Store formatted result in results.substance
@@ -93,6 +315,109 @@ export function calculatePartMarriage(): void {
 	// Convert result into structured object
 	const marriageData = convertPositionToSignAndDegrees(marriagePos);
 
-	// Store formatted result in results.marriage
+	// Store formatted result in results.partMarriage
 	chartData.results.partMarriage = `Parte do Casamento: ${marriageData.degrees}°${marriageData.minutes}' em ${marriageData.icon} ${marriageData.label}`;
+}
+
+export function calculatePartChildren() {
+	const jupiterPos = calculatePosition(
+		chartData.planets.jupiter.sign,
+		chartData.planets.jupiter.degrees,
+		chartData.planets.jupiter.minutes
+	);
+	const saturnPos = calculatePosition(
+		chartData.planets.saturn.sign,
+		chartData.planets.saturn.degrees,
+		chartData.planets.saturn.minutes
+	);
+	const ascPos = calculatePosition(
+		chartData.points.ascendant.sign,
+		chartData.points.ascendant.degrees,
+		chartData.points.ascendant.minutes
+	);
+
+	let childrenPos =
+		chartData.dayNight === 'day'
+			? ascPos + (saturnPos - jupiterPos)
+			: ascPos + (jupiterPos - saturnPos);
+
+	// Convert result into structured object
+	const childrenData = convertPositionToSignAndDegrees(childrenPos);
+
+	// Store formatted result in results.children
+	chartData.results.partChildren = `Parte dos Filhos: ${childrenData.degrees}°${childrenData.minutes}' em ${childrenData.icon} ${childrenData.label}`;
+}
+
+export function calculatePartFriends() {
+	const moonPos = calculatePosition(
+		chartData.planets.moon.sign,
+		chartData.planets.moon.degrees,
+		chartData.planets.moon.minutes
+	);
+	const mercuryPos = calculatePosition(
+		chartData.planets.mercury.sign,
+		chartData.planets.mercury.degrees,
+		chartData.planets.mercury.minutes
+	);
+	const ascPos = calculatePosition(
+		chartData.points.ascendant.sign,
+		chartData.points.ascendant.degrees,
+		chartData.points.ascendant.minutes
+	);
+
+	// Convert result into structured object
+	const friendsData = convertPositionToSignAndDegrees(ascPos + (mercuryPos - moonPos));
+
+	// Store formatted result in results.friends
+	chartData.results.partFriends = `Parte dos Amigos: ${friendsData.degrees}°${friendsData.minutes}' em ${friendsData.icon} ${friendsData.label}`;
+}
+
+export function calculatePartEnemies() {
+	const ruler12 = chartData.planets[chartData.houses.house12.ruler];
+	const ruler12Pos = calculatePosition(ruler12.sign, ruler12.degrees, ruler12.minutes);
+	const cusp12Pos = calculatePosition(
+		chartData.houses.house12.cusp.sign,
+		chartData.houses.house12.cusp.degrees,
+		chartData.houses.house12.cusp.minutes
+	);
+	const ascPos = calculatePosition(
+		chartData.points.ascendant.sign,
+		chartData.points.ascendant.degrees,
+		chartData.points.ascendant.minutes
+	);
+
+	// Convert result into structured object
+	const enemiesData = convertPositionToSignAndDegrees(ascPos + (cusp12Pos - ruler12Pos));
+
+	// Store formatted result in results.enemies
+	chartData.results.partEnemies = `Parte dos Inimigos: ${enemiesData.degrees}°${enemiesData.minutes}' em ${enemiesData.icon} ${enemiesData.label}`;
+}
+
+export function calculatePartReligion() {
+	const moonPos = calculatePosition(
+		chartData.planets.moon.sign,
+		chartData.planets.moon.degrees,
+		chartData.planets.moon.minutes
+	);
+	const mercuryPos = calculatePosition(
+		chartData.planets.mercury.sign,
+		chartData.planets.mercury.degrees,
+		chartData.planets.mercury.minutes
+	);
+	const ascPos = calculatePosition(
+		chartData.points.ascendant.sign,
+		chartData.points.ascendant.degrees,
+		chartData.points.ascendant.minutes
+	);
+
+	let religionPos =
+		chartData.dayNight === 'day'
+			? ascPos + (mercuryPos - moonPos)
+			: ascPos + (moonPos - mercuryPos);
+
+	// Convert result into structured object
+	const religionData = convertPositionToSignAndDegrees(religionPos);
+
+	// Store formatted result in results.religion
+	chartData.results.partReligion = `Parte da Lei ou da Religião: ${religionData.degrees}°${religionData.minutes}' em ${religionData.icon} ${religionData.label}`;
 }

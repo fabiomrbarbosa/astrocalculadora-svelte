@@ -1,13 +1,13 @@
 <script>
-	import { calculatePartSubstance } from '$lib/calcs';
-	import { chartData } from '$lib/store.svelte';
+	import { calculatePartMarriage } from '$lib/calcs';
+	import { chartData } from '$lib/chartData.svelte';
 	import AstroInput from '$lib/components/AstroInput.svelte';
 	import usePreventDefault from '$lib/actions/usePreventDefault';
 </script>
 
-<!-- Fortune Form -->
+<!-- Part of Marriage Form -->
 <div class="panel">
-	<form class="form" onsubmit={calculatePartSubstance} use:usePreventDefault>
+	<form class="form" onsubmit={calculatePartMarriage} use:usePreventDefault>
 		<!-- Day/Night Input -->
 		<div>
 			<label class="label" for="selectMaleFemale">O mapa natal é masculino ou feminino?</label>
@@ -21,8 +21,8 @@
 		<AstroInput keyName="saturn" data={chartData.planets.saturn} />
 		<AstroInput keyName="ascendant" data={chartData.points.ascendant} />
 
-		<button class="submit"> Calcular Parte da Substância</button>
+		<button class="submit">Calcular Parte do Casamento</button>
 	</form>
 	<!-- Result -->
-	<div id="fortuneResult" class="result">{chartData.results.partSubstance}</div>
+	<div id="partMarriageResults" class="result">{chartData.results.partMarriage}</div>
 </div>
