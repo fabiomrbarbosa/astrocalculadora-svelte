@@ -1,10 +1,25 @@
 <script lang="ts">
 	import { chartData } from './../lib/chartData.svelte';
 	import '../app.css';
+	import { page } from '$app/state';
 	let { children } = $props();
 
-	// Implement data persistence via localStorage
+	// Menu items
 
+	const menuItems = [
+		{ href: '/aspects', label: 'Aspectos' },
+		{ href: '/almutemfiguris', label: 'Almutem Figuris' },
+		{ href: '/almutemsubstance', label: 'Almutem da Substância' },
+		{ href: '/partfortune', label: 'Parte da Fortuna' },
+		{ href: '/partsubstance', label: 'Parte da Substância' },
+		{ href: '/partmarriage', label: 'Parte do Casamento' },
+		{ href: '/partchildren', label: 'Parte dos Filhos' },
+		{ href: '/partfriends', label: 'Parte dos Amigos' },
+		{ href: '/partenemies', label: 'Parte dos Inimigos' },
+		{ href: '/partreligion', label: 'Parte da Religião' }
+	];
+
+	// Implement data persistence via localStorage
 	$effect(() => {
 		const savedChartData = localStorage.getItem('chartData');
 		if (savedChartData) {
@@ -41,16 +56,17 @@
 					<ul
 						class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
 					>
-						<li><a href="/aspects">Aspectos</a></li>
-						<li><a href="/almutemfiguris">Almutem Figuris</a></li>
-						<li><a href="/almutemsubstance">Almutem da Substância</a></li>
-						<li><a href="/partfortune">Parte da Fortuna</a></li>
-						<li><a href="/partsubstance">Parte da Substância</a></li>
-						<li><a href="/partmarriage">Parte do Casamento</a></li>
-						<li><a href="/partchildren">Parte dos Filhos</a></li>
-						<li><a href="/partfriends">Parte dos Amigos</a></li>
-						<li><a href="/partenemies">Parte dos Inimigos</a></li>
-						<li><a href="/partreligion">Parte da Religião</a></li>
+						{#each menuItems as { href, label }}
+							<li>
+								<a
+									{href}
+									class:menu-active={page.url.pathname === href}
+									aria-current={page.url.pathname === href ? 'page' : undefined}
+								>
+									{label}
+								</a>
+							</li>
+						{/each}
 					</ul>
 				</div>
 				<a href="/" class="btn btn-ghost text-xl">Calculadora Astrológica</a>
@@ -59,18 +75,17 @@
 	</div>
 	<div class="bg-base-100 rounded-box hidden shadow-sm lg:row-start-2 lg:block lg:min-h-screen">
 		<ul class="menu sticky top-0 w-full">
-			<li>
-				<a href="/aspects">Aspectos</a>
-			</li>
-			<li><a href="/almutemfiguris">Almutem Figuris</a></li>
-			<li><a href="/almutemsubstance">Almutem da Substância</a></li>
-			<li><a href="/partfortune">Parte da Fortuna</a></li>
-			<li><a href="/partsubstance">Parte da Substância</a></li>
-			<li><a href="/partmarriage">Parte do Casamento</a></li>
-			<li><a href="/partchildren">Parte dos Filhos</a></li>
-			<li><a href="/partfriends">Parte dos Amigos</a></li>
-			<li><a href="/partenemies">Parte dos Inimigos</a></li>
-			<li><a href="/partreligion">Parte da Religião</a></li>
+			{#each menuItems as { href, label }}
+				<li>
+					<a
+						{href}
+						class:menu-active={page.url.pathname === href}
+						aria-current={page.url.pathname === href ? 'page' : undefined}
+					>
+						{label}
+					</a>
+				</li>
+			{/each}
 		</ul>
 	</div>
 	<div class="-mt-4 lg:col-span-4 lg:row-start-2">{@render children()}</div>
