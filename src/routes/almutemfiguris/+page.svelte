@@ -21,55 +21,55 @@
 		<AstroInput keyName="syzygy" data={chartData.points.syzygy} />
 
 		<!-- Positions per House -->
-		<div class="house-placements">
-			<label for="housePlacements" class="fieldset-label">Posições por Casa</label>
-			<fieldset id="housePlacements" class="house-placements-fields">
+		<fieldset class="fieldset">
+			<legend class="fieldset-legend">Posições por Casa</legend>
+			<div class="flex gap-2 md:flex-row">
 				{#each Object.entries(chartData.planets) as [planet]}
-					<div class="flex gap-2">
-						<label for="{planet}House" class="label">{chartData.planets[planet].icon}</label>
-						<select id="{planet}House" bind:value={chartData.planets[planet].house} class="select">
-							{#each Array.from({ length: 12 }, (_, i) => i + 1) as n}
-								<option value={n} selected={n === chartData.planets[planet].house}>Casa {n}</option>
-							{/each}
-						</select>
+					<div class="house-field w-full">
+						<label class="select">
+							<span class="label">{chartData.planets[planet].icon}</span>
+							<select id="{planet}House" bind:value={chartData.planets[planet].house}>
+								{#each Array.from({ length: 12 }, (_, i) => i + 1) as n}
+									<option value={n} selected={n === chartData.planets[planet].house}
+										>Casa {n}</option
+									>
+								{/each}
+							</select>
+						</label>
 					</div>
 				{/each}
-			</fieldset>
-		</div>
-
-		<fieldset class="fieldset">
-			<!-- Rulers of Day/Night -->
-			<div class="rulers-of-day-hour">
-				<label for="rulerOfDayNight" class="fieldset-label">Regente do Dia/da Noite</label>
-				<div id="rulerOfDayNight">
-					<select bind:value={chartData.rulerOfDay} class="select">
-						{#each Object.entries(chartData.planets) as [planetKey, planet]}
-							<option value={planetKey}>{planet.icon} {planet.label}</option>
-						{/each}
-					</select>
-				</div>
-
-				<!-- Ruler of the Hour -->
-				<div class="rulers-of-day-hour">
-					<label for="rulerOfHour" class="fieldset-label">Regente da Hora</label>
-					<div id="rulerOfHour">
-						<select bind:value={chartData.rulerOfHour} class="select">
-							{#each Object.entries(chartData.planets) as [planetKey, planet]}
-								<option value={planetKey}>{planet.icon} {planet.label}</option>
-							{/each}
-						</select>
-					</div>
-				</div>
 			</div>
 		</fieldset>
+
+		<div class="flex flex-col gap-4 md:flex-row">
+			<!-- Rulers of Day/Night -->
+			<fieldset class="fieldset">
+				<legend class="fieldset-legend">Regente do Dia/da Noite</legend>
+				<select bind:value={chartData.rulerOfDay} class="select w-full">
+					{#each Object.entries(chartData.planets) as [planetKey, planet]}
+						<option value={planetKey}>{planet.icon} {planet.label}</option>
+					{/each}
+				</select>
+			</fieldset>
+
+			<!-- Ruler of the Hour -->
+			<fieldset class="fieldset">
+				<legend class="fieldset-legend">Regente da Hora</legend>
+				<select bind:value={chartData.rulerOfHour} class="select w-full">
+					{#each Object.entries(chartData.planets) as [planetKey, planet]}
+						<option value={planetKey}>{planet.icon} {planet.label}</option>
+					{/each}
+				</select>
+			</fieldset>
+		</div>
 
 		<button class="submit">Calcular Almutem Figuris</button>
 	</form>
 
 	<!-- Result -->
 	{#if Object.keys(chartData.results.almutemFiguris.scores).length > 0}
-		<div class="result">
-			<table class="almutem-table almutem-table--figuris">
+		<div class="table-container">
+			<table class="table">
 				<thead>
 					<tr>
 						<th>Pontos Hilégicos</th>

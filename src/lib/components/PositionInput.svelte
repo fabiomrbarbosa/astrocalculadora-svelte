@@ -26,43 +26,47 @@
 	}
 </script>
 
-<div class="astro-position flex flex-col">
-	<label class="fieldset-label" for="{keyName}Degrees">Graus</label>
-	<input
-		id="{keyName}Degrees"
-		name="{keyName}Degrees"
-		type="number"
-		bind:value={data.degrees}
-		max="29"
-		min="0"
-		placeholder="Graus"
-		class="input"
-		inputmode="numeric"
-		required
-		oninput={(e) => handleInput(e, 'degrees')}
-		onblur={() => enforceRange('degrees', 0, 29)}
-	/>
+<div class="astro-position flex w-full flex-col gap-2 md:flex-row">
+	<label class="input w-full">
+		<span class="label">Graus</span>
+		<input
+			id="{keyName}Degrees"
+			name="{keyName}Degrees"
+			type="number"
+			bind:value={data.degrees}
+			max="29"
+			min="0"
+			placeholder="Graus"
+			inputmode="numeric"
+			required
+			oninput={(e) => handleInput(e, 'degrees')}
+			onblur={() => enforceRange('degrees', 0, 29)}
+		/>
+	</label>
 
-	<label class="fieldset-label" for="{keyName}Minutes">Minutos</label>
-	<input
-		id="{keyName}Minutes"
-		name="{keyName}Minutes"
-		type="number"
-		bind:value={data.minutes}
-		max="59"
-		min="0"
-		placeholder="Minutos"
-		class="input"
-		inputmode="numeric"
-		required
-		oninput={(e) => handleInput(e, 'minutes')}
-		onblur={() => enforceRange('minutes', 0, 59)}
-	/>
+	<label class="input w-full">
+		<span class="label">Minutos</span>
+		<input
+			id="{keyName}Minutes"
+			name="{keyName}Minutes"
+			type="number"
+			bind:value={data.minutes}
+			max="59"
+			min="0"
+			placeholder="Minutos"
+			inputmode="numeric"
+			required
+			oninput={(e) => handleInput(e, 'minutes')}
+			onblur={() => enforceRange('minutes', 0, 59)}
+		/></label
+	>
 
-	<label class="fieldset-label" for="{keyName}Sign">Signo</label>
-	<select id="{keyName}Sign" name="{keyName}Sign" bind:value={data.sign} class="select">
-		{#each Object.entries(signs) as [signKey, sign]}
-			<option value={signKey}>{sign.icon} {sign.label}</option>
-		{/each}
-	</select>
+	<label class="select w-full">
+		<span class="label">Signo</span>
+		<select id="{keyName}Sign" name="{keyName}Sign" bind:value={data.sign}>
+			{#each Object.entries(signs) as [signKey, sign]}
+				<option value={signKey}>{sign.icon} {sign.label}</option>
+			{/each}
+		</select></label
+	>
 </div>

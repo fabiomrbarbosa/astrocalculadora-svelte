@@ -9,13 +9,13 @@
 <div class="panel">
 	<form class="form" onsubmit={calculatePartFortune} use:usePreventDefault>
 		<!-- Day/Night Input -->
-		<div>
-			<label class="label" for="selectDayNight">O mapa natal é diurno ou noturno?</label>
-			<select name="selectDayNight" bind:value={chartData.dayNight} class="select">
+		<fieldset class="fieldset">
+			<legend class="fieldset-legend">O mapa natal é diurno ou noturno?</legend>
+			<select name="selectDayNight" bind:value={chartData.dayNight} class="select w-full">
 				<option value="day">Diurno</option>
 				<option value="night">Noturno</option>
 			</select>
-		</div>
+		</fieldset>
 
 		<AstroInput keyName="sun" data={chartData.planets.sun} />
 		<AstroInput keyName="moon" data={chartData.planets.moon} />
@@ -24,5 +24,7 @@
 		<button class="submit">Calcular Parte da Fortuna </button>
 	</form>
 	<!-- Result -->
-	<div id="partFortuneResults" class="result">{chartData.results.partFortune}</div>
+	{#if chartData.results.partFortune}
+		<div id="partFortuneResults" class="result">{chartData.results.partFortune}</div>
+	{/if}
 </div>

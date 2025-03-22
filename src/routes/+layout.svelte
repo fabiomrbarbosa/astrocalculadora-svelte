@@ -17,9 +17,9 @@
 	});
 </script>
 
-<div class="grid grid-cols-4 gap-4">
-	<div class="col-span-4">
-		<div class="navbar bg-base-100 shadow-sm">
+<div class="grid grid-cols-1 gap-6 lg:grid-cols-5">
+	<div class="lg:col-span-5">
+		<div class="navbar bg-base-100 rounded-box shadow-sm">
 			<div class="navbar-start">
 				<div class="dropdown">
 					<div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
@@ -53,24 +53,25 @@
 						<li><a href="/partreligion">Parte da Religião</a></li>
 					</ul>
 				</div>
-				<a href="/" class="btn btn-ghost text-xl">Cazimi App</a>
-			</div>
-			<div class="navbar-center hidden lg:flex">
-				<ul class="menu menu-horizontal px-1">
-					<li><a href="/aspects">Aspectos</a></li>
-					<li><a href="/almutemfiguris">Almutem Figuris</a></li>
-					<li><a href="/almutemsubstance">Almutem da Substância</a></li>
-					<li><a href="/partfortune">Parte da Fortuna</a></li>
-					<li><a href="/partsubstance">Parte da Substância</a></li>
-					<li><a href="/partmarriage">Parte do Casamento</a></li>
-					<li><a href="/partchildren">Parte dos Filhos</a></li>
-					<li><a href="/partfriends">Parte dos Amigos</a></li>
-					<li><a href="/partenemies">Parte dos Inimigos</a></li>
-					<li><a href="/partreligion">Parte da Religião</a></li>
-				</ul>
+				<a href="/" class="btn btn-ghost text-xl">Calculadora Astrológica</a>
 			</div>
 		</div>
 	</div>
-	<div class="row-start-2">2</div>
-	<div class="col-span-3 row-start-2">{@render children()}</div>
+	<div class="bg-base-100 rounded-box hidden shadow-sm lg:row-start-2 lg:block lg:min-h-screen">
+		<ul class="menu sticky top-0 w-full">
+			<li>
+				<a href="/aspects">Aspectos</a>
+			</li>
+			<li><a href="/almutemfiguris">Almutem Figuris</a></li>
+			<li><a href="/almutemsubstance">Almutem da Substância</a></li>
+			<li><a href="/partfortune">Parte da Fortuna</a></li>
+			<li><a href="/partsubstance">Parte da Substância</a></li>
+			<li><a href="/partmarriage">Parte do Casamento</a></li>
+			<li><a href="/partchildren">Parte dos Filhos</a></li>
+			<li><a href="/partfriends">Parte dos Amigos</a></li>
+			<li><a href="/partenemies">Parte dos Inimigos</a></li>
+			<li><a href="/partreligion">Parte da Religião</a></li>
+		</ul>
+	</div>
+	<div class="-mt-4 lg:col-span-4 lg:row-start-2">{@render children()}</div>
 </div>

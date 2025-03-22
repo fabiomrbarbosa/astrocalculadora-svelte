@@ -9,13 +9,13 @@
 <div class="panel">
 	<form class="form" onsubmit={calculatePartChildren} use:usePreventDefault>
 		<!-- Day/Night Input -->
-		<div>
-			<label class="label" for="selectDayNight">O mapa natal é diurno ou noturno?</label>
-			<select name="selectDayNight" bind:value={chartData.dayNight} class="select">
+		<fieldset class="fieldset">
+			<legend class="fieldset-legend">O mapa natal é diurno ou noturno?</legend>
+			<select name="selectDayNight" bind:value={chartData.dayNight} class="select w-full">
 				<option value="day">Diurno</option>
 				<option value="night">Noturno</option>
 			</select>
-		</div>
+		</fieldset>
 
 		<AstroInput keyName="jupiter" data={chartData.planets.jupiter} />
 		<AstroInput keyName="saturn" data={chartData.planets.saturn} />
@@ -25,5 +25,7 @@
 	</form>
 
 	<!-- Result -->
-	<div id="partChildrenResults" class="result">{chartData.results.partChildren}</div>
+	{#if chartData.results.partChildren}
+		<div id="partChildrenResults" class="result">{chartData.results.partChildren}</div>
+	{/if}
 </div>

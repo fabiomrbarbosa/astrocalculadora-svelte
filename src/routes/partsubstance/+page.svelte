@@ -14,6 +14,9 @@
 
 		<button class="submit">Calcular Parte da Substância</button>
 	</form>
+
 	<!-- Result -->
-	<div id="partSubstanceResults" class="result">{chartData.results.partSubstance}</div>
+	{#if chartData.results.partSubstance}
+		<div id="partSubstanceResults" class="result">{chartData.results.partSubstance}</div>
+	{/if}
 </div>

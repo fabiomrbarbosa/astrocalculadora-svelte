@@ -8,14 +8,14 @@
 <!-- Part of Marriage Form -->
 <div class="panel">
 	<form class="form" onsubmit={calculatePartMarriage} use:usePreventDefault>
-		<!-- Day/Night Input -->
-		<div>
-			<label class="label" for="selectMaleFemale">O mapa natal é masculino ou feminino?</label>
-			<select name="selectMaleFemale" bind:value={chartData.maleFemale} class="select">
+		<!-- Male/Female Input -->
+		<fieldset class="fieldset">
+			<legend class="fieldset-legend">O mapa natal é masculino ou feminino?</legend>
+			<select name="selectMaleFemale" bind:value={chartData.maleFemale} class="select w-full">
 				<option value="male">Masculino</option>
 				<option value="female">Feminino</option>
 			</select>
-		</div>
+		</fieldset>
 
 		<AstroInput keyName="venus" data={chartData.planets.venus} />
 		<AstroInput keyName="saturn" data={chartData.planets.saturn} />
@@ -23,6 +23,9 @@
 
 		<button class="submit">Calcular Parte do Casamento</button>
 	</form>
+
 	<!-- Result -->
-	<div id="partMarriageResults" class="result">{chartData.results.partMarriage}</div>
+	{#if chartData.results.partMarriage}
+		<div id="partMarriageResults" class="result">{chartData.results.partMarriage}</div>
+	{/if}
 </div>

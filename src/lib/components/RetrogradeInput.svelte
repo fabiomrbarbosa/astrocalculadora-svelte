@@ -1,9 +1,9 @@
 <script lang="ts">
-	const { keyName, data, showRetrograde = false } = $props();
+	const { keyName, data } = $props();
 </script>
 
-{#if 'retrograde' in data && showRetrograde === true}
-	<label class="fieldset-label" for="{keyName}Retrograde">Movimento</label>
+<label class="select w-full md:w-1/3">
+	<span class="label">Direção</span>
 	<select
 		id="{keyName}Retrograde"
 		name="{keyName}Retrograde"
@@ -12,5 +12,5 @@
 	>
 		<option value={false}>Directo</option>
 		<option value={true}>Retrógrado</option>
-	</select>
-{/if}
+	</select></label
+>

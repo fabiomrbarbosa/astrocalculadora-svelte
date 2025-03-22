@@ -28,8 +28,8 @@
 	<!-- Result -->
 
 	{#if Object.keys(chartData.results.almutemSubstance.scores).length > 0}
-		<div id="almutemSubstanceResults" class="result">
-			<table class="almutem-table almutem-table--substance">
+		<div class="table-container">
+			<table class="table">
 				<thead>
 					<tr>
 						<th>Significadores</th>

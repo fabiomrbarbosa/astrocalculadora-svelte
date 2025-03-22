@@ -16,5 +16,7 @@
 	</form>
 
 	<!-- Result -->
-	<div id="partFriendsResults" class="result">{chartData.results.partFriends}</div>
+	{#if chartData.results.partFriends}
+		<div id="partFriendsResults" class="result">{chartData.results.partFriends}</div>
+	{/if}
 </div>

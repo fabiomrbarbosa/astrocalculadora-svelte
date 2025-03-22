@@ -10,20 +10,16 @@ body {
 	@apply bg-base-200 p-4;
 }
 
-.wrapper {
-	@apply flex min-h-screen flex-col items-center justify-center;
-}
-
-.container {
-	@apply mx-auto mb-16 max-w-4xl rounded bg-white p-6 shadow;
-}
-
-.title {
-	@apply mb-4 text-2xl font-bold;
+.panel {
+	@apply flex flex-col gap-6;
 }
 
 .form {
-	@apply flex min-h-screen flex-col justify-center gap-2;
+	@apply flex flex-col gap-2;
+}
+
+.fieldset {
+	@apply bg-base-100 border-base-300 rounded-box w-full border p-4 shadow-xs;
 }
 
 .submit {
@@ -36,7 +32,7 @@ body {
 }
 
 .result {
-	@apply mt-6 text-lg font-semibold;
+	@apply bg-base-100 border-base-300 rounded-box w-full border p-4 text-lg font-semibold shadow-xs;
 }
 
 .aspect-table {
@@ -51,64 +47,14 @@ body {
 	place-content: center;
 }
 
-.house-placements-fields {
-	display: flex;
-	justify-content: space-between;
-	gap: 1.5rem;
+.table-container {
+	@apply rounded-box border-base-300 bg-base-100 overflow-x-auto border shadow-xs;
 }
 
-@media screen and (max-width: 780px) {
-	.house-placements-fields {
-		flex-direction: column;
-	}
-}
-
-.almutem-table {
-	border-collapse: separate;
-	border-spacing: 0;
-	min-width: 100%;
-	table-layout: fixed;
-	font-weight: 400;
-}
-.almutem-table tr th,
-.almutem-table tr td {
-	border-right: 1px solid var(--color-base-300);
-	border-bottom: 1px solid var(--color-base-300);
-	padding: 5px;
-	min-width: 10%;
-}
-
-.almutem-table tr th:first-child,
-.almutem-table tr td:first-child {
+.table th + th,
+.table td + td {
 	border-left: 1px solid var(--color-base-300);
-	min-width: 30%;
-}
-.almutem-table tr th {
-	background: var(--color-base-300);
-	border-top: 1px solid var(--color-base-300);
-	text-align: left;
-}
-.almutem-table tr td {
-	background: var(--color-base-100);
-}
-/* top-left border-radius */
-.almutem-table tr:first-child th:first-child {
-	border-top-left-radius: 6px;
-}
-
-/* top-right border-radius */
-.almutem-table tr:first-child th:last-child {
-	border-top-right-radius: 6px;
-}
-
-/* bottom-left border-radius */
-.almutem-table tr:last-child td:first-child {
-	border-bottom-left-radius: 6px;
-}
-
-/* bottom-right border-radius */
-.almutem-table tr:last-child td:last-child {
-	border-bottom-right-radius: 6px;
+	min-width: 10%;
 }
 
 .floatingchat-container {
