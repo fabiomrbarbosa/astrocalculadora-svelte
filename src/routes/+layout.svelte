@@ -1,6 +1,20 @@
 <script lang="ts">
+	import { chartData } from './../lib/chartData.svelte';
 	import '../app.css';
 	let { children } = $props();
+
+	// Implement data persistence via localStorage
+
+	$effect(() => {
+		const savedChartData = localStorage.getItem('chartData');
+		if (savedChartData) {
+			Object.assign(chartData, JSON.parse(savedChartData));
+		}
+	});
+
+	$effect(() => {
+		localStorage.setItem('chartData', JSON.stringify(chartData));
+	});
 </script>
 
 <div class="grid grid-cols-4 gap-4">

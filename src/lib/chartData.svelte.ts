@@ -1,7 +1,6 @@
 import { signs } from './staticData';
 
 export type ChartData = {
-	activeTab: string;
 	dayNight: string;
 	maleFemale: string;
 	rulerOfDay: string;
@@ -15,7 +14,6 @@ export type ChartData = {
 };
 
 export let chartData: ChartData = $state({
-	activeTab: 'aspects',
 	dayNight: 'day',
 	maleFemale: 'male',
 	rulerOfDay: 'moon',
