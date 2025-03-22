@@ -5,7 +5,6 @@
 	let { children } = $props();
 
 	// Menu items
-
 	const menuItems = [
 		{ href: '/aspects', label: 'Aspectos' },
 		{ href: '/almutemfiguris', label: 'Almutem Figuris' },
