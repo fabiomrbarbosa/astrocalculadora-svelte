@@ -23,10 +23,10 @@
 		<!-- Positions per House -->
 		<fieldset class="fieldset">
 			<legend class="fieldset-legend">Posições por Casa</legend>
-			<div class="flex gap-2 md:flex-row">
+			<div class="flex flex-col gap-2 md:flex-row">
 				{#each Object.entries(chartData.planets) as [planet]}
 					<div class="house-field w-full">
-						<label class="select">
+						<label class="select w-full">
 							<span class="label">{chartData.planets[planet].icon}</span>
 							<select id="{planet}House" bind:value={chartData.planets[planet].house}>
 								{#each Array.from({ length: 12 }, (_, i) => i + 1) as n}
