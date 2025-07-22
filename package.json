@@ -15,19 +15,25 @@
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^4.0.0",
-		"@sveltejs/kit": "^2.16.0",
-		"@sveltejs/vite-plugin-svelte": "^5.0.0",
-		"@tailwindcss/vite": "^4.0.14",
-		"prettier": "^3.4.2",
-		"prettier-plugin-svelte": "^3.3.3",
-		"prettier-plugin-tailwindcss": "^0.6.11",
-		"svelte": "^5.0.0",
-		"svelte-check": "^4.0.0",
+		"@sveltejs/kit": "^2.22.5",
+		"@sveltejs/vite-plugin-svelte": "^5.1.0",
+		"@tailwindcss/vite": "^4.1.11",
+		"@types/node": "^24.0.14",
+		"prettier": "^3.6.2",
+		"prettier-plugin-svelte": "^3.4.0",
+		"prettier-plugin-tailwindcss": "^0.6.14",
+		"svelte": "^5.35.6",
+		"svelte-check": "^4.2.2",
 		"tailwindcss": "^4.0.14",
-		"typescript": "^5.0.0",
-		"vite": "^6.0.0"
+		"typescript": "^5.8.3",
+		"vite": "^6.3.5"
 	},
 	"dependencies": {
-		"daisyui": "^5.0.4"
+		"daisyui": "^5.0.46",
+		"dayjs": "^1.11.13",
+		"geo-tz": "^8.1.4",
+		"opencage-api-client": "^2.0.0",
+		"path": "^0.12.7",
+		"sweph": "^2.10.3-b-1"
 	}
 }
