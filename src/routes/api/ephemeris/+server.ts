@@ -11,7 +11,7 @@ import { OPENCAGE_API_KEY } from '$env/static/private';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-const ephePath = new URL('../../../lib/ephemeris', import.meta.url).pathname;
+const ephePath = new URL('../../../lib/vendor/ephemeris', import.meta.url).pathname;
 sweph.set_ephe_path(ephePath);
 
 const PLANETS = {

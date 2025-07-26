@@ -29,6 +29,7 @@
 		"vite": "^6.3.5"
 	},
 	"dependencies": {
+		"@astrodraw/astrochart": "^3.0.2",
 		"daisyui": "^5.0.46",
 		"dayjs": "^1.11.13",
 		"geo-tz": "^8.1.4",
