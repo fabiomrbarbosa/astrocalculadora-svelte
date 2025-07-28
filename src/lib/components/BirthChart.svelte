@@ -9,8 +9,8 @@
 	const center = size / 2;
 	const outerRadius = center - 20;
 	const zodiacOuter = outerRadius;
-	const zodiacInner = zodiacOuter - 20;
-	const houseRing = zodiacInner - 10;
+	const zodiacInner = zodiacOuter - 30;
+	const houseRing = zodiacInner - 5;
 	const planetRing = houseRing - 25;
 
 	const innerClearRadius = size / 6;
@@ -69,16 +69,16 @@
 	{#each zodiacMarkers as marker}
 		{@const outer = polarToCartesian(center, center, zodiacOuter, marker.start)}
 		{@const inner = polarToCartesian(center, center, zodiacInner, marker.start)}
-		<line x1={inner.x} y1={inner.y} x2={outer.x} y2={outer.y} stroke="#bbb" stroke-width="1" />
+		<line x1={inner.x} y1={inner.y} x2={outer.x} y2={outer.y} stroke="#999" stroke-width="1" />
 	{/each}
 
 	<!-- Zodiac Ring Label Belt -->
-	<circle cx={center} cy={center} r={zodiacOuter} stroke="#ddd" fill="none" />
-	<circle cx={center} cy={center} r={zodiacInner} stroke="#ddd" fill="none" />
+	<circle cx={center} cy={center} r={zodiacOuter} stroke="#999" fill="none" />
+	<circle cx={center} cy={center} r={zodiacInner} stroke="#999" fill="none" />
 
 	{#each zodiacMarkers as marker}
 		{@const mid = polarToCartesian(center, center, (zodiacOuter + zodiacInner) / 2, marker.mid)}
-		<text x={mid.x} y={mid.y} text-anchor="middle" alignment-baseline="middle" font-size="16">
+		<text x={mid.x} y={mid.y + 6} text-anchor="middle" alignment-baseline="middle" font-size="16">
 			{marker.glyph}
 		</text>
 	{/each}
@@ -94,7 +94,7 @@
 			y1={inner.y}
 			x2={pos.x}
 			y2={pos.y}
-			stroke="black"
+			stroke="#999"
 			stroke-width={i === 0 || i === 3 || i === 6 || i === 9 ? 2.5 : 1}
 		/>
 	{/each}
@@ -111,7 +111,7 @@
 		{@const angle = (midpointAngle(cusp, nextCusp) + rotationOffset) % 360}
 		{@const pos = polarToCartesian(center, center, houseLabelRadius - 12, angle)}
 
-		<text x={pos.x} y={pos.y} font-size="12" text-anchor="middle" alignment-baseline="middle">
+		<text x={pos.x} y={pos.y + 3} font-size="12" text-anchor="middle" alignment-baseline="middle">
 			{houseNumbers[i]}
 		</text>
 	{/each}
@@ -145,7 +145,7 @@
 	{/if}
 
 	<!-- Chart Boundary -->
-	<circle cx={center} cy={center} r={planetRing + 30} stroke="black" fill="none" />
+	<circle cx={center} cy={center} r={planetRing + 30} stroke="#999" fill="none" />
 </svg>
 
 <style>
