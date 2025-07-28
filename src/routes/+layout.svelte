@@ -1,4 +1,5 @@
 <script lang="ts">
+	import DarkModeToggle from './../lib/components/DarkModeToggle.svelte';
 	import { chartData } from './../lib/chartData.svelte';
 	import '../app.css';
 	import { page } from '$app/state';
@@ -69,6 +70,7 @@
 					</ul>
 				</div>
 				<a href="/" class="btn btn-ghost text-xl">Calculadora Astrológica</a>
+				<DarkModeToggle />
 			</div>
 		</div>
 	</div>

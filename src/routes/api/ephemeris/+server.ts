@@ -139,9 +139,12 @@ export async function POST({ request }) {
 		signName: ascSign.signName
 	};
 
+	console.log(planetPositions, ascendant, houseData);
+
 	return json({
 		planetPositions,
 		ascendant,
+		houses: houseData.data.houses,
 		usedTimezone: tz,
 		usedCoordinates: { latitude: lat, longitude: lng },
 		utcTime: utcTime.format()

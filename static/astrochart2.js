@@ -13,6 +13,30 @@
 	else if (typeof exports === 'object') exports['astrology'] = factory();
 	else root['astrology'] = factory();
 })(self, () => {
+	function angleToDMS(angle) {
+		const totalDegrees = angle % 360;
+		const signIndex = Math.floor(totalDegrees / 30);
+		const signs = [
+			'Aries',
+			'Taurus',
+			'Gemini',
+			'Cancer',
+			'Leo',
+			'Virgo',
+			'Libra',
+			'Scorpio',
+			'Sagittarius',
+			'Capricorn',
+			'Aquarius',
+			'Pisces'
+		];
+		const sign = signs[signIndex];
+		const degInSign = totalDegrees % 30;
+		const deg = Math.floor(degInSign);
+		const min = Math.floor((degInSign - deg) * 60);
+		return { sign, deg, min };
+	}
+
 	return /******/ (() => {
 		// webpackBootstrap
 		/******/ 'use strict';
