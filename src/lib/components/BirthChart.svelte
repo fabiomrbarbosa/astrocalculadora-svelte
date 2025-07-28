@@ -69,12 +69,12 @@
 	{#each zodiacMarkers as marker}
 		{@const outer = polarToCartesian(center, center, zodiacOuter, marker.start)}
 		{@const inner = polarToCartesian(center, center, zodiacInner, marker.start)}
-		<line x1={inner.x} y1={inner.y} x2={outer.x} y2={outer.y} stroke="#999" stroke-width="1" />
+		<line x1={inner.x} y1={inner.y} x2={outer.x} y2={outer.y} stroke="#333" stroke-width="1" />
 	{/each}
 
 	<!-- Zodiac Ring Label Belt -->
-	<circle cx={center} cy={center} r={zodiacOuter} stroke="#999" fill="none" />
-	<circle cx={center} cy={center} r={zodiacInner} stroke="#999" fill="none" />
+	<circle cx={center} cy={center} r={zodiacOuter} stroke="#333" fill="none" />
+	<circle cx={center} cy={center} r={zodiacInner} stroke="#333" fill="none" />
 
 	{#each zodiacMarkers as marker}
 		{@const mid = polarToCartesian(center, center, (zodiacOuter + zodiacInner) / 2, marker.mid)}
@@ -94,16 +94,16 @@
 			y1={inner.y}
 			x2={pos.x}
 			y2={pos.y}
-			stroke="#999"
+			stroke="#333"
 			stroke-width={i === 0 || i === 3 || i === 6 || i === 9 ? 2.5 : 1}
 		/>
 	{/each}
 
 	<!-- House Label Ring -->
-	<circle cx={center} cy={center} r={houseLabelRadius} fill="none" stroke="#eee" />
+	<circle cx={center} cy={center} r={houseLabelRadius} fill="none" stroke="#333" />
 
 	<!-- Inner Clear Boundary -->
-	<circle cx={center} cy={center} r={innerClearRadius} fill="none" stroke="#ccc" stroke-width="1" />
+	<circle cx={center} cy={center} r={innerClearRadius} fill="none" stroke="#333" stroke-width="1" />
 
 	<!-- House Numbers -->
 	{#each houses as cusp, i}
@@ -145,7 +145,7 @@
 	{/if}
 
 	<!-- Chart Boundary -->
-	<circle cx={center} cy={center} r={planetRing + 30} stroke="#999" fill="none" />
+	<circle cx={center} cy={center} r={planetRing + 30} stroke="#333" fill="none" />
 </svg>
 
 <style>
