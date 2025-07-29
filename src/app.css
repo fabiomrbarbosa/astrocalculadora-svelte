@@ -6,12 +6,18 @@
 	-webkit-font-smoothing: antialiased !important;
 }
 
+html,
 body {
-	@apply bg-base-200 p-4 pb-20;
+	min-height: 100vh;
+	min-height: 100dvh;
+}
+
+body {
+	@apply bg-base-200 p-5 pb-20;
 }
 
 .panel {
-	@apply flex flex-col gap-6;
+	@apply -mt-4 flex flex-col gap-6;
 }
 
 .form {

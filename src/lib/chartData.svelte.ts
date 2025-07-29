@@ -1,6 +1,22 @@
 import { signs } from './staticData';
 
 export type ChartData = {
+	meta: {
+		year: number;
+		month: number;
+		day: number;
+		hour: number;
+		minute: number;
+		second: number;
+		utcOffset: string; // '+02:00'
+		timezone: string; // 'Europe/Berlin'
+		latitude: number;
+		longitude: number;
+		city?: string;
+		country?: string;
+		utcTime?: string; // ISO string if needed
+	};
+	renderedChart: string;
 	dayNight: string;
 	maleFemale: string;
 	rulerOfDay: string;
@@ -14,6 +30,23 @@ export type ChartData = {
 };
 
 export let chartData: ChartData = $state({
+	meta: {
+		year: 2000,
+		month: 1,
+		day: 1,
+		hour: 12,
+		minute: 0,
+		second: 0,
+		utcOffset: '+00:00',
+		timezone: 'UTC',
+		latitude: 0,
+		longitude: 0,
+		city: '',
+		country: '',
+		utcTime: ''
+	},
+
+	renderedChart: '',
 	dayNight: 'day',
 	maleFemale: 'male',
 	rulerOfDay: 'moon',

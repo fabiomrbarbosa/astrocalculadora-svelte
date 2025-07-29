@@ -1,39 +1,9 @@
 <script lang="ts">
 	import BirthChart from '$lib/components/BirthChart.svelte';
-	import { syncEphemerisToChartData } from '$lib/syncChartToData';
+	import { syncChartToData } from '$lib/syncChartToData';
+	import { chartData } from '$lib/chartData.svelte'; // persistent state
 
-	let city = '';
-	let country = '';
-
-	let day = '';
-	let month = '';
-	let year = '';
-	let hour = '';
-	let minute = '';
-	let second = '';
-
-	let chartData: any = null;
-
-	async function submitChart() {
-		const date = `${safeYear(year)}-${safePad(month, 1, 12)}-${safePad(day, 1, 31)}`;
-		const time = `${safePad(hour, 0, 23)}:${safePad(minute, 0, 59)}:${safePad(second, 0, 59)}`;
-
-		try {
-			const res = await fetch('/api/ephemeris', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ date, time, city, country })
-			});
-			if (!res.ok) throw new Error(await res.text());
-
-			chartData = await res.json();
-			console.log('Chart result:', chartData);
-
-			syncEphemerisToChartData(chartData);
-		} catch (err) {
-			console.error('Error fetching chart:', err);
-		}
-	}
+	let ephemerisResult: any = null;
 
 	function safePad(value: string, min: number, max: number, fallback = '00') {
 		const num = Number(value);
@@ -45,29 +15,56 @@
 		const num = Number(value);
 		return Number.isNaN(num) || num < 0 ? '0000' : String(num).padStart(4, '0');
 	}
+
+	async function submitChart() {
+		const meta = chartData.meta;
+		const date = `${safeYear(meta.year)}-${safePad(meta.month, 1, 12)}-${safePad(meta.day, 1, 31)}`;
+		const time = `${safePad(meta.hour, 0, 23)}:${safePad(meta.minute, 0, 59)}:${safePad(meta.second, 0, 59)}`;
+
+		try {
+			const res = await fetch('/api/ephemeris', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ date, time, city: meta.city, country: meta.country })
+			});
+			if (!res.ok) throw new Error(await res.text());
+
+			ephemerisResult = await res.json();
+			console.log(chartData);
+
+			syncChartToData(ephemerisResult);
+		} catch (err) {
+			console.error('Error fetching chart:', err);
+		}
+	}
 </script>
 
-<div class="mt-4 grid md:grid-cols-3">
+<div class="grid h-full gap-4 md:grid-cols-3">
 	<form class="bg-base-100 rounded-box p-4 shadow-sm" on:submit|preventDefault={submitChart}>
 		<h2 class="text-xl font-bold">Birth Data</h2>
 
 		<div class="space-y-2">
-			<input type="text" placeholder="City" bind:value={city} class="input input-bordered w-full" />
+			<input
+				type="text"
+				placeholder="City"
+				bind:value={chartData.meta.city}
+				class="input input-bordered w-full"
+			/>
 			<input
 				type="text"
 				placeholder="Country"
-				bind:value={country}
+				bind:value={chartData.meta.country}
 				class="input input-bordered w-full"
 			/>
 		</div>
 
-		<div class="flex space-x-2">
+		<div class="mt-4 flex space-x-2">
 			<input
 				type="number"
 				min="1"
 				max="31"
 				placeholder="Day"
-				bind:value={day}
+				bind:value={chartData.meta.day}
 				class="input input-bordered w-full"
 			/>
 			<input
@@ -75,7 +72,7 @@
 				min="1"
 				max="12"
 				placeholder="Month"
-				bind:value={month}
+				bind:value={chartData.meta.month}
 				class="input input-bordered w-full"
 			/>
 			<input
@@ -83,18 +80,18 @@
 				min="0"
 				max="9999"
 				placeholder="Year"
-				bind:value={year}
+				bind:value={chartData.meta.year}
 				class="input input-bordered w-full"
 			/>
 		</div>
 
-		<div class="flex space-x-2">
+		<div class="mt-4 flex space-x-2">
 			<input
 				type="number"
 				min="0"
 				max="23"
 				placeholder="Hour"
-				bind:value={hour}
+				bind:value={chartData.meta.hour}
 				class="input input-bordered w-full"
 			/>
 			<input
@@ -102,7 +99,7 @@
 				min="0"
 				max="59"
 				placeholder="Minute"
-				bind:value={minute}
+				bind:value={chartData.meta.minute}
 				class="input input-bordered w-full"
 			/>
 			<input
@@ -110,23 +107,26 @@
 				min="0"
 				max="59"
 				placeholder="Second"
-				bind:value={second}
+				bind:value={chartData.meta.second}
 				class="input input-bordered w-full"
 			/>
 		</div>
 
-		<button type="submit" class="btn btn-primary w-full">Generate Chart</button>
+		<button type="submit" class="btn btn-primary mt-4 w-full">Generate Chart</button>
 	</form>
 
-	<div class="flex justify-center md:col-span-2">
-		{#if chartData}
+	<div class="bg-base-100 rounded-box flex justify-center p-4 shadow-sm md:col-span-2">
+		{#if ephemerisResult}
 			<BirthChart
-				planetPositions={chartData.planetPositions}
-				ascendant={chartData.ascendant}
-				usedCoordinates={chartData.usedCoordinates}
-				usedTimezone={chartData.usedTimezone}
-				houses={chartData.houses}
+				planetPositions={ephemerisResult.planetPositions}
+				ascendant={ephemerisResult.ascendant}
+				usedCoordinates={ephemerisResult.usedCoordinates}
+				usedTimezone={ephemerisResult.usedTimezone}
+				houses={ephemerisResult.houses}
 			/>
+		{:else if chartData.renderedChart}
+			<!-- Render the cached SVG -->
+			{@html chartData.renderedChart}
 		{/if}
 	</div>
 </div>

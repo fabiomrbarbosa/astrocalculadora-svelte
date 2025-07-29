@@ -1,13 +1,77 @@
-import { chartData } from '$lib/chartData.svelte'; // wherever it's defined
+import { chartData } from '$lib/chartData.svelte';
 import { signs } from './staticData';
 
+type PlanetPosition = {
+	position: {
+		degrees: number;
+		minutes: number;
+	};
+	signName: string;
+	retrograde: boolean;
+};
+
+type Ascendant = {
+	position: {
+		degrees: number;
+		minutes: number;
+	};
+	signName: string;
+};
+
+type UsedCoordinates = {
+	latitude: number;
+	longitude: number;
+	city?: string;
+	country?: string;
+};
+
+type UsedTimezone = {
+	name?: string;
+	offset?: string;
+};
+
+type MetaData = {
+	year?: number | string;
+	month?: number | string;
+	day?: number | string;
+	hour?: number | string;
+	minute?: number | string;
+	second?: number | string;
+	utcTime?: string;
+};
+
+type SyncChartInput = {
+	planetPositions: Record<string, PlanetPosition>;
+	ascendant: Ascendant;
+	houses: number[];
+	meta?: MetaData;
+	usedCoordinates?: UsedCoordinates;
+	usedTimezone?: UsedTimezone;
+};
+
 function findSignKey(signName: string): keyof typeof signs {
-	return Object.keys(signs).find((k) => signs[k].label === signName.toLowerCase()) || 'aries';
+	return (
+		(Object.keys(signs).find(
+			(k) => signs[k as keyof typeof signs].label === signName.toLowerCase()
+		) as keyof typeof signs) || 'aries'
+	);
 }
 
-export function syncEphemerisToChartData({ planetPositions, ascendant, houses }) {
+export function syncChartToData({
+	planetPositions,
+	ascendant,
+	houses,
+	meta,
+	usedCoordinates,
+	usedTimezone
+}: SyncChartInput): void {
+	// If backend adjusts UTC time or timezone info, optionally keep just these:
+	chartData.meta.utcTime = meta?.utcTime || '';
+	chartData.meta.utcOffset = usedTimezone?.offset || '+00:00';
+	chartData.meta.timezone = usedTimezone?.name || 'UTC';
+
 	for (const [planetKey, data] of Object.entries(planetPositions)) {
-		const key = planetKey.toLowerCase(); // ensure keys match lowercase ones in chartData
+		const key = planetKey.toLowerCase();
 		if (chartData.planets[key]) {
 			chartData.planets[key].degrees = data.position.degrees;
 			chartData.planets[key].minutes = data.position.minutes;
@@ -20,7 +84,6 @@ export function syncEphemerisToChartData({ planetPositions, ascendant, houses })
 	chartData.points.ascendant.minutes = ascendant.position.minutes;
 	chartData.points.ascendant.sign = findSignKey(ascendant.signName);
 
-	// House cusp loop
 	houses.forEach((cusp, i) => {
 		const houseNum = i + 1;
 		const signIndex = Math.floor(cusp / 30);
@@ -30,7 +93,7 @@ export function syncEphemerisToChartData({ planetPositions, ascendant, houses })
 
 		const houseKey = `house${houseNum}` as keyof typeof chartData.houses;
 		if (!chartData.houses[houseKey]) {
-			chartData.houses[houseKey] = {};
+			chartData.houses[houseKey] = {} as any;
 		}
 		chartData.houses[houseKey].cusp = {
 			label: `Cúspide da ${houseNum}ª Casa`,

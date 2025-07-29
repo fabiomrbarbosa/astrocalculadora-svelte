@@ -29,10 +29,11 @@
 
 	$effect(() => {
 		localStorage.setItem('chartData', JSON.stringify(chartData));
+		console.log(chartData);
 	});
 </script>
 
-<div class="grid grid-cols-1 gap-6 lg:grid-cols-5">
+<div class="grid grid-cols-1 gap-4 lg:grid-cols-5">
 	<div class="lg:col-span-5">
 		<div class="navbar bg-base-100 rounded-box shadow-sm">
 			<div class="navbar-start">
@@ -74,20 +75,22 @@
 			</div>
 		</div>
 	</div>
-	<div class="bg-base-100 rounded-box hidden shadow-sm lg:row-start-2 lg:block lg:min-h-screen">
-		<ul class="menu sticky top-0 w-full">
-			{#each menuItems as { href, label }}
-				<li>
-					<a
-						{href}
-						class:menu-active={page.url.pathname === href}
-						aria-current={page.url.pathname === href ? 'page' : undefined}
-					>
-						{label}
-					</a>
-				</li>
-			{/each}
-		</ul>
+	<div class="hidden lg:row-start-2 lg:block">
+		<div class="bg-base-100 rounded-box shadow-sm">
+			<ul class="menu sticky top-0 w-full">
+				{#each menuItems as { href, label }}
+					<li>
+						<a
+							{href}
+							class:menu-active={page.url.pathname === href}
+							aria-current={page.url.pathname === href ? 'page' : undefined}
+						>
+							{label}
+						</a>
+					</li>
+				{/each}
+			</ul>
+		</div>
 	</div>
-	<div class="-mt-4 lg:col-span-4 lg:row-start-2">{@render children()}</div>
+	<div class="lg:col-span-4 lg:row-start-2">{@render children()}</div>
 </div>
