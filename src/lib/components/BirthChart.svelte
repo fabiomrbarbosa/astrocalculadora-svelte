@@ -126,6 +126,7 @@
 
 <svg
 	bind:this={svgRef}
+	class="color-base-content"
 	viewBox={`0 0 ${size} ${size}`}
 	preserveAspectRatio="xMidYMid meet"
 	style="width: 100%; height: auto; display: block;"
@@ -136,40 +137,51 @@
 		cx={center}
 		cy={center}
 		r={zodiacOuter + 4}
-		stroke="#333"
+		class="fill-none stroke-current"
 		stroke-width="0.5"
-		fill="none"
 	/>
 	<circle
 		id="chart-zodiac-outer"
 		cx={center}
 		cy={center}
 		r={zodiacOuter}
-		stroke="#333"
+		class="fill-none stroke-current"
 		stroke-width="0.5"
-		fill="none"
 	/>
 	<circle
 		id="chart-zodiac-inner"
 		cx={center}
 		cy={center}
 		r={zodiacInner}
-		stroke="#333"
+		class="fill-none stroke-current"
 		stroke-width="0.5"
-		fill="none"
 	/>
 
 	<!-- Sign Division Lines -->
 	{#each zodiacMarkers as marker}
 		{@const outer = polarToCartesian(center, center, zodiacOuter, marker.start)}
 		{@const inner = polarToCartesian(center, center, zodiacInner, marker.start)}
-		<line x1={inner.x} y1={inner.y} x2={outer.x} y2={outer.y} stroke="#333" stroke-width="0.5" />
+		<line
+			x1={inner.x}
+			y1={inner.y}
+			x2={outer.x}
+			y2={outer.y}
+			class="stroke-current"
+			stroke-width="0.5"
+		/>
 	{/each}
 
 	<!-- Sign Glyphs -->
 	{#each zodiacMarkers as marker}
 		{@const mid = polarToCartesian(center, center, (zodiacOuter + zodiacInner) / 2, marker.mid)}
-		<text x={mid.x} y={mid.y + 6} text-anchor="middle" alignment-baseline="middle" font-size="16">
+		<text
+			class="fill-current"
+			x={mid.x}
+			y={mid.y + 6}
+			text-anchor="middle"
+			alignment-baseline="middle"
+			font-size="16"
+		>
 			{marker.glyph}
 		</text>
 	{/each}
@@ -180,12 +192,11 @@
 		{@const outer = polarToCartesian(center, center, tick.endRadius, tick.angle)}
 
 		<line
-			class="chart-degree-tick"
+			class="chart-degree-tick stroke-current"
 			x1={inner.x}
 			y1={inner.y}
 			x2={outer.x}
 			y2={outer.y}
-			stroke="#444"
 			stroke-width="0.5"
 		/>
 	{/each}
@@ -196,9 +207,8 @@
 		cx={center}
 		cy={center}
 		r={houseCuspLabelRadiusOuter}
-		stroke="#333"
+		class="fill-none stroke-current"
 		stroke-width="0.5"
-		fill="none"
 	/>
 
 	<defs>
@@ -212,8 +222,8 @@
 				{@const end = polarToCartesian(center, center, houseCuspLabelRadius, angleStart)}
 				<path
 					id={`arc-label-${cusp.index}`}
-					fill="none"
-					stroke="none"
+					class="fill-none"
+					stroke="stroke-none"
 					d={`M ${start.x} ${start.y} A ${houseCuspLabelRadius} ${houseCuspLabelRadius} 0 ${largeArcFlag} 1 ${end.x} ${end.y}`}
 				/>
 			{:else}
@@ -233,13 +243,14 @@
 		{#if cusp.layout === 'stack'}
 			{@const pos = polarToCartesian(center, center, houseCuspLabelRadius, cusp.angle)}
 			<g transform={`translate(${pos.x}, ${pos.y})`}>
-				<text y="-12" font-size="10" text-anchor="middle">{cusp.degrees}</text>
-				<text y="0" font-size="10" text-anchor="middle">{cusp.sign}</text>
-				<text y="12" font-size="10" text-anchor="middle">{cusp.minutes}</text>
+				<text class="fill-current" y="-12" font-size="10" text-anchor="middle">{cusp.degrees}</text>
+				<text class="fill-current" y="0" font-size="10" text-anchor="middle">{cusp.sign}</text>
+				<text class="fill-current" y="12" font-size="10" text-anchor="middle">{cusp.minutes}</text>
 			</g>
 		{:else}
-			<text font-size="10" fill="#111">
+			<text class="fill-current" font-size="10">
 				<textPath
+					class="fill-current"
 					xlink:href={`#arc-label-${cusp.index}`}
 					startOffset="50%"
 					text-anchor="middle"
@@ -259,8 +270,7 @@
 		cx={center}
 		cy={center}
 		r={planetRingOuter}
-		fill="none"
-		stroke="#333"
+		class="fill-none stroke-current"
 		stroke-width="0.5"
 	/>
 
@@ -275,7 +285,7 @@
 			y1={inner.y}
 			x2={pos.x}
 			y2={pos.y}
-			stroke="#333"
+			class="stroke-current"
 			stroke-width={i === 0 || i === 3 || i === 6 || i === 9 ? 2.5 : 0.5}
 		/>
 	{/each}
@@ -286,10 +296,10 @@
 			{@const angle = (point.position.longitude + rotationOffset) % 360}
 
 			{@const pos = polarToCartesian(center, center, planetRingInner, angle)}
-			<text x={pos.x} y={pos.y - 4} font-size="14" text-anchor="middle">
+			<text class="fill-current" x={pos.x} y={pos.y - 4} font-size="14" text-anchor="middle">
 				{planetGlyphs[name] ?? name}
 			</text>
-			<text x={pos.x} y={pos.y + 10} font-size="10" fill="gray" text-anchor="middle">
+			<text class="fill-current" x={pos.x} y={pos.y + 10} font-size="10" text-anchor="middle">
 				{point.position.degrees}°
 				{signGlyphs[point.signNumber - 1]}
 				{point.position.minutes.toString().padStart(2, '0')}
@@ -304,8 +314,7 @@
 		cx={center}
 		cy={center}
 		r={houseNumberRadius}
-		fill="none"
-		stroke="#333"
+		class="fill-none stroke-current"
 		stroke-width="0.5"
 	/>
 
@@ -315,7 +324,14 @@
 		{@const angle = (midpointAngle(cusp, nextCusp) + rotationOffset) % 360}
 		{@const pos = polarToCartesian(center, center, houseNumberRadius - 12, angle)}
 
-		<text x={pos.x} y={pos.y + 4} font-size="10" text-anchor="middle" alignment-baseline="middle">
+		<text
+			class="fill-current"
+			x={pos.x}
+			y={pos.y + 4}
+			font-size="10"
+			text-anchor="middle"
+			alignment-baseline="middle"
+		>
 			{houseNumbers[i]}
 		</text>
 	{/each}
@@ -327,7 +343,7 @@
 		cy={center}
 		r={clearRadiusInner}
 		fill="none"
-		stroke="#333"
+		class="fill-none stroke-current"
 		stroke-width="0.5"
 	/>
 </svg>
