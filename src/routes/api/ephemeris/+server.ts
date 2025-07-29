@@ -6,7 +6,7 @@ import { getSunrise, getSunset } from 'sunrise-sunset-js';
 import { json, error } from '@sveltejs/kit';
 import opencage from 'opencage-api-client';
 import geoTz from 'geo-tz';
-import { OPENCAGE_API_KEY } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 
 // Initialize Day.js plugins
 dayjs.extend(utc);
@@ -139,8 +139,8 @@ export async function POST({ request }) {
 
 		// Geocode
 		const query = `${city}, ${country}`;
-		if (!OPENCAGE_API_KEY) throw error(500, 'Missing OPENCAGE_API_KEY');
-		const geo = await opencage.geocode({ q: query, key: OPENCAGE_API_KEY, language: 'pt-PT' });
+		if (!env.OPENCAGE_API_KEY) throw error(500, 'Missing OPENCAGE_API_KEY');
+		const geo = await opencage.geocode({ q: query, key: env.OPENCAGE_API_KEY, language: 'pt-PT' });
 		if (!geo.results.length) throw error(404, `No location: ${query}`);
 		const { lat, lng } = geo.results[0].geometry;
 
