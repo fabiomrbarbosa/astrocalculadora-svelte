@@ -59,7 +59,7 @@
 			/>
 		</fieldset>
 
-		<fieldset class="fieldset mt-4 flex space-x-2">
+		<fieldset class="fieldset flex space-x-2">
 			<legend class="fieldset-legend">Data</legend>
 			<input
 				type="number"
@@ -93,7 +93,7 @@
 			/>
 		</fieldset>
 
-		<fieldset class="fieldset mt-4 flex space-x-2">
+		<fieldset class="fieldset flex space-x-2">
 			<legend class="fieldset-legend">Hora</legend>
 			<input
 				type="number"

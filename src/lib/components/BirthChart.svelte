@@ -298,16 +298,6 @@
 		{/if}
 	{/each}
 
-	<!-- ASC Marker -->
-	{#if ascendant?.position?.longitude}
-		{@const angle = (ascendant.position.longitude + rotationOffset) % 360}
-
-		{@const asc = polarToCartesian(center, center, planetRingInner + 18, angle)}
-		<text x={asc.x} y={asc.y} font-size="16" text-anchor="middle" fill="red">
-			{planetGlyphs.ASC}
-		</text>
-	{/if}
-
 	<!-- House Number Ring -->
 	<circle
 		id="chart-housenumber-outer"

@@ -23,7 +23,7 @@
 		<div id="aspectsResults" class="result">
 			<ul class="aspect-list">
 				{#each chartData.results.aspects as aspect, index}
-					<li class={aspect.outOfSign ? 'text-gray-400' : ''}>
+					<li class={aspect.outOfSign ? 'text-stone-400' : ''}>
 						<span>{aspect.icon}</span>
 						<span>{aspect.planet1} {aspect.aspect} {aspect.planet2}</span>
 						<span>({aspect.orb}{aspect.applying}{aspect.outOfSign ? ' D' : ''})</span>

@@ -13,7 +13,7 @@ body {
 }
 
 body {
-	@apply bg-base-200 p-5 pb-20;
+	@apply bg-base-300 p-5 pb-20;
 }
 
 .panel {
