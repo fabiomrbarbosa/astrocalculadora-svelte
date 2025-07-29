@@ -81,22 +81,27 @@ export function syncChartToData({
 	chartData.points.ascendant.minutes = ascendant.position.minutes;
 	chartData.points.ascendant.sign = findSignKey(ascendant.signName);
 
+	const signKeys = Object.keys(signs) as Array<keyof typeof signs>;
+
 	houses.forEach((cusp, i) => {
-		const houseNum = i + 1;
-		const signIndex = Math.floor(cusp / 30);
-		const signName = signs[signIndex]?.label || 'aries';
+		// which zodiac sign the cusp sits in:
+		const index = Math.floor(cusp / 30);
+		const signKey = signKeys[index]; // e.g. 'gemini'
+		const signObj = signs[signKey];
+
 		const degrees = Math.floor(cusp % 30);
 		const minutes = Math.floor(((cusp % 30) - degrees) * 60);
+		const ruler = signObj.dignities.domicile; // <-- planetary ruler
 
-		const houseKey = `house${houseNum}` as keyof typeof chartData.houses;
-		if (!chartData.houses[houseKey]) {
-			chartData.houses[houseKey] = {} as any;
-		}
-		chartData.houses[houseKey].cusp = {
-			label: `Cúspide da ${houseNum}ª Casa`,
-			degrees,
-			minutes,
-			sign: findSignKey(signName)
+		const houseKey = `house${i + 1}` as keyof typeof chartData.houses;
+		chartData.houses[houseKey] = {
+			cusp: {
+				label: `Cúspide da ${i + 1}ª Casa`,
+				degrees,
+				minutes,
+				sign: signKey, // 'gemini', 'cancer', etc.
+				ruler // add the domicile ruler here
+			}
 		};
 	});
 }

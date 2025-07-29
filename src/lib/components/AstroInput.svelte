@@ -36,7 +36,7 @@
 			<select
 				id={keyName}
 				name={keyName}
-				bind:value={chartData.houses[keyName.replace('Ruler', '')].ruler}
+				bind:value={chartData.houses[keyName.replace('Ruler', '')].cusp.ruler}
 			>
 				<option value="" disabled selected>Selecione um planeta</option>
 				{#each Object.entries(chartData.planets) as [planetKey, planet]}

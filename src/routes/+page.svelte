@@ -41,18 +41,18 @@
 
 <div class="grid h-full gap-4 md:grid-cols-3">
 	<form class="bg-base-100 rounded-box p-4 shadow-sm" on:submit|preventDefault={submitChart}>
-		<h2 class="text-xl font-bold">Birth Data</h2>
+		<h2 class="text-xl font-bold">Dados do Mapa</h2>
 
 		<div class="space-y-2">
 			<input
 				type="text"
-				placeholder="City"
+				placeholder="Cidade"
 				bind:value={chartData.meta.city}
 				class="input input-bordered w-full"
 			/>
 			<input
 				type="text"
-				placeholder="Country"
+				placeholder="País"
 				bind:value={chartData.meta.country}
 				class="input input-bordered w-full"
 			/>
@@ -63,7 +63,7 @@
 				type="number"
 				min="1"
 				max="31"
-				placeholder="Day"
+				placeholder="Dia"
 				bind:value={chartData.meta.day}
 				class="input input-bordered w-full"
 			/>
@@ -71,7 +71,7 @@
 				type="number"
 				min="1"
 				max="12"
-				placeholder="Month"
+				placeholder="Mês"
 				bind:value={chartData.meta.month}
 				class="input input-bordered w-full"
 			/>
@@ -79,7 +79,7 @@
 				type="number"
 				min="0"
 				max="9999"
-				placeholder="Year"
+				placeholder="Ano"
 				bind:value={chartData.meta.year}
 				class="input input-bordered w-full"
 			/>
@@ -90,7 +90,7 @@
 				type="number"
 				min="0"
 				max="23"
-				placeholder="Hour"
+				placeholder="Horas"
 				bind:value={chartData.meta.hour}
 				class="input input-bordered w-full"
 			/>
@@ -98,7 +98,7 @@
 				type="number"
 				min="0"
 				max="59"
-				placeholder="Minute"
+				placeholder="Minutos"
 				bind:value={chartData.meta.minute}
 				class="input input-bordered w-full"
 			/>
@@ -106,7 +106,7 @@
 				type="number"
 				min="0"
 				max="59"
-				placeholder="Second"
+				placeholder="Segundos"
 				bind:value={chartData.meta.second}
 				class="input input-bordered w-full"
 			/>
