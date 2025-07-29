@@ -126,6 +126,9 @@ export function syncChartToData({
 			hi = (hi + 1) % 12;
 		}
 
+		// store the house number on the planet
+		chartData.planets[key].house = hi + 1;
+
 		// finally, push the planet into house (hi+1)
 		chartData.houses[`house${hi + 1}`].planets.push(key);
 	}
