@@ -10,11 +10,7 @@
 		}
 	});
 
-	export let houses;
-	export let planetPositions;
-	export let ascendant;
-	export let usedCoordinates;
-	export let usedTimezone;
+	let { houses, planetPositions, ascendant, usedCoordinates, usedTimezone } = $props();
 
 	const size = 600;
 	const center = size / 2;
@@ -54,8 +50,9 @@
 	};
 
 	// Rotate chart so that ASC is at 180° (left)
-	let rotationOffset =
-		ascendant?.position?.longitude != null ? (0 - ascendant.position.longitude + 360) % 360 : 0;
+	let rotationOffset = $derived(
+		ascendant?.position?.longitude != null ? (0 - ascendant.position.longitude + 360) % 360 : 0
+	);
 
 	function polarToCartesian(cx: number, cy: number, r: number, angle: number) {
 		const rad = (180 - angle) * (Math.PI / 180);
@@ -66,50 +63,56 @@
 		};
 	}
 
-	const zodiacMarkers = Array.from({ length: 12 }, (_, i) => {
-		const start = (i * 30 + rotationOffset) % 360;
-		return {
-			start,
-			mid: (start + 15) % 360,
-			glyph: signGlyphs[i]
-		};
-	});
-
-	const degreeTicks = zodiacMarkers.flatMap(({ start }, signIndex) =>
-		Array.from({ length: 30 }, (_, i) => {
-			const absoluteDegree = (start + i) % 360;
-			const isLong = i % 10 === 0;
-			const tickLength = isLong ? 10 : 5;
-
+	const zodiacMarkers = $derived(
+		Array.from({ length: 12 }, (_, i) => {
+			const start = (i * 30 + rotationOffset) % 360;
 			return {
-				angle: absoluteDegree,
-				startRadius: zodiacInner,
-				endRadius: zodiacInner + tickLength
+				start,
+				mid: (start + 15) % 360,
+				glyph: signGlyphs[i]
 			};
 		})
 	);
 
-	const houseCuspLabels = houses.map((cusp, i) => {
-		const angle = (cusp + rotationOffset) % 360;
-		const degrees = Math.floor(cusp % 30);
-		const minutes = Math.floor(((cusp % 30) - degrees) * 60);
-		const signIndex = Math.floor(cusp / 30) % 12;
+	const degreeTicks = $derived(
+		zodiacMarkers.flatMap(({ start }, signIndex) =>
+			Array.from({ length: 30 }, (_, i) => {
+				const absoluteDegree = (start + i) % 360;
+				const isLong = i % 10 === 0;
+				const tickLength = isLong ? 10 : 5;
 
-		// Layout override
-		let layout: 'arc' | 'stack' | 'arc-flipped' = 'arc';
-		if (i === 0 || i === 6)
-			layout = 'stack'; // 1st and 7th cusp
-		else if (i >= 7 && i <= 11) layout = 'arc-flipped'; // 8th–11th
+				return {
+					angle: absoluteDegree,
+					startRadius: zodiacInner,
+					endRadius: zodiacInner + tickLength
+				};
+			})
+		)
+	);
 
-		return {
-			angle,
-			degrees: `${degrees}°`,
-			sign: signGlyphs[signIndex],
-			minutes: `${minutes.toString().padStart(2, '0')}'`,
-			layout,
-			index: i
-		};
-	});
+	const houseCuspLabels = $derived(
+		houses.map((cusp, i) => {
+			const angle = (cusp + rotationOffset) % 360;
+			const degrees = Math.floor(cusp % 30);
+			const minutes = Math.floor(((cusp % 30) - degrees) * 60);
+			const signIndex = Math.floor(cusp / 30) % 12;
+
+			// Layout override
+			let layout: 'arc' | 'stack' | 'arc-flipped' = 'arc';
+			if (i === 0 || i === 6)
+				layout = 'stack'; // 1st and 7th cusp
+			else if (i >= 7 && i <= 11) layout = 'arc-flipped'; // 8th–11th
+
+			return {
+				angle,
+				degrees: `${degrees}°`,
+				sign: signGlyphs[signIndex],
+				minutes: `${minutes.toString().padStart(2, '0')}'`,
+				layout,
+				index: i
+			};
+		})
+	);
 </script>
 
 <svg
@@ -333,6 +336,5 @@
 <style>
 	svg {
 		font-family: 'Noto Sans Symbols', 'Symbola', 'Segoe UI Symbol', 'Arial Unicode MS', sans-serif;
-		line-height: 1;
 	}
 </style>
