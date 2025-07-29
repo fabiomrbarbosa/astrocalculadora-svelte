@@ -50,11 +50,8 @@ type SyncChartInput = {
 };
 
 function findSignKey(signName: string): keyof typeof signs {
-	return (
-		(Object.keys(signs).find(
-			(k) => signs[k as keyof typeof signs].label === signName.toLowerCase()
-		) as keyof typeof signs) || 'aries'
-	);
+	const normalized = signName.trim().toLowerCase();
+	return (normalized in signs ? normalized : 'aries') as keyof typeof signs;
 }
 
 export function syncChartToData({

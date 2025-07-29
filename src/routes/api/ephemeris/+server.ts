@@ -27,18 +27,18 @@ const PLANETS = {
 };
 
 const SIGNS = [
-	'Aries',
-	'Taurus',
-	'Gemini',
-	'Cancer',
-	'Leo',
-	'Virgo',
-	'Libra',
-	'Scorpio',
-	'Sagittarius',
-	'Capricorn',
-	'Aquarius',
-	'Pisces'
+	'aries',
+	'taurus',
+	'gemini',
+	'cancer',
+	'leo',
+	'virgo',
+	'libra',
+	'scorpio',
+	'sagittarius',
+	'capricorn',
+	'aquarius',
+	'pisces'
 ];
 
 function getZodiacInfo(degrees: number) {
@@ -138,8 +138,6 @@ export async function POST({ request }) {
 		signNumber: ascSign.signNumber,
 		signName: ascSign.signName
 	};
-
-	console.log(planetPositions, ascendant, houseData);
 
 	return json({
 		planetPositions,

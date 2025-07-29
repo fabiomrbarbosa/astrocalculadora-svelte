@@ -30,7 +30,7 @@
 			if (!res.ok) throw new Error(await res.text());
 
 			ephemerisResult = await res.json();
-			console.log(chartData);
+			console.log('chartData: ', ephemerisResult);
 
 			syncChartToData(ephemerisResult);
 		} catch (err) {
