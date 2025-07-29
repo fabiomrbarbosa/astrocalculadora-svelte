@@ -19,6 +19,9 @@ type SyncChartInput = {
 	ascendant: Ascendant;
 	houses: number[]; // 12 cusp longitudes in absolute degrees [0–360)
 	meta?: Record<string, any>;
+	dayNight?: 'day' | 'night';
+	dayRuler?: string;
+	hourRuler?: string;
 	usedCoordinates?: Record<string, any>;
 	usedTimezone?: Record<string, any>;
 };
@@ -46,9 +49,9 @@ export function syncChartToData({
 	chartData.meta.utcOffset = usedTimezone?.offset || '+00:00';
 	chartData.meta.timezone = usedTimezone?.name || 'UTC';
 
-	chartData.dayNight = dayNight;
-	chartData.rulerOfDay = dayRuler;
-	chartData.rulerOfHour = hourRuler;
+	chartData.dayNight = dayNight || '';
+	chartData.rulerOfDay = dayRuler || '';
+	chartData.rulerOfHour = hourRuler || '';
 
 	// ——————————————————————————————
 	// 2) Sync raw planet positions (skip nodes)
