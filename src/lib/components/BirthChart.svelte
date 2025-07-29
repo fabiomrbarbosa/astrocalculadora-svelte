@@ -10,8 +10,12 @@
 	const outerRadius = center - 20;
 	const zodiacOuter = outerRadius;
 	const zodiacInner = zodiacOuter - 30;
-	const houseRing = zodiacInner - 5;
-	const planetRing = houseRing - 25;
+
+	const houseCuspLabelRadiusOuter = zodiacInner;
+	const houseCuspLabelRadiusInner = zodiacInner - 20;
+	const houseCuspLabelRadius = (houseCuspLabelRadiusOuter + houseCuspLabelRadiusInner) / 2;
+
+	const planetRing = houseCuspLabelRadiusInner - 30;
 
 	const innerClearRadius = size / 6;
 	const houseLabelRadius = innerClearRadius + 20;
@@ -58,6 +62,32 @@
 			glyph: signGlyphs[i]
 		};
 	});
+
+	const degreeTicks = zodiacMarkers.flatMap(({ start }, signIndex) =>
+		Array.from({ length: 30 }, (_, i) => {
+			const absoluteDegree = (start + i) % 360;
+			const isLong = i % 10 === 0;
+			const tickLength = isLong ? 10 : 5;
+
+			return {
+				angle: absoluteDegree,
+				startRadius: zodiacInner,
+				endRadius: zodiacInner + tickLength
+			};
+		})
+	);
+
+	const houseCuspLabels = houses.map((cusp, i) => {
+		const angle = (cusp + rotationOffset) % 360;
+		const degrees = Math.floor(cusp % 30);
+		const minutes = Math.floor(((cusp % 30) - degrees) * 60);
+		const signIndex = Math.floor(cusp / 30) % 12;
+
+		return {
+			angle,
+			label: `${degrees}° ${signGlyphs[signIndex]} ${minutes.toString().padStart(2, '0')}'`
+		};
+	});
 </script>
 
 <svg
@@ -69,7 +99,7 @@
 	{#each zodiacMarkers as marker}
 		{@const outer = polarToCartesian(center, center, zodiacOuter, marker.start)}
 		{@const inner = polarToCartesian(center, center, zodiacInner, marker.start)}
-		<line x1={inner.x} y1={inner.y} x2={outer.x} y2={outer.y} stroke="#333" stroke-width="1" />
+		<line x1={inner.x} y1={inner.y} x2={outer.x} y2={outer.y} stroke="#333" stroke-width="0.5" />
 	{/each}
 
 	<!-- Zodiac Ring Label Belt -->
@@ -80,6 +110,48 @@
 		{@const mid = polarToCartesian(center, center, (zodiacOuter + zodiacInner) / 2, marker.mid)}
 		<text x={mid.x} y={mid.y + 6} text-anchor="middle" alignment-baseline="middle" font-size="16">
 			{marker.glyph}
+		</text>
+	{/each}
+
+	<!-- Degree Ticks -->
+	{#each degreeTicks as tick}
+		{@const inner = polarToCartesian(center, center, tick.startRadius, tick.angle)}
+		{@const outer = polarToCartesian(center, center, tick.endRadius, tick.angle)}
+
+		<line x1={inner.x} y1={inner.y} x2={outer.x} y2={outer.y} stroke="#444" stroke-width="0.5" />
+	{/each}
+
+	<!-- House Cusp Label Ring -->
+	<circle
+		cx={center}
+		cy={center}
+		r={houseCuspLabelRadiusOuter}
+		stroke="#333"
+		stroke-width="0.5"
+		fill="none"
+	/>
+	<circle
+		cx={center}
+		cy={center}
+		r={houseCuspLabelRadiusInner}
+		stroke="#333"
+		stroke-width="0.5"
+		fill="none"
+	/>
+
+	<!-- House Cusp Degree Labels -->
+	{#each houseCuspLabels as cusp}
+		{@const pos = polarToCartesian(center, center, houseCuspLabelRadius, cusp.angle)}
+
+		<text
+			x={pos.x}
+			y={pos.y}
+			font-size="10"
+			text-anchor="middle"
+			alignment-baseline="middle"
+			fill="#111"
+		>
+			{cusp.label}
 		</text>
 	{/each}
 
@@ -95,7 +167,7 @@
 			x2={pos.x}
 			y2={pos.y}
 			stroke="#333"
-			stroke-width={i === 0 || i === 3 || i === 6 || i === 9 ? 2.5 : 1}
+			stroke-width={i === 0 || i === 3 || i === 6 || i === 9 ? 2.5 : 0.5}
 		/>
 	{/each}
 
@@ -103,7 +175,14 @@
 	<circle cx={center} cy={center} r={houseLabelRadius} fill="none" stroke="#333" />
 
 	<!-- Inner Clear Boundary -->
-	<circle cx={center} cy={center} r={innerClearRadius} fill="none" stroke="#333" stroke-width="1" />
+	<circle
+		cx={center}
+		cy={center}
+		r={innerClearRadius}
+		fill="none"
+		stroke="#333"
+		stroke-width="0.5"
+	/>
 
 	<!-- House Numbers -->
 	{#each houses as cusp, i}
