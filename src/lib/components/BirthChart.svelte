@@ -10,7 +10,16 @@
 		}
 	});
 
-	let { houses, planetPositions, ascendant, usedCoordinates, usedTimezone } = $props();
+	let {
+		houses,
+		planetPositions,
+		ascendant,
+		dayNight,
+		dayRuler,
+		hourRuler,
+		usedCoordinates,
+		usedTimezone
+	} = $props();
 
 	const size = 600;
 	const center = size / 2;

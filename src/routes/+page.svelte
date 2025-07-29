@@ -123,6 +123,9 @@
 				usedCoordinates={ephemerisResult.usedCoordinates}
 				usedTimezone={ephemerisResult.usedTimezone}
 				houses={ephemerisResult.houses}
+				dayNight={ephemerisResult.dayNight}
+				dayRuler={ephemerisResult.dayRuler}
+				hourRuler={ephemerisResult.hourRuler}
 			/>
 		{:else if chartData.renderedChart}
 			<!-- Render the cached SVG -->

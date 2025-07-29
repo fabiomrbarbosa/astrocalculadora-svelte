@@ -33,6 +33,9 @@ export function syncChartToData({
 	ascendant,
 	houses,
 	meta,
+	dayNight,
+	dayRuler,
+	hourRuler,
 	usedCoordinates,
 	usedTimezone
 }: SyncChartInput): void {
@@ -42,6 +45,10 @@ export function syncChartToData({
 	chartData.meta.utcTime = meta?.utcTime || '';
 	chartData.meta.utcOffset = usedTimezone?.offset || '+00:00';
 	chartData.meta.timezone = usedTimezone?.name || 'UTC';
+
+	chartData.dayNight = dayNight;
+	chartData.rulerOfDay = dayRuler;
+	chartData.rulerOfHour = hourRuler;
 
 	// ——————————————————————————————
 	// 2) Sync raw planet positions (skip nodes)
