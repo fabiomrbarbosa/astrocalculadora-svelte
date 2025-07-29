@@ -1,4 +1,3 @@
-import path from 'path';
 import sweph from 'sweph';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc.js';
@@ -141,7 +140,7 @@ export async function POST({ request }) {
 		// Geocode
 		const query = `${city}, ${country}`;
 		if (!OPENCAGE_API_KEY) throw error(500, 'Missing OPENCAGE_API_KEY');
-		const geo = await opencage.geocode({ q: query, key: OPENCAGE_API_KEY });
+		const geo = await opencage.geocode({ q: query, key: OPENCAGE_API_KEY, language: 'pt-PT' });
 		if (!geo.results.length) throw error(404, `No location: ${query}`);
 		const { lat, lng } = geo.results[0].geometry;
 
