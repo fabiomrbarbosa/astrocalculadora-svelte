@@ -54,7 +54,7 @@
 	};
 
 	// Rotate chart so that ASC is at 180° (left)
-	const rotationOffset =
+	let rotationOffset =
 		ascendant?.position?.longitude != null ? (0 - ascendant.position.longitude + 360) % 360 : 0;
 
 	function polarToCartesian(cx: number, cy: number, r: number, angle: number) {
@@ -118,6 +118,35 @@
 	preserveAspectRatio="xMidYMid meet"
 	style="width: 100%; height: auto; display: block;"
 >
+	<!-- Zodiac Ring Label Belt -->
+	<circle
+		id="chart-outer-border"
+		cx={center}
+		cy={center}
+		r={zodiacOuter + 4}
+		stroke="#333"
+		stroke-width="0.5"
+		fill="none"
+	/>
+	<circle
+		id="chart-zodiac-outer"
+		cx={center}
+		cy={center}
+		r={zodiacOuter}
+		stroke="#333"
+		stroke-width="0.5"
+		fill="none"
+	/>
+	<circle
+		id="chart-zodiac-inner"
+		cx={center}
+		cy={center}
+		r={zodiacInner}
+		stroke="#333"
+		stroke-width="0.5"
+		fill="none"
+	/>
+
 	<!-- Sign Division Lines -->
 	{#each zodiacMarkers as marker}
 		{@const outer = polarToCartesian(center, center, zodiacOuter, marker.start)}
@@ -125,10 +154,7 @@
 		<line x1={inner.x} y1={inner.y} x2={outer.x} y2={outer.y} stroke="#333" stroke-width="0.5" />
 	{/each}
 
-	<!-- Zodiac Ring Label Belt -->
-	<circle cx={center} cy={center} r={zodiacOuter} stroke="#333" fill="none" />
-	<circle cx={center} cy={center} r={zodiacInner} stroke="#333" fill="none" />
-
+	<!-- Sign Glyphs -->
 	{#each zodiacMarkers as marker}
 		{@const mid = polarToCartesian(center, center, (zodiacOuter + zodiacInner) / 2, marker.mid)}
 		<text x={mid.x} y={mid.y + 6} text-anchor="middle" alignment-baseline="middle" font-size="16">
@@ -141,22 +167,23 @@
 		{@const inner = polarToCartesian(center, center, tick.startRadius, tick.angle)}
 		{@const outer = polarToCartesian(center, center, tick.endRadius, tick.angle)}
 
-		<line x1={inner.x} y1={inner.y} x2={outer.x} y2={outer.y} stroke="#444" stroke-width="0.5" />
+		<line
+			class="chart-degree-tick"
+			x1={inner.x}
+			y1={inner.y}
+			x2={outer.x}
+			y2={outer.y}
+			stroke="#444"
+			stroke-width="0.5"
+		/>
 	{/each}
 
 	<!-- House Cusp Label Ring -->
 	<circle
+		id="chart-houselabel-outer"
 		cx={center}
 		cy={center}
 		r={houseCuspLabelRadiusOuter}
-		stroke="#333"
-		stroke-width="0.5"
-		fill="none"
-	/>
-	<circle
-		cx={center}
-		cy={center}
-		r={houseCuspLabelRadiusInner}
 		stroke="#333"
 		stroke-width="0.5"
 		fill="none"
@@ -214,6 +241,17 @@
 		{/if}
 	{/each}
 
+	<!-- Planet Ring Boundary -->
+	<circle
+		id="chart-planetspoints-outer"
+		cx={center}
+		cy={center}
+		r={planetRingOuter}
+		fill="none"
+		stroke="#333"
+		stroke-width="0.5"
+	/>
+
 	<!-- House Cusps -->
 	{#each houses as cusp, i}
 		{@const angle = (cusp + rotationOffset) % 360}
@@ -258,21 +296,16 @@
 		</text>
 	{/if}
 
-	<!-- Planet Ring Boundary -->
-	<circle id="boundary" cx={center} cy={center} r={planetRingOuter} stroke="#333" fill="none" />
-
-	<!-- Inner Clear Boundary -->
+	<!-- House Number Ring -->
 	<circle
+		id="chart-housenumber-outer"
 		cx={center}
 		cy={center}
-		r={clearRadiusInner}
+		r={houseNumberRadius}
 		fill="none"
 		stroke="#333"
 		stroke-width="0.5"
 	/>
-
-	<!-- House Number Ring -->
-	<circle cx={center} cy={center} r={houseNumberRadius} fill="none" stroke="#333" />
 
 	<!-- House Numbers -->
 	{#each houses as cusp, i}
@@ -284,6 +317,17 @@
 			{houseNumbers[i]}
 		</text>
 	{/each}
+
+	<!-- Inner Clear Boundary -->
+	<circle
+		id="chart-inner-border"
+		cx={center}
+		cy={center}
+		r={clearRadiusInner}
+		fill="none"
+		stroke="#333"
+		stroke-width="0.5"
+	/>
 </svg>
 
 <style>
