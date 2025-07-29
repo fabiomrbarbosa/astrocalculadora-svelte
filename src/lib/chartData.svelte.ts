@@ -116,29 +116,68 @@ export let chartData: ChartData = $state({
 			sign: 'aries'
 		}
 	},
-
 	houses: {
+		house1: {
+			cusp: { label: 'Cúspide da 1ª Casa', degrees: 0, minutes: 0, sign: 'aries' },
+			ruler: 'moon',
+			planets: []
+		},
 		house2: {
-			cusp: {
-				label: 'Cúspide da 2ª Casa',
-				degrees: 0,
-				minutes: 0,
-				sign: 'aries'
-			},
+			cusp: { label: 'Cúspide da 2ª Casa', degrees: 0, minutes: 0, sign: 'aries' },
+			ruler: 'moon',
+			planets: []
+		},
+		house3: {
+			cusp: { label: 'Cúspide da 3ª Casa', degrees: 0, minutes: 0, sign: 'aries' },
+			ruler: 'moon',
+			planets: []
+		},
+		house4: {
+			cusp: { label: 'Cúspide da 4ª Casa', degrees: 0, minutes: 0, sign: 'aries' },
+			ruler: 'moon',
+			planets: []
+		},
+		house5: {
+			cusp: { label: 'Cúspide da 5ª Casa', degrees: 0, minutes: 0, sign: 'aries' },
+			ruler: 'moon',
+			planets: []
+		},
+		house6: {
+			cusp: { label: 'Cúspide da 6ª Casa', degrees: 0, minutes: 0, sign: 'aries' },
+			ruler: 'moon',
+			planets: []
+		},
+		house7: {
+			cusp: { label: 'Cúspide da 7ª Casa', degrees: 0, minutes: 0, sign: 'aries' },
+			ruler: 'moon',
+			planets: []
+		},
+		house8: {
+			cusp: { label: 'Cúspide da 8ª Casa', degrees: 0, minutes: 0, sign: 'aries' },
+			ruler: 'moon',
+			planets: []
+		},
+		house9: {
+			cusp: { label: 'Cúspide da 9ª Casa', degrees: 0, minutes: 0, sign: 'aries' },
+			ruler: 'moon',
+			planets: []
+		},
+		house10: {
+			cusp: { label: 'Cúspide da 10ª Casa', degrees: 0, minutes: 0, sign: 'aries' },
+			ruler: 'moon',
+			planets: []
+		},
+		house11: {
+			cusp: { label: 'Cúspide da 11ª Casa', degrees: 0, minutes: 0, sign: 'aries' },
 			ruler: 'moon',
 			planets: []
 		},
 		house12: {
-			cusp: {
-				label: 'Cúspide da 12ª Casa',
-				degrees: 0,
-				minutes: 0,
-				sign: 'aries'
-			},
-			ruler: 'moon'
+			cusp: { label: 'Cúspide da 12ª Casa', degrees: 0, minutes: 0, sign: 'aries' },
+			ruler: 'moon',
+			planets: []
 		}
 	},
-
 	get partFortuneDispositor() {
 		return signs[this.points.partFortune.sign]?.dignities.domicile;
 	},

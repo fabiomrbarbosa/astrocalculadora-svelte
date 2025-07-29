@@ -1,5 +1,6 @@
 <script lang="ts">
 	import BirthChart from '$lib/components/BirthChart.svelte';
+	import { syncEphemerisToChartData } from '$lib/syncChartToData';
 
 	let city = '';
 	let country = '';
@@ -27,6 +28,8 @@
 
 			chartData = await res.json();
 			console.log('Chart result:', chartData);
+
+			syncEphemerisToChartData(chartData);
 		} catch (err) {
 			console.error('Error fetching chart:', err);
 		}
