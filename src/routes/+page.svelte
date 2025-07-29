@@ -25,7 +25,7 @@
 			const res = await fetch('/api/ephemeris', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ date, time, city: meta.city, country: meta.country })
+				body: JSON.stringify({ date: date, time: time, city: meta.city, country: meta.country })
 			});
 			if (!res.ok) throw new Error(await res.text());
 
