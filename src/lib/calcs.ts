@@ -257,7 +257,7 @@ export function calculatePartFortune(): void {
 }
 
 export function calculatePartSubstance(): void {
-	const ruler2 = chartData.planets[chartData.houses.house2.cusp.ruler];
+	const ruler2 = chartData.planets[chartData.houses.house2.ruler];
 	const ruler2Pos = calculatePosition(ruler2.sign, ruler2.degrees, ruler2.minutes);
 	const cusp2Pos = calculatePosition(
 		chartData.houses.house2.cusp.sign,
@@ -369,7 +369,7 @@ export function calculatePartFriends() {
 }
 
 export function calculatePartEnemies() {
-	const ruler12 = chartData.planets[chartData.houses.house12.cusp.ruler];
+	const ruler12 = chartData.planets[chartData.houses.house12.ruler];
 	const ruler12Pos = calculatePosition(ruler12.sign, ruler12.degrees, ruler12.minutes);
 	const cusp12Pos = calculatePosition(
 		chartData.houses.house12.cusp.sign,
@@ -416,4 +416,17 @@ export function calculatePartReligion() {
 
 	// Store formatted result in results.religion
 	chartData.results.partReligion = `Parte da Lei ou da Religião: ${religionData.degrees}°${religionData.minutes}' em ${religionData.icon} ${religionData.label}`;
+}
+
+export function calculateAll() {
+	calculateAspects();
+	calculateAlmutemFiguris();
+	calculateAlmutemSubstance();
+	calculatePartFortune();
+	calculatePartSubstance();
+	calculatePartMarriage();
+	calculatePartChildren();
+	calculatePartFriends();
+	calculatePartEnemies();
+	calculatePartReligion();
 }

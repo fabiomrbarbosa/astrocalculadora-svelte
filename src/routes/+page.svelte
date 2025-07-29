@@ -3,7 +3,7 @@
 	import { syncChartToData } from '$lib/syncChartToData';
 	import { chartData } from '$lib/chartData.svelte'; // persistent state
 
-	let ephemerisResult: any = null;
+	let ephemerisResult: any = $state();
 
 	function safePad(value: string, min: number, max: number, fallback = '00') {
 		const num = Number(value);
@@ -40,7 +40,7 @@
 </script>
 
 <div class="grid h-full gap-4 md:grid-cols-3">
-	<form class="bg-base-100 rounded-box p-4 shadow-sm" on:submit|preventDefault={submitChart}>
+	<form class="bg-base-100 rounded-box p-4 shadow-sm" onsubmit={submitChart}>
 		<h2 class="text-xl font-bold">Dados do Mapa</h2>
 
 		<div class="space-y-2">

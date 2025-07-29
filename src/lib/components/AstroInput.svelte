@@ -14,6 +14,12 @@
 	const isPoint = keyName in chartData.points; // A single calculated point
 
 	let selectedPlanet = $state('');
+
+	// Compute which planet is actually the dispositor
+	const dispositorKey =
+		keyName === 'partFortuneDispositor'
+			? chartData.partFortuneDispositor
+			: chartData.partSubstanceDispositor;
 </script>
 
 <fieldset class="fieldset">
@@ -36,7 +42,7 @@
 			<select
 				id={keyName}
 				name={keyName}
-				bind:value={chartData.houses[keyName.replace('Ruler', '')].cusp.ruler}
+				bind:value={chartData.houses[keyName.replace('Ruler', '')].ruler}
 			>
 				<option value="" disabled selected>Selecione um planeta</option>
 				{#each Object.entries(chartData.planets) as [planetKey, planet]}
@@ -55,15 +61,21 @@
 	{:else if isPlanetArray}
 		<!-- List of Planets in House -->
 		{#each data as planetKey, index}
-			<div class="flex w-full flex-col gap-2 md:flex-row">
-				<PlanetInput keyName={planetKey} data={chartData.planets[planetKey]} />
-				<button
-					type="button"
-					class="submit submit--danger w-full"
-					onclick={() => data.splice(index, 1)}
-				>
-					✕
-				</button>
+			<div class="flex w-full flex-col gap-2">
+				<!-- 🪐 Planet name header -->
+				<div class="planet-name mb-1 font-semibold">
+					{chartData.planets[planetKey].label}
+				</div>
+				<div class="flex gap-2 md:flex-row">
+					<PlanetInput keyName={planetKey} data={chartData.planets[planetKey]} />
+					<button
+						type="button"
+						class="submit submit--danger w-full"
+						onclick={() => data.splice(index, 1)}
+					>
+						✕
+					</button>
+				</div>
 			</div>
 		{/each}
 
@@ -91,15 +103,11 @@
 			</button>
 		</div>
 	{:else if isDispositor}
-		<!-- Automatically update the dispositor based on the current sign -->
-		<PlanetInput
-			{keyName}
-			data={chartData.planets[
-				keyName === 'partFortuneDispositor'
-					? chartData.partFortuneDispositor
-					: chartData.partSubstanceDispositor
-			]}
-		/>
+		<!-- 🪐 Dispositor name header -->
+		<div class="planet-name mb-1 font-semibold">
+			{chartData.planets[dispositorKey].label}
+		</div>
+		<PlanetInput keyName={dispositorKey} data={chartData.planets[dispositorKey]} />
 	{:else if isPlanet}
 		<PlanetInput {showRetrograde} {keyName} {data} />
 	{:else}
