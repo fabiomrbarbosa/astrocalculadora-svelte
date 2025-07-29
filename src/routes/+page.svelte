@@ -43,7 +43,8 @@
 	<form class="bg-base-100 rounded-box p-4 shadow-sm" onsubmit={submitChart}>
 		<h2 class="text-xl font-bold">Dados do Mapa</h2>
 
-		<div class="space-y-2">
+		<fieldset class="fieldset mt-4 flex space-x-2">
+			<legend class="fieldset-legend">Local</legend>
 			<input
 				type="text"
 				placeholder="Cidade"
@@ -56,9 +57,10 @@
 				bind:value={chartData.meta.country}
 				class="input input-bordered w-full"
 			/>
-		</div>
+		</fieldset>
 
-		<div class="mt-4 flex space-x-2">
+		<fieldset class="fieldset mt-4 flex space-x-2">
+			<legend class="fieldset-legend">Data</legend>
 			<input
 				type="number"
 				min="1"
@@ -67,14 +69,20 @@
 				bind:value={chartData.meta.day}
 				class="input input-bordered w-full"
 			/>
-			<input
-				type="number"
-				min="1"
-				max="12"
-				placeholder="Mês"
-				bind:value={chartData.meta.month}
-				class="input input-bordered w-full"
-			/>
+			<select class="select" bind:value={chartData.meta.month}>
+				<option value={1}>Janeiro</option>
+				<option value={2}>Fevereiro</option>
+				<option value={3}>Março</option>
+				<option value={4}>Abril</option>
+				<option value={5}>Maio</option>
+				<option value={6}>Junho</option>
+				<option value={7}>Julho</option>
+				<option value={8}>Agosto</option>
+				<option value={9}>Setembro</option>
+				<option value={10}>Outubro</option>
+				<option value={11}>Novembro</option>
+				<option value={12}>Dezembro</option>
+			</select>
 			<input
 				type="number"
 				min="0"
@@ -83,9 +91,10 @@
 				bind:value={chartData.meta.year}
 				class="input input-bordered w-full"
 			/>
-		</div>
+		</fieldset>
 
-		<div class="mt-4 flex space-x-2">
+		<fieldset class="fieldset mt-4 flex space-x-2">
+			<legend class="fieldset-legend">Hora</legend>
 			<input
 				type="number"
 				min="0"
@@ -110,9 +119,9 @@
 				bind:value={chartData.meta.second}
 				class="input input-bordered w-full"
 			/>
-		</div>
+		</fieldset>
 
-		<button type="submit" class="btn btn-primary mt-4 w-full">Generate Chart</button>
+		<button type="submit" class="btn btn-primary mt-4 w-full">Criar Mapa</button>
 	</form>
 
 	<div class="bg-base-100 rounded-box flex justify-center p-4 shadow-sm md:col-span-2">

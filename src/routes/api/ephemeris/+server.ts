@@ -222,9 +222,9 @@ export async function POST({ request }) {
 			ascendant,
 			houses: houseData.data.houses,
 			dayNight: dayNight,
-			planetaryDayRuler: dayRuler,
+			dayRuler: dayRuler.toLowerCase(),
+			hourRuler: hourRuler.toLowerCase(),
 			planetaryHour: hourNumber,
-			planetaryHourRuler: hourRuler,
 			usedTimezone: tz,
 			usedCoordinates: { latitude: lat, longitude: lng },
 			utcTime: utcTime.format()
