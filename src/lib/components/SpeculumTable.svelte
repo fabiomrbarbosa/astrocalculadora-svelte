@@ -67,7 +67,7 @@
 
 <div class="table-container table-speculum">
 	<table class="table text-center">
-		<thead class="sticky">
+		<thead>
 			<tr>
 				<th>°</th>
 				{#each signGlyphs as sign}

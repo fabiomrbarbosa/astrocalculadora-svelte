@@ -30,7 +30,6 @@
 			if (!res.ok) throw new Error(await res.text());
 
 			ephemerisResult = await res.json();
-
 			syncChartToData(ephemerisResult);
 		} catch (err) {
 			console.error('Error fetching chart:', err);
@@ -124,13 +123,11 @@
 		<button type="submit" class="btn btn-primary mt-4 w-full">Preencher Speculum</button>
 	</form>
 
-	<div class="speculum">
-		{#if ephemerisResult}
-			<SpeculumTable
-				planetPositions={ephemerisResult.planetPositions}
-				ascendant={ephemerisResult.ascendant}
-				houses={ephemerisResult.houses}
-			/>
-		{/if}
-	</div>
+	{#if ephemerisResult}
+		<SpeculumTable
+			planetPositions={ephemerisResult.planetPositions}
+			ascendant={ephemerisResult.ascendant}
+			houses={ephemerisResult.houses}
+		/>
+	{/if}
 </div>

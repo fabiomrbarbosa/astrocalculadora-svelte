@@ -78,9 +78,12 @@ body {
 	line-height: 1;
 }
 
+.table-speculum td {
+	vertical-align: top;
+}
+
 .table-speculum th + th,
 .table-speculum td + td {
-	width: 7.5%;
 	min-width: 7.5%;
 }
 
@@ -88,7 +91,6 @@ body {
 .table-speculum th:nth-child(14),
 .table-speculum td:nth-child(1),
 .table-speculum td:nth-child(14) {
-	width: 5%;
 	min-width: 5%;
 }
 

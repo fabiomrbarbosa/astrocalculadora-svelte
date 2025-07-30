@@ -16,7 +16,6 @@ export type ChartData = {
 		country?: string;
 		utcTime?: string; // ISO string if needed
 	};
-	renderedChart: string;
 	dayNight: string;
 	maleFemale: string;
 	rulerOfDay: string;
@@ -45,8 +44,6 @@ export let chartData: ChartData = $state({
 		country: '',
 		utcTime: ''
 	},
-
-	renderedChart: '',
 	dayNight: 'day',
 	maleFemale: 'male',
 	rulerOfDay: 'moon',

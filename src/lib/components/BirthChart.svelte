@@ -37,12 +37,6 @@
 
 	let svgRef: SVGSVGElement | null = null;
 
-	onMount(() => {
-		if (svgRef) {
-			chartData.renderedChart = svgRef.outerHTML;
-		}
-	});
-
 	let {
 		houses,
 		planetPositions,

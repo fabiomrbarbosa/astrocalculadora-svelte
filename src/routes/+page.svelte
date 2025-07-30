@@ -30,7 +30,6 @@
 			if (!res.ok) throw new Error(await res.text());
 
 			ephemerisResult = await res.json();
-
 			syncChartToData(ephemerisResult);
 		} catch (err) {
 			console.error('Error fetching chart:', err);
@@ -135,9 +134,6 @@
 				dayRuler={ephemerisResult.dayRuler}
 				hourRuler={ephemerisResult.hourRuler}
 			/>
-		{:else if chartData.renderedChart}
-			<!-- Render the cached SVG -->
-			{@html chartData.renderedChart}
 		{/if}
 	</div>
 </div>
