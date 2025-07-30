@@ -180,9 +180,9 @@
 			class="font-astronomicon fill-current"
 			x={mid.x}
 			y={mid.y}
-			text-anchor="middle"
-			alignment-baseline="middle"
 			font-size="22"
+			text-anchor="middle"
+			dominant-baseline="central"
 		>
 			{marker.glyph}
 		</text>
@@ -237,7 +237,7 @@
 			y={degreesPos.y}
 			font-size="10"
 			text-anchor="middle"
-			dominant-baseline="middle"
+			dominant-baseline="central"
 		>
 			{cusp.degrees}
 		</text>
@@ -249,7 +249,7 @@
 			y={signPos.y}
 			font-size="14"
 			text-anchor="middle"
-			dominant-baseline="middle"
+			dominant-baseline="central"
 		>
 			{cusp.sign}
 		</text>
@@ -261,7 +261,7 @@
 			y={minutesPos.y}
 			font-size="10"
 			text-anchor="middle"
-			dominant-baseline="middle"
+			dominant-baseline="central"
 		>
 			{cusp.minutes}
 		</text>
@@ -349,7 +349,7 @@
 				y={glyphPos.y}
 				font-size="24"
 				text-anchor="middle"
-				dominant-baseline="middle"
+				dominant-baseline="central"
 			>
 				{planetGlyphs[name] ?? name}
 			</text>
@@ -361,7 +361,7 @@
 				y={degreesPos.y}
 				font-size="12"
 				text-anchor="middle"
-				dominant-baseline="middle"
+				dominant-baseline="central"
 			>
 				{point.position.degrees}°
 			</text>
@@ -373,7 +373,7 @@
 				y={signPos.y}
 				font-size="16"
 				text-anchor="middle"
-				dominant-baseline="middle"
+				dominant-baseline="central"
 			>
 				{signGlyphs[point.signNumber - 1]}
 			</text>
@@ -385,7 +385,7 @@
 				y={minutesPos.y}
 				font-size="10"
 				text-anchor="middle"
-				dominant-baseline="middle"
+				dominant-baseline="central"
 			>
 				{point.position.minutes.toString().padStart(2, '0')}'
 			</text>
@@ -398,7 +398,7 @@
 					y={retrogradePos.y}
 					font-size="10"
 					text-anchor="middle"
-					dominant-baseline="middle"
+					dominant-baseline="central"
 				>
 					℞
 				</text>
@@ -428,7 +428,7 @@
 			y={pos.y}
 			font-size="10"
 			text-anchor="middle"
-			alignment-baseline="middle"
+			dominant-baseline="central"
 		>
 			{houseNumbers[i]}
 		</text>
