@@ -3,7 +3,7 @@
 	import { syncChartToData } from '$lib/syncChartToData';
 	import { chartData } from '$lib/chartData.svelte'; // persistent state
 
-	let ephemerisResult: any = $state();
+	let ephemerisResult = $state(chartData.rawEphemeris);
 
 	function safePad(value: string, min: number, max: number, fallback = '00') {
 		const num = Number(value);
@@ -122,8 +122,8 @@
 		<button type="submit" class="btn btn-primary mt-4 w-full">Criar Mapa</button>
 	</form>
 
-	<div class="bg-base-100 rounded-box flex justify-center p-4 shadow-sm md:col-span-2">
-		{#if ephemerisResult}
+	{#if ephemerisResult}
+		<div class="bg-base-100 rounded-box flex justify-center p-4 shadow-sm md:col-span-2">
 			<BirthChart
 				planetPositions={ephemerisResult.planetPositions}
 				ascendant={ephemerisResult.ascendant}
@@ -134,6 +134,6 @@
 				dayRuler={ephemerisResult.dayRuler}
 				hourRuler={ephemerisResult.hourRuler}
 			/>
-		{/if}
-	</div>
+		</div>
+	{/if}
 </div>

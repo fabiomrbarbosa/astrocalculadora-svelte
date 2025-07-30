@@ -3,7 +3,7 @@
 	import { chartData } from '$lib/chartData.svelte'; // persistent state
 	import SpeculumTable from '$lib/components/SpeculumTable.svelte';
 
-	let ephemerisResult: any = $state();
+	let ephemerisResult = $state(chartData.rawEphemeris);
 
 	function safePad(value: string, min: number, max: number, fallback = '00') {
 		const num = Number(value);

@@ -31,17 +31,19 @@ function findSignKey(signName: string): keyof typeof signs {
 	return (norm in signs ? norm : 'aries') as keyof typeof signs;
 }
 
-export function syncChartToData({
-	planetPositions,
-	ascendant,
-	houses,
-	meta,
-	dayNight,
-	dayRuler,
-	hourRuler,
-	usedCoordinates,
-	usedTimezone
-}: SyncChartInput): void {
+export function syncChartToData(input: SyncChartInput) {
+	const {
+		planetPositions,
+		ascendant,
+		houses,
+		dayNight,
+		dayRuler,
+		hourRuler,
+		usedCoordinates,
+		usedTimezone,
+		meta
+	} = input;
+
 	// ——————————————————————————————
 	// 1) Meta / timezone
 	// ——————————————————————————————
@@ -143,8 +145,23 @@ export function syncChartToData({
 		chartData.houses[`house${hi + 1}`].planets.push(key);
 	}
 
+	// ————————————————————————————
+	// 6) Save raw ephemeris result
+	// ————————————————————————————
+
+	chartData.rawEphemeris = {
+		planetPositions,
+		ascendant,
+		houses,
+		dayNight: dayNight!,
+		dayRuler: dayRuler!,
+		hourRuler: hourRuler!,
+		usedCoordinates: usedCoordinates!,
+		usedTimezone: usedTimezone!
+	};
+
 	// ——————————————————————
-	// 6) Re‐run every calculation
+	// 7) Re‐run every calculation
 	// ——————————————————————
 	calculateAll();
 }

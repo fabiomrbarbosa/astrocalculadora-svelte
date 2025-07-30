@@ -26,6 +26,16 @@ export type ChartData = {
 	results: Record<string, any>; // Loose typing for deep nesting
 	partFortuneDispositor: string;
 	partSubstanceDispositor: string;
+	rawEphemeris?: {
+		planetPositions: Record<string, any>;
+		ascendant: any;
+		houses: number[];
+		dayNight: 'day' | 'night';
+		dayRuler: string;
+		hourRuler: string;
+		usedCoordinates: Record<string, any>;
+		usedTimezone: Record<string, any>;
+	} | null;
 };
 
 export let chartData: ChartData = $state({
@@ -235,6 +245,8 @@ export let chartData: ChartData = $state({
 		partChildren: '',
 		partFriends: '',
 		partEnemies: '',
-		partReligion: ''
+		partReligion: '',
+
+		rawEphemeris: null
 	}
 });
