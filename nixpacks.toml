@@ -1,0 +1,10 @@
+[setup]
+# Pull in node18 & npm-9 as before, plus Python and build essentials
+nixPkgs = ["nodejs_18", "npm-9_x"]
+aptPkgs  = [
+  "curl",
+  "wget",
+  "python3",
+  "python3-dev",
+  "build-essential",  # gcc, g++, make, etc.
+]
