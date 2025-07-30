@@ -44,17 +44,19 @@
 		return (a + diff) % 360;
 	}
 
-	const signGlyphs = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓'];
+	//['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓'];
+	const signGlyphs = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
 	const planetGlyphs: Record<string, string> = {
-		Sun: '☉',
-		Moon: '☽',
-		Mercury: '☿',
-		Venus: '♀',
-		Mars: '♂',
-		Jupiter: '♃',
-		Saturn: '♄',
-		NorthNode: '☊',
-		SouthNode: '☋',
+		Sun: 'Q',
+		Moon: 'R',
+		Mercury: 'S',
+		Venus: 'T',
+		Mars: 'U',
+		Jupiter: 'V',
+		Saturn: 'W',
+		NorthNode: 'g',
+		SouthNode: 'i',
+		Fortune: '?',
 		ASC: '↑'
 	};
 
@@ -175,12 +177,12 @@
 	{#each zodiacMarkers as marker}
 		{@const mid = polarToCartesian(center, center, (zodiacOuter + zodiacInner) / 2, marker.mid)}
 		<text
-			class="fill-current"
+			class="font-astronomicon fill-current"
 			x={mid.x}
-			y={mid.y + 6}
+			y={mid.y + 4}
 			text-anchor="middle"
 			alignment-baseline="middle"
-			font-size="16"
+			font-size="18"
 		>
 			{marker.glyph}
 		</text>
@@ -244,7 +246,9 @@
 			{@const pos = polarToCartesian(center, center, houseCuspLabelRadius, cusp.angle)}
 			<g transform={`translate(${pos.x}, ${pos.y})`}>
 				<text class="fill-current" y="-12" font-size="10" text-anchor="middle">{cusp.degrees}</text>
-				<text class="fill-current" y="0" font-size="10" text-anchor="middle">{cusp.sign}</text>
+				<text class="font-astronomicon fill-current" y="0" font-size="14" text-anchor="middle"
+					>{cusp.sign}</text
+				>
 				<text class="fill-current" y="12" font-size="10" text-anchor="middle">{cusp.minutes}</text>
 			</g>
 		{:else}
@@ -256,9 +260,11 @@
 					text-anchor="middle"
 					dominant-baseline="middle"
 				>
-					{cusp.degrees}
-					{cusp.sign}
-					{cusp.minutes}
+					<tspan>{cusp.degrees}</tspan>
+					<tspan dy="0.2em" class="font-astronomicon fill-current" font-size="14">
+						{cusp.sign}
+					</tspan>
+					<tspan dy="-0.3em">{cusp.minutes}</tspan>
 				</textPath>
 			</text>
 		{/if}
@@ -296,13 +302,19 @@
 			{@const angle = (point.position.longitude + rotationOffset) % 360}
 
 			{@const pos = polarToCartesian(center, center, planetRingInner, angle)}
-			<text class="fill-current" x={pos.x} y={pos.y - 4} font-size="14" text-anchor="middle">
+			<text
+				class="font-astronomicon fill-current"
+				x={pos.x}
+				y={pos.y - 4}
+				font-size="18"
+				text-anchor="middle"
+			>
 				{planetGlyphs[name] ?? name}
 			</text>
 			<text class="fill-current" x={pos.x} y={pos.y + 10} font-size="10" text-anchor="middle">
-				{point.position.degrees}°
-				{signGlyphs[point.signNumber - 1]}
-				{point.position.minutes.toString().padStart(2, '0')}
+				{point.position.degrees + `°`}
+				<tspan class="font-astronomicon" font-size="14">{signGlyphs[point.signNumber - 1]}</tspan>
+				{point.position.minutes.toString().padStart(2, '0') + `'`}
 				{point.retrograde ? '℞' : ''}
 			</text>
 		{/if}
@@ -322,7 +334,7 @@
 	{#each houses as cusp, i}
 		{@const nextCusp = houses[(i + 1) % 12]}
 		{@const angle = (midpointAngle(cusp, nextCusp) + rotationOffset) % 360}
-		{@const pos = polarToCartesian(center, center, houseNumberRadius - 12, angle)}
+		{@const pos = polarToCartesian(center, center, houseNumberRadius - 10, angle)}
 
 		<text
 			class="fill-current"
@@ -347,9 +359,3 @@
 		stroke-width="0.5"
 	/>
 </svg>
-
-<style>
-	svg {
-		font-family: 'Noto Sans Symbols', 'Symbola', 'Segoe UI Symbol', 'Arial Unicode MS', sans-serif;
-	}
-</style>

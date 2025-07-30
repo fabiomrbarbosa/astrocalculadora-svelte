@@ -1,6 +1,17 @@
 @import 'tailwindcss';
 @plugin "daisyui";
 
+@font-face {
+	font-family: 'Astronomicon';
+	src: url(/Astronomicon.ttf);
+	font-display: swap;
+}
+
+.font-astronomicon {
+	font-family: 'Astronomicon', sans-serif;
+	line-height: 1;
+}
+
 * {
 	text-rendering: optimizeLegibility !important;
 	-webkit-font-smoothing: antialiased !important;
