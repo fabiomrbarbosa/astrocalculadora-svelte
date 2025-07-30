@@ -179,7 +179,7 @@
 		<text
 			class="font-astronomicon fill-current"
 			x={mid.x}
-			y={mid.y + 6}
+			y={mid.y}
 			text-anchor="middle"
 			alignment-baseline="middle"
 			font-size="22"
@@ -425,7 +425,7 @@
 		<text
 			class="fill-current"
 			x={pos.x}
-			y={pos.y + 4}
+			y={pos.y}
 			font-size="10"
 			text-anchor="middle"
 			alignment-baseline="middle"
