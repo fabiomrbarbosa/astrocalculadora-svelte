@@ -74,6 +74,24 @@ body {
 	min-width: 10%;
 }
 
+.table-speculum {
+	line-height: 1;
+}
+
+.table-speculum th + th,
+.table-speculum td + td {
+	width: 7.5%;
+	min-width: 7.5%;
+}
+
+.table-speculum th:nth-child(1),
+.table-speculum th:nth-child(14),
+.table-speculum td:nth-child(1),
+.table-speculum td:nth-child(14) {
+	width: 5%;
+	min-width: 5%;
+}
+
 .floatingchat-container {
 	width: 300px !important;
 }

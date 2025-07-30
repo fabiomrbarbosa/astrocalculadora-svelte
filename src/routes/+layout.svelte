@@ -8,6 +8,7 @@
 	// Menu items
 	const menuItems = [
 		{ href: '/', label: 'Mapa Natal' },
+		{ href: '/speculum', label: 'Speculum' },
 		{ href: '/aspects', label: 'Aspectos' },
 		{ href: '/almutemfiguris', label: 'Almutem Figuris' },
 		{ href: '/almutemsubstance', label: 'Almutem da Substância' },
