@@ -102,16 +102,6 @@
 								{/if}
 							{/each}
 
-							<!-- Planets -->
-							{#each Object.entries(planetPositions) as [planet, pos]}
-								{#if signIndex(pos.signName) === sIdx && Math.floor(pos.position.degrees) === degree}
-									<div class="text-accent" title={`${getPlanetLabel(planet)}`}>
-										<span class="font-astronomicon text-lg">! {getPlanetGlyph(planet)}</span>
-										<span class="text-xs">{pos.position.minutes}'</span>
-									</div>
-								{/if}
-							{/each}
-
 							<!-- House cusps -->
 							{#each houses as cusp, index}
 								{#if Math.floor(cusp % 30) === degree && Math.floor(cusp / 30) === sIdx}
@@ -130,6 +120,16 @@
 										<span class="speculum__house-minutes">
 											{`• ` + getCuspMinutes(cusp) + `'`}
 										</span>
+									</div>
+								{/if}
+							{/each}
+
+							<!-- Planets -->
+							{#each Object.entries(planetPositions) as [planet, pos]}
+								{#if signIndex(pos.signName) === sIdx && Math.floor(pos.position.degrees) === degree}
+									<div class="text-accent" title={`${getPlanetLabel(planet)}`}>
+										<span class="font-astronomicon text-lg">! {getPlanetGlyph(planet)}</span>
+										<span class="text-xs">{pos.position.minutes}'</span>
 									</div>
 								{/if}
 							{/each}
