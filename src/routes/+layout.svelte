@@ -30,7 +30,6 @@
 
 	$effect(() => {
 		localStorage.setItem('chartData', JSON.stringify(chartData));
-		console.log(chartData);
 	});
 </script>
 

@@ -213,61 +213,58 @@
 		stroke-width="0.5"
 	/>
 
-	<defs>
-		{#each houseCuspLabels as cusp}
-			{@const angleStart = cusp.angle - 5}
-			{@const angleEnd = cusp.angle + 5}
-			{@const largeArcFlag = Math.abs(angleEnd - angleStart) <= 180 ? 0 : 1}
-
-			{#if cusp.layout === 'arc-flipped'}
-				{@const start = polarToCartesian(center, center, houseCuspLabelRadius, angleEnd)}
-				{@const end = polarToCartesian(center, center, houseCuspLabelRadius, angleStart)}
-				<path
-					id={`arc-label-${cusp.index}`}
-					class="fill-none"
-					stroke="stroke-none"
-					d={`M ${start.x} ${start.y} A ${houseCuspLabelRadius} ${houseCuspLabelRadius} 0 ${largeArcFlag} 1 ${end.x} ${end.y}`}
-				/>
-			{:else}
-				{@const start = polarToCartesian(center, center, houseCuspLabelRadius, angleStart)}
-				{@const end = polarToCartesian(center, center, houseCuspLabelRadius, angleEnd)}
-				<path
-					id={`arc-label-${cusp.index}`}
-					fill="none"
-					stroke="none"
-					d={`M ${start.x} ${start.y} A ${houseCuspLabelRadius} ${houseCuspLabelRadius} 0 ${largeArcFlag} 0 ${end.x} ${end.y}`}
-				/>
-			{/if}
-		{/each}
-	</defs>
-
 	{#each houseCuspLabels as cusp}
-		{#if cusp.layout === 'stack'}
-			{@const pos = polarToCartesian(center, center, houseCuspLabelRadius, cusp.angle)}
-			<g transform={`translate(${pos.x}, ${pos.y})`}>
-				<text class="fill-current" y="-12" font-size="10" text-anchor="middle">{cusp.degrees}</text>
-				<text class="font-astronomicon fill-current" y="0" font-size="14" text-anchor="middle"
-					>{cusp.sign}</text
-				>
-				<text class="fill-current" y="12" font-size="10" text-anchor="middle">{cusp.minutes}</text>
-			</g>
-		{:else}
-			<text class="fill-current" font-size="10">
-				<textPath
-					class="fill-current"
-					xlink:href={`#arc-label-${cusp.index}`}
-					startOffset="50%"
-					text-anchor="middle"
-					dominant-baseline="middle"
-				>
-					<tspan>{cusp.degrees}</tspan>
-					<tspan dy="0.2em" class="font-astronomicon fill-current" font-size="14">
-						{cusp.sign}
-					</tspan>
-					<tspan dy="-0.3em">{cusp.minutes}</tspan>
-				</textPath>
-			</text>
-		{/if}
+		{@const baseRadius = houseCuspLabelRadius}
+		{@const angleOffset = 4}
+		{@const angle = cusp.angle}
+		{@const reversed = cusp.index >= 6}
+		<!-- Houses 7–12 (indexes 6–11) -->
+
+		<!-- Calculate angles conditionally -->
+		{@const degreesAngle = reversed ? angle + angleOffset : angle - angleOffset}
+		{@const signAngle = angle}
+		{@const minutesAngle = reversed ? angle - angleOffset : angle + angleOffset}
+
+		<!-- Positions along the ring -->
+		{@const degreesPos = polarToCartesian(center, center, baseRadius, degreesAngle)}
+		{@const signPos = polarToCartesian(center, center, baseRadius, signAngle)}
+		{@const minutesPos = polarToCartesian(center, center, baseRadius, minutesAngle)}
+
+		<!-- Degrees -->
+		<text
+			class="fill-current"
+			x={degreesPos.x}
+			y={degreesPos.y}
+			font-size="10"
+			text-anchor="middle"
+			dominant-baseline="middle"
+		>
+			{cusp.degrees}
+		</text>
+
+		<!-- Sign Glyph -->
+		<text
+			class="font-astronomicon fill-current"
+			x={signPos.x}
+			y={signPos.y}
+			font-size="14"
+			text-anchor="middle"
+			dominant-baseline="middle"
+		>
+			{cusp.sign}
+		</text>
+
+		<!-- Minutes -->
+		<text
+			class="fill-current"
+			x={minutesPos.x}
+			y={minutesPos.y}
+			font-size="10"
+			text-anchor="middle"
+			dominant-baseline="middle"
+		>
+			{cusp.minutes}
+		</text>
 	{/each}
 
 	<!-- Planet Ring Boundary -->
