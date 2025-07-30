@@ -2,6 +2,39 @@
 	import { onMount } from 'svelte';
 	import { chartData } from '$lib/chartData.svelte';
 
+	type Glyph = { name: string; glyph: string };
+
+	export const signs: Glyph[] = [
+		{ name: 'Aries', glyph: 'A' },
+		{ name: 'Taurus', glyph: 'B' },
+		{ name: 'Gemini', glyph: 'C' },
+		{ name: 'Cancer', glyph: 'D' },
+		{ name: 'Leo', glyph: 'E' },
+		{ name: 'Virgo', glyph: 'F' },
+		{ name: 'Libra', glyph: 'G' },
+		{ name: 'Scorpio', glyph: 'H' },
+		{ name: 'Sagittarius', glyph: 'I' },
+		{ name: 'Capricorn', glyph: 'J' },
+		{ name: 'Aquarius', glyph: 'K' },
+		{ name: 'Pisces', glyph: 'L' }
+	];
+
+	export const planets: Glyph[] = [
+		{ name: 'Sun', glyph: 'Q' },
+		{ name: 'Moon', glyph: 'R' },
+		{ name: 'Mercury', glyph: 'S' },
+		{ name: 'Venus', glyph: 'T' },
+		{ name: 'Mars', glyph: 'U' },
+		{ name: 'Jupiter', glyph: 'V' },
+		{ name: 'Saturn', glyph: 'W' },
+		{ name: 'NorthNode', glyph: 'g' },
+		{ name: 'SouthNode', glyph: 'i' },
+		{ name: 'Fortune', glyph: '?' },
+		{ name: 'ASC', glyph: '↑' }
+	];
+
+	const planetMap = Object.fromEntries(planets.map((p) => [p.name, p.glyph]));
+
 	let svgRef: SVGSVGElement | null = null;
 
 	onMount(() => {
@@ -38,36 +71,17 @@
 	const houseNumberRadius = clearRadiusInner + 20;
 	const houseNumbers = Array.from({ length: 12 }, (_, i) => (i + 1).toString());
 
-	// Compute midpoint between two angles
 	function midpointAngle(a: number, b: number): number {
 		const diff = ((b - a + 360) % 360) / 2;
 		return (a + diff) % 360;
 	}
 
-	//['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓'];
-	const signGlyphs = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
-	const planetGlyphs: Record<string, string> = {
-		Sun: 'Q',
-		Moon: 'R',
-		Mercury: 'S',
-		Venus: 'T',
-		Mars: 'U',
-		Jupiter: 'V',
-		Saturn: 'W',
-		NorthNode: 'g',
-		SouthNode: 'i',
-		Fortune: '?',
-		ASC: '↑'
-	};
-
-	// Rotate chart so that ASC is at 180° (left)
 	let rotationOffset = $derived(
 		ascendant?.position?.longitude != null ? (0 - ascendant.position.longitude + 360) % 360 : 0
 	);
 
 	function polarToCartesian(cx: number, cy: number, r: number, angle: number) {
 		const rad = (180 - angle) * (Math.PI / 180);
-
 		return {
 			x: cx + r * Math.cos(rad),
 			y: cy + r * Math.sin(rad)
@@ -75,12 +89,13 @@
 	}
 
 	const zodiacMarkers = $derived(
-		Array.from({ length: 12 }, (_, i) => {
+		signs.map((sign, i) => {
 			const start = (i * 30 + rotationOffset) % 360;
 			return {
 				start,
 				mid: (start + 15) % 360,
-				glyph: signGlyphs[i]
+				glyph: sign.glyph,
+				name: sign.name
 			};
 		})
 	);
@@ -91,7 +106,6 @@
 				const absoluteDegree = (start + i) % 360;
 				const isLong = i % 10 === 0;
 				const tickLength = isLong ? 10 : 5;
-
 				return {
 					angle: absoluteDegree,
 					startRadius: zodiacInner,
@@ -108,18 +122,12 @@
 			const minutes = Math.floor(((cusp % 30) - degrees) * 60);
 			const signIndex = Math.floor(cusp / 30) % 12;
 
-			// Layout override
-			let layout: 'arc' | 'stack' | 'arc-flipped' = 'arc';
-			if (i === 0 || i === 6)
-				layout = 'stack'; // 1st and 7th cusp
-			else if (i >= 7 && i <= 11) layout = 'arc-flipped'; // 8th–11th
-
 			return {
 				angle,
 				degrees: `${degrees}°`,
-				sign: signGlyphs[signIndex],
+				sign: signs[signIndex].glyph,
+				signName: signs[signIndex].name,
 				minutes: `${minutes.toString().padStart(2, '0')}'`,
-				layout,
 				index: i
 			};
 		})
@@ -177,7 +185,7 @@
 	{#each zodiacMarkers as marker}
 		{@const mid = polarToCartesian(center, center, (zodiacOuter + zodiacInner) / 2, marker.mid)}
 		<text
-			class="font-astronomicon fill-current"
+			class="font-astronomicon fill-current birth-chart__{marker.name.toLowerCase()}"
 			x={mid.x}
 			y={mid.y}
 			font-size="22"
@@ -344,14 +352,14 @@
 
 			<!-- Planet Glyph -->
 			<text
-				class="font-astronomicon fill-current"
+				class="font-astronomicon fill-current birth-chart__{name.toLowerCase()}"
 				x={glyphPos.x}
 				y={glyphPos.y}
 				font-size="24"
 				text-anchor="middle"
 				dominant-baseline="central"
 			>
-				{planetGlyphs[name] ?? name}
+				{planetMap[name] ?? name}
 			</text>
 
 			<!-- Degrees -->
@@ -375,7 +383,7 @@
 				text-anchor="middle"
 				dominant-baseline="central"
 			>
-				{signGlyphs[point.signNumber - 1]}
+				{signs[point.signNumber - 1].glyph}
 			</text>
 
 			<!-- Minutes -->
