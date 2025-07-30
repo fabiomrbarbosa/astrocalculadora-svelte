@@ -10,10 +10,10 @@
 	<form class="form" onsubmit={calculatePartChildren} use:usePreventDefault>
 		<!-- Day/Night Input -->
 		<fieldset class="fieldset">
-			<legend class="fieldset-legend">O mapa natal é diurno ou noturno?</legend>
+			<legend class="fieldset-legend">O mapa natal é diurno ou nocturno?</legend>
 			<select name="selectDayNight" bind:value={chartData.dayNight} class="select w-full">
 				<option value="day">Diurno</option>
-				<option value="night">Noturno</option>
+				<option value="night">Nocturno</option>
 			</select>
 		</fieldset>
 
