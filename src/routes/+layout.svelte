@@ -71,7 +71,7 @@
 						{/each}
 					</ul>
 				</div>
-				<a href="/" class="btn btn-ghost text-xl">AstroCalculadora</a>
+				<a href="/" class="btn btn-ghost text-xl">AstroCalculadora<sup>β</sup></a>
 				<DarkModeToggle />
 			</div>
 		</div>
