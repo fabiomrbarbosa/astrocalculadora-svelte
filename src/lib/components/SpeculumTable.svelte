@@ -67,6 +67,11 @@
 
 	const getPlanetLabel = (planetName: string): string =>
 		planets.find((p) => p.name.toLowerCase() === planetName.toLowerCase())?.label ?? '';
+
+	const getCuspMinutes = (cusp: number): number => {
+		let deg = Math.floor(cusp % 30);
+		return Math.floor(((cusp % 30) - deg) * 60);
+	};
 </script>
 
 <div class="table-container table-speculum">
@@ -110,8 +115,8 @@
 							<!-- House cusps -->
 							{#each houses as cusp, index}
 								{#if Math.floor(cusp % 30) === degree && Math.floor(cusp / 30) === sIdx}
-									<div class="text-primary text-xs font-bold">
-										<span class="speculum__house-cusp">
+									<div class="text-primary text-xs">
+										<span class="speculum__house-cusp font-bold">
 											{index === 0
 												? 'ASC'
 												: index === 3
@@ -122,6 +127,9 @@
 															? 'MC'
 															: `C${index + 1}`}</span
 										>
+										<span class="speculum__house-minutes">
+											{`• ` + getCuspMinutes(cusp) + `'`}
+										</span>
 									</div>
 								{/if}
 							{/each}
