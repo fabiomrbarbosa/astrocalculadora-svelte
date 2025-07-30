@@ -80,6 +80,7 @@ body {
 
 .table-speculum td {
 	vertical-align: top;
+	padding-inline: 0.5rem;
 }
 
 .table-speculum th + th,
