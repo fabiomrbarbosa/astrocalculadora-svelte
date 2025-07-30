@@ -96,5 +96,6 @@ body {
 }
 
 .floatingchat-container {
-	width: 300px !important;
+	width: 216px !important;
+	height: 46px !important;
 }
