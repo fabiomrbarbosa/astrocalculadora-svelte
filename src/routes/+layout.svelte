@@ -70,7 +70,7 @@
 						{/each}
 					</ul>
 				</div>
-				<a href="/" class="btn btn-ghost text-xl">Calculadora Astrológica</a>
+				<a href="/" class="btn btn-ghost text-xl">AstroCalculadora</a>
 				<DarkModeToggle />
 			</div>
 		</div>
