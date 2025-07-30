@@ -426,6 +426,7 @@ export function calculateAll() {
 	calculatePartFriends();
 	calculatePartEnemies();
 	calculatePartReligion();
+	// Calculating these depends on getting the above Parts right:
 	calculateAspects();
 	calculateAlmutemFiguris();
 	calculateAlmutemSubstance();
