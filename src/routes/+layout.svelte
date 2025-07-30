@@ -77,7 +77,7 @@
 		</div>
 	</div>
 	<div class="hidden lg:row-start-2 lg:block">
-		<div class="bg-base-100 rounded-box shadow-sm">
+		<div class="bg-base-100 rounded-box sticky top-4 shadow-sm">
 			<ul class="menu sticky top-0 w-full">
 				{#each menuItems as { href, label }}
 					<li>
