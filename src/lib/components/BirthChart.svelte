@@ -179,10 +179,10 @@
 		<text
 			class="font-astronomicon fill-current"
 			x={mid.x}
-			y={mid.y + 4}
+			y={mid.y + 6}
 			text-anchor="middle"
 			alignment-baseline="middle"
-			font-size="18"
+			font-size="22"
 		>
 			{marker.glyph}
 		</text>
@@ -301,22 +301,111 @@
 		{#if point.position}
 			{@const angle = (point.position.longitude + rotationOffset) % 360}
 
-			{@const pos = polarToCartesian(center, center, planetRingInner, angle)}
+			<!-- Ticks -->
+			{@const tickOuterStart = polarToCartesian(center, center, planetRingOuter, angle)}
+			{@const tickOuterEnd = polarToCartesian(center, center, planetRingOuter - 6, angle)}
+			{@const tickInnerStart = polarToCartesian(center, center, houseNumberRadius, angle)}
+			{@const tickInnerEnd = polarToCartesian(center, center, houseNumberRadius + 6, angle)}
+
+			<!-- Outer Tick -->
+			<line
+				x1={tickOuterStart.x}
+				y1={tickOuterStart.y}
+				x2={tickOuterEnd.x}
+				y2={tickOuterEnd.y}
+				class="stroke-current"
+				stroke-width="0.5"
+			/>
+
+			<!-- Inner Tick -->
+			<line
+				x1={tickInnerStart.x}
+				y1={tickInnerStart.y}
+				x2={tickInnerEnd.x}
+				y2={tickInnerEnd.y}
+				class="stroke-current"
+				stroke-width="0.5"
+			/>
+
+			<!-- Radial staggering parameters -->
+			{@const glyphRadius = planetRingOuter - 20}
+			<!-- closer to outer ring -->
+			{@const radialStep = 16}
+			<!-- spacing between sub-elements -->
+
+			<!-- Positions calculated radially -->
+			{@const glyphPos = polarToCartesian(center, center, glyphRadius, angle)}
+			{@const degreesPos = polarToCartesian(center, center, glyphRadius - radialStep * 1.35, angle)}
+			{@const signPos = polarToCartesian(center, center, glyphRadius - radialStep * 2.45, angle)}
+			{@const minutesPos = polarToCartesian(center, center, glyphRadius - radialStep * 3.5, angle)}
+			{@const retrogradePos = polarToCartesian(
+				center,
+				center,
+				glyphRadius - radialStep * 4.5,
+				angle
+			)}
+
+			<!-- Planet Glyph -->
 			<text
 				class="font-astronomicon fill-current"
-				x={pos.x}
-				y={pos.y - 4}
-				font-size="18"
+				x={glyphPos.x}
+				y={glyphPos.y}
+				font-size="24"
 				text-anchor="middle"
+				dominant-baseline="middle"
 			>
 				{planetGlyphs[name] ?? name}
 			</text>
-			<text class="fill-current" x={pos.x} y={pos.y + 10} font-size="10" text-anchor="middle">
-				{point.position.degrees + `°`}
-				<tspan class="font-astronomicon" font-size="14">{signGlyphs[point.signNumber - 1]}</tspan>
-				{point.position.minutes.toString().padStart(2, '0') + `'`}
-				{point.retrograde ? '℞' : ''}
+
+			<!-- Degrees -->
+			<text
+				class="fill-current"
+				x={degreesPos.x}
+				y={degreesPos.y}
+				font-size="12"
+				text-anchor="middle"
+				dominant-baseline="middle"
+			>
+				{point.position.degrees}°
 			</text>
+
+			<!-- Sign Glyph -->
+			<text
+				class="font-astronomicon fill-current"
+				x={signPos.x}
+				y={signPos.y}
+				font-size="16"
+				text-anchor="middle"
+				dominant-baseline="middle"
+			>
+				{signGlyphs[point.signNumber - 1]}
+			</text>
+
+			<!-- Minutes -->
+			<text
+				class="fill-current"
+				x={minutesPos.x}
+				y={minutesPos.y}
+				font-size="10"
+				text-anchor="middle"
+				dominant-baseline="middle"
+			>
+				{point.position.minutes.toString().padStart(2, '0')}'
+			</text>
+
+			<!-- Retrograde -->
+			{#if point.retrograde}
+				<text
+					class="fill-current"
+					x={retrogradePos.x}
+					y={retrogradePos.y}
+					font-size="10"
+					text-anchor="middle"
+					dominant-baseline="middle"
+				>
+					℞
+				</text>
+			{/if}
 		{/if}
 	{/each}
 
