@@ -2,7 +2,10 @@
 const colors = require('tailwindcss/colors');
 
 module.exports = {
-	darkMode: ['selector', '[data-theme="dark"]'],
+	daisyui: {
+		themes: ['light', 'dark'],
+		darkTheme: 'dark'
+	},
 	theme: {
 		extend: {
 			colors: {
