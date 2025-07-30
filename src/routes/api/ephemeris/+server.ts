@@ -1,3 +1,4 @@
+import path from 'path';
 import sweph from 'sweph';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc.js';
@@ -13,7 +14,8 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 // Set Swiss Ephemeris data path
-const ephePath = new URL('../../../lib/vendor/ephemeris', import.meta.url).pathname;
+// Use import.meta.url to locate this file, then point at the vendor folder
+const ephePath = path.join(process.cwd(), 'src', 'lib', 'vendor', 'ephemeris');
 sweph.set_ephe_path(ephePath);
 
 // Planet & sign constants
