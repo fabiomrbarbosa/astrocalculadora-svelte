@@ -419,9 +419,6 @@ export function calculatePartReligion() {
 }
 
 export function calculateAll() {
-	calculateAspects();
-	calculateAlmutemFiguris();
-	calculateAlmutemSubstance();
 	calculatePartFortune();
 	calculatePartSubstance();
 	calculatePartMarriage();
@@ -429,4 +426,7 @@ export function calculateAll() {
 	calculatePartFriends();
 	calculatePartEnemies();
 	calculatePartReligion();
+	calculateAspects();
+	calculateAlmutemFiguris();
+	calculateAlmutemSubstance();
 }
