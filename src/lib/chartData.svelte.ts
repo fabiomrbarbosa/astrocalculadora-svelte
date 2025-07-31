@@ -28,6 +28,7 @@ export type ChartData = {
 	partSubstanceDispositor: string;
 	syzygy?: {
 		label: string;
+		type: string;
 		degrees: number;
 		minutes: number;
 		sign: string;
@@ -157,6 +158,7 @@ export let chartData: ChartData = $state({
 		},
 		syzygy: {
 			label: 'Sizígia Pré-Natal',
+			type: '',
 			degrees: 0,
 			minutes: 0,
 			sign: 'aries'
@@ -227,6 +229,7 @@ export let chartData: ChartData = $state({
 
 	syzygy: {
 		label: '',
+		type: '',
 		degrees: 0,
 		minutes: 0,
 		sign: 'aries'

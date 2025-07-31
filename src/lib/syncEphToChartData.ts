@@ -151,7 +151,8 @@ export function syncEphToChartData(input: SyncChartInput) {
 	// ————————————————————————————
 	if (prenatalSyzygy) {
 		chartData.points.syzygy = {
-			label: `Sizígia Pré-Natal (${prenatalSyzygy.type})`,
+			label: 'Sizígia Pré-Natal',
+			type: prenatalSyzygy.type,
 			degrees: prenatalSyzygy.degrees,
 			minutes: prenatalSyzygy.minutes,
 			sign: prenatalSyzygy.sign

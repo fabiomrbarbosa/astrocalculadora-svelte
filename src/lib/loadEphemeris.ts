@@ -15,7 +15,6 @@ export async function loadEphemeris(date: string, time: string, city: string, co
 	});
 	if (!res.ok) throw new Error(await res.text());
 	const eph = await res.json();
-	console.log(eph);
 
 	// 2) sync the main chart into your store
 	chartData.meta.city = city;
