@@ -36,7 +36,7 @@
 		"geo-tz": "^8.1.4",
 		"opencage-api-client": "^2.0.0",
 		"path": "^0.12.7",
-		"sunrise-sunset-js": "^2.2.1",
+		"suncalc": "^1.9.0",
 		"sweph": "^2.10.3-b-1"
 	}
 }

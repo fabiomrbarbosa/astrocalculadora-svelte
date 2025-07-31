@@ -3,7 +3,7 @@ import sweph from 'sweph';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc.js';
 import timezone from 'dayjs/plugin/timezone.js';
-import { getSunrise, getSunset } from 'sunrise-sunset-js';
+import SunCalc from 'suncalc';
 import { json, error } from '@sveltejs/kit';
 import opencage from 'opencage-api-client';
 import geoTz from 'geo-tz';
@@ -96,27 +96,22 @@ function computeEphAtJd(jdUT: number, lat: number, lng: number) {
 	};
 }
 
-// ── Sunrise/Sunset helpers using `sunrise-sunset-js` ─────────────────────────
-/**
- * Returns local sunrise & sunset for isoDate (YYYY-MM-DD) at lat/lng in tz
- */
+// ── Sunrise/Sunset helpers ─────────────────────────
 function getSunriseSunsetLocal(isoDate: string, lat: number, lng: number, tz: string) {
-	// Parse ISO date components
-	const [year, month, day] = isoDate.split('-').map(Number);
-	// Construct JS Date (month is zero-based)
-	const dateObj = new Date(year, month - 1, day);
-	// getSunrise/getSunset accept (lat, lng) or (lat, lng, date)
-	const sunriseDt = getSunrise(lat, lng, dateObj);
-	const sunsetDt = getSunset(lat, lng, dateObj);
+	// 1) Make a Date at local‐noon in the target tz
+	const noon = dayjs.tz(`${isoDate}T12:00:00`, tz).toDate();
+	// 2) Ask SunCalc…
+	const times = SunCalc.getTimes(noon, lat, lng);
+
+	// 5) Wrap back into Day.js in your tz
 	return {
-		sunrise: dayjs(sunriseDt).tz(tz),
-		sunset: dayjs(sunsetDt).tz(tz)
+		sunrise: dayjs.tz(times.sunrise, tz),
+		sunset: dayjs.tz(times.sunset, tz)
 	};
 }
 
 // ── Planetary Hour helper ───────────────────────────────────────────────────
 const CHALDEAN = ['Saturn', 'Jupiter', 'Mars', 'Sun', 'Venus', 'Mercury', 'Moon'];
-const DAY_RULER = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'];
 
 /**
  * Returns planetary hour number (1–24), hour ruler, and day ruler
@@ -128,40 +123,46 @@ function getPlanetaryHour(
 	nextRise: dayjs.Dayjs
 ) {
 	let isDay: boolean;
-	let segment: number;
+	let segmentMs: number;
 	let sinceMs: number;
 	let cycleDay: number;
 
 	if (localTime.isAfter(sunrise) && localTime.isBefore(sunset)) {
 		isDay = true;
-		segment = sunset.diff(sunrise) / 12;
+		segmentMs = sunset.diff(sunrise) / 12;
 		sinceMs = localTime.diff(sunrise);
-		cycleDay = localTime.day();
+		cycleDay = localTime.day(); // 0=Sunday … 6=Saturday
 	} else {
 		isDay = false;
 		if (localTime.isBefore(sunrise)) {
 			const prevSet = sunset.subtract(1, 'day');
-			segment = sunrise.diff(prevSet) / 12;
+			segmentMs = sunrise.diff(prevSet) / 12;
 			sinceMs = localTime.diff(prevSet);
 			cycleDay = sunrise.subtract(1, 'day').day();
 		} else {
-			segment = nextRise.diff(sunset) / 12;
+			segmentMs = nextRise.diff(sunset) / 12;
 			sinceMs = localTime.diff(sunset);
 			cycleDay = localTime.day();
 		}
 	}
 
-	const idx = Math.floor(sinceMs / segment); // 0–11
+	const idx = Math.floor(sinceMs / segmentMs); // 0–11
 	const hourNumber = isDay ? idx + 1 : idx + 13; // 1–24
 
-	const startIdx = CHALDEAN.indexOf(DAY_RULER[cycleDay]);
-	const planetIdx = (startIdx + (hourNumber - 1)) % CHALDEAN.length;
+	// 1) Compute the *original* day-ruler (Sun on Sunday, Moon on Monday, etc.)
+	//    by jumping 3 steps per weekday from Saturday (index 0).
+	const originalBaseIdx = ((cycleDay + 1) * 3) % CHALDEAN.length;
+	const originalDayRuler = CHALDEAN[originalBaseIdx];
 
-	return {
-		hourNumber,
-		hourRuler: CHALDEAN[planetIdx],
-		dayRuler: DAY_RULER[cycleDay]
-	};
+	// 2) For the “dayRuler” output, shift 2 steps back only if it's night
+	const dayRuler = isDay
+		? originalDayRuler
+		: CHALDEAN[(originalBaseIdx - 2 + CHALDEAN.length) % CHALDEAN.length];
+
+	// 3) But the hour-ruler always steps forward from the *original* day-ruler
+	const hourRuler = CHALDEAN[(originalBaseIdx + (hourNumber - 1)) % CHALDEAN.length];
+
+	return { hourNumber, hourRuler, dayRuler };
 }
 
 // ---------------
@@ -254,7 +255,8 @@ export async function POST({ request }) {
 		if (!tz) throw error(500, 'Could not determine timezone');
 
 		// UTC & Julian Day
-		const utcTime = dayjs.tz(`${date}T${time}`, tz).utc();
+		const localTime = dayjs.tz(`${date}T${time}`, tz);
+		const utcTime = localTime.utc();
 		const jd = sweph.utc_to_jd(
 			utcTime.year(),
 			utcTime.month() + 1,
@@ -272,11 +274,10 @@ export async function POST({ request }) {
 		const { sunrise, sunset } = getSunriseSunsetLocal(date, lat, lng, tz);
 		const tomorrow = dayjs.tz(`${date}T00:00:00`, tz).add(1, 'day').format('YYYY-MM-DD');
 		const { sunrise: nextSunrise } = getSunriseSunsetLocal(tomorrow, lat, lng, tz);
-		// Use isAfter/isBefore instead of isBetween plugin
-		const dayNight = utcTime.isAfter(sunrise) && utcTime.isBefore(sunset) ? 'day' : 'night';
+
+		const dayNight = localTime.isAfter(sunrise) && localTime.isBefore(sunset) ? 'day' : 'night';
 
 		// Planetary Hour
-		const localTime = dayjs.tz(`${date}T${time}`, tz);
 		const { hourNumber, hourRuler, dayRuler } = getPlanetaryHour(
 			localTime,
 			sunrise,
@@ -284,32 +285,8 @@ export async function POST({ request }) {
 			nextSunrise
 		);
 
-		// Planetary positions
-		const planetPositions: Record<string, any> = {};
-
-		for (const [planet, code] of Object.entries(PLANETS)) {
-			const result = sweph.calc_ut(jdUT, code, flags);
-
-			if (!result.error) {
-				let lon = result.data[0];
-				let speed = result.data[3];
-
-				if (planet === 'SouthNode') {
-					lon = getOppositeLongitude(lon);
-					speed = -speed;
-				}
-
-				const position = degreesToDms(lon);
-				const signInfo = getZodiacInfo(lon);
-
-				planetPositions[planet] = {
-					position,
-					retrograde: speed < 0,
-					signNumber: signInfo.signNumber,
-					signName: signInfo.signName
-				};
-			}
-		}
+		// Planetary positions: call  main ephemeris
+		const mainEph = computeEphAtJd(jdUT, lat, lng);
 
 		// Houses & Ascendant
 		const houseData = sweph.houses_ex2(jdUT, flags, lat, lng, 'B');
@@ -321,9 +298,6 @@ export async function POST({ request }) {
 			signNumber: ascSign.signNumber,
 			signName: ascSign.signName
 		};
-
-		// main ephemeris
-		const mainEph = computeEphAtJd(jdUT, lat, lng);
 
 		// prenatal syzygy
 		const { jd: jdSyzygy, isFull } = await findPrenatalSyzygy(jdUT);
