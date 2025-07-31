@@ -1,9 +1,7 @@
 <script lang="ts">
 	import BirthChart from '$lib/components/BirthChart.svelte';
-	import { syncChartToData } from '$lib/syncChartToData';
+	import { loadEphemeris } from '$lib/loadEphemeris';
 	import { chartData } from '$lib/chartData.svelte'; // persistent state
-
-	let ephemerisResult = $state(chartData.rawEphemeris);
 
 	function safePad(value: string, min: number, max: number, fallback = '00') {
 		const num = Number(value);
@@ -16,29 +14,21 @@
 		return Number.isNaN(num) || num < 0 ? '0000' : String(num).padStart(4, '0');
 	}
 
-	async function submitChart() {
+	async function handleSubmit() {
 		const meta = chartData.meta;
 		const date = `${safeYear(meta.year)}-${safePad(meta.month, 1, 12)}-${safePad(meta.day, 1, 31)}`;
 		const time = `${safePad(meta.hour, 0, 23)}:${safePad(meta.minute, 0, 59)}:${safePad(meta.second, 0, 59)}`;
 
 		try {
-			const res = await fetch('/api/ephemeris', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ date: date, time: time, city: meta.city, country: meta.country })
-			});
-			if (!res.ok) throw new Error(await res.text());
-
-			ephemerisResult = await res.json();
-			syncChartToData(ephemerisResult);
+			await loadEphemeris(date, time, meta.city, meta.country);
 		} catch (err) {
-			console.error('Error fetching chart:', err);
+			console.error('Error loading full chart:', err);
 		}
 	}
 </script>
 
 <div class="grid h-full gap-4 md:grid-cols-3">
-	<form class="bg-base-100 rounded-box p-4 shadow-sm" onsubmit={submitChart}>
+	<form class="bg-base-100 rounded-box p-4 shadow-sm" onsubmit={handleSubmit}>
 		<h2 class="text-xl font-bold">Dados do Mapa</h2>
 
 		<fieldset class="fieldset mt-4 flex space-x-2">
@@ -122,17 +112,17 @@
 		<button type="submit" class="btn btn-primary mt-4 w-full">Criar Mapa</button>
 	</form>
 
-	{#if ephemerisResult}
+	{#if chartData.rawEphemeris}
 		<div class="bg-base-100 rounded-box flex justify-center p-4 shadow-sm md:col-span-2">
 			<BirthChart
-				planetPositions={ephemerisResult.planetPositions}
-				ascendant={ephemerisResult.ascendant}
-				usedCoordinates={ephemerisResult.usedCoordinates}
-				usedTimezone={ephemerisResult.usedTimezone}
-				houses={ephemerisResult.houses}
-				dayNight={ephemerisResult.dayNight}
-				dayRuler={ephemerisResult.dayRuler}
-				hourRuler={ephemerisResult.hourRuler}
+				planetPositions={chartData.rawEphemeris.planetPositions}
+				ascendant={chartData.rawEphemeris.ascendant}
+				usedCoordinates={chartData.rawEphemeris.usedCoordinates}
+				usedTimezone={chartData.rawEphemeris.usedTimezone}
+				houses={chartData.rawEphemeris.houses}
+				dayNight={chartData.rawEphemeris.dayNight}
+				dayRuler={chartData.rawEphemeris.dayRuler}
+				hourRuler={chartData.rawEphemeris.hourRuler}
 			/>
 		</div>
 	{/if}

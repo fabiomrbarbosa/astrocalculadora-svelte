@@ -26,6 +26,12 @@ export type ChartData = {
 	results: Record<string, any>; // Loose typing for deep nesting
 	partFortuneDispositor: string;
 	partSubstanceDispositor: string;
+	syzygy?: {
+		label: string;
+		degrees: number;
+		minutes: number;
+		sign: string;
+	};
 	rawEphemeris?: {
 		planetPositions: Record<string, any>;
 		ascendant: any;
@@ -218,6 +224,14 @@ export let chartData: ChartData = $state({
 			planets: []
 		}
 	},
+
+	syzygy: {
+		label: '',
+		degrees: 0,
+		minutes: 0,
+		sign: 'aries'
+	},
+
 	get partFortuneDispositor() {
 		return signs[this.points.partFortune.sign]?.dignities.domicile;
 	},
@@ -245,8 +259,8 @@ export let chartData: ChartData = $state({
 		partChildren: '',
 		partFriends: '',
 		partEnemies: '',
-		partReligion: '',
+		partReligion: ''
+	},
 
-		rawEphemeris: null
-	}
+	rawEphemeris: null
 });

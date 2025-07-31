@@ -63,6 +63,39 @@ function getOppositeLongitude(deg: number) {
 	return (deg + 180) % 360;
 }
 
+// Direct ephemeris computation at given jdUT
+function computeEphAtJd(jdUT: number, lat: number, lng: number) {
+	const flags = sweph.constants.SEFLG_TROPICAL | sweph.constants.SEFLG_SPEED;
+	const planetPositions: Record<string, any> = {};
+
+	for (const [name, code] of Object.entries(PLANETS)) {
+		const result = sweph.calc_ut(jdUT, code, flags);
+		if (result.error) continue;
+		let lon = result.data[0];
+		let speed = result.data[3];
+		if (name === 'SouthNode') {
+			lon = getOppositeLongitude(lon);
+			speed = -speed;
+		}
+		planetPositions[name] = {
+			position: degreesToDms(lon),
+			retrograde: speed < 0,
+			...getZodiacInfo(lon)
+		};
+	}
+
+	const housesData = sweph.houses_ex2(jdUT, flags, lat, lng, 'B');
+	const ascLon = housesData.data.points[0];
+	const asc = degreesToDms(ascLon);
+	const ascInfo = getZodiacInfo(ascLon);
+
+	return {
+		planetPositions,
+		ascendant: { position: asc, ...ascInfo },
+		houses: housesData.data.houses
+	};
+}
+
 // ── Sunrise/Sunset helpers using `sunrise-sunset-js` ─────────────────────────
 /**
  * Returns local sunrise & sunset for isoDate (YYYY-MM-DD) at lat/lng in tz
@@ -129,6 +162,76 @@ function getPlanetaryHour(
 		hourRuler: CHALDEAN[planetIdx],
 		dayRuler: DAY_RULER[cycleDay]
 	};
+}
+
+// ---------------
+// SYZYGY HELPERS
+// ---------------
+
+// Meeus-based syzygy calculation
+// Calculate lunation index K (Meeus ch.49)
+function calcK(jd: number): number {
+	// approximate UTC date from JD
+	const dt = dayjs.utc((jd - 2440587.5) * 86400 * 1000);
+	const Y = dt.year();
+	const jdStartRes = sweph.utc_to_jd(Y, 1, 1, 0, 0, 0, sweph.constants.SE_GREG_CAL);
+	const jdStart = jdStartRes.data[1];
+	const daysInYear = jd - jdStart;
+	const yFrac = Y + daysInYear / 365.25;
+	return (yFrac - 1900) * 12.3685;
+}
+
+// Compute syzygy Julian Day for New (integer K) or Full (half-integer K)
+function calcSyzygyJD(K: number): number {
+	const T = K / 1236.85;
+	// Mean anomalies
+	const M = 359.2242 + 29.10535608 * K - 0.0000333 * Math.pow(T, 2) - 0.00000347 * Math.pow(T, 3);
+	const M1 = 306.0253 + 385.81691806 * K + 0.0107306 * Math.pow(T, 2) + 0.00001236 * Math.pow(T, 3);
+	const F = 21.2964 + 390.67050646 * K - 0.0016528 * Math.pow(T, 2) - 0.00000239 * Math.pow(T, 3);
+	// Periodic corrections
+	let corr = (0.1734 - 0.000393 * T) * Math.sin((M * Math.PI) / 180);
+	corr += 0.0021 * Math.sin((2 * M * Math.PI) / 180);
+	corr -= 0.4068 * Math.sin((M1 * Math.PI) / 180);
+	corr += 0.0161 * Math.sin((2 * M1 * Math.PI) / 180);
+	corr -= 0.0004 * Math.sin((3 * M1 * Math.PI) / 180);
+	corr += 0.0104 * Math.sin((2 * F * Math.PI) / 180);
+	corr -= 0.0051 * Math.sin(((M + M1) * Math.PI) / 180);
+	corr -= 0.0074 * Math.sin(((M - M1) * Math.PI) / 180);
+	corr += 0.0004 * Math.sin(((2 * F + M) * Math.PI) / 180);
+	corr -= 0.0004 * Math.sin(((2 * F - M) * Math.PI) / 180);
+	corr -= 0.0006 * Math.sin(((2 * F + M1) * Math.PI) / 180);
+	corr += 0.001 * Math.sin(((2 * F - M1) * Math.PI) / 180);
+	corr += 0.0005 * Math.sin(((M + 2 * M1) * Math.PI) / 180);
+	// Base epoch + synodic month
+	let JD =
+		2415020.75933 + 29.53058868 * K + 0.0001178 * Math.pow(T, 2) - 0.000000155 * Math.pow(T, 3);
+	JD += 0.00033 * Math.sin(((166.56 + 132.87 * T - 0.009173 * Math.pow(T, 2)) * Math.PI) / 180);
+	JD += corr;
+	return JD;
+}
+
+// Round K to nearest half
+function roundK(k: number): number {
+	if (k >= 0) {
+		const f = k - Math.floor(k);
+		return f >= 0.5 ? Math.floor(k) + 0.5 : Math.floor(k);
+	} else {
+		const c = Math.ceil(k);
+		const f = c - k;
+		return f >= 0.5 ? c + 0.5 : c;
+	}
+}
+
+// Find prenatal syzygy using Meeus formulas
+function findPrenatalSyzygy(jdBirth: number): { jd: number; isFull: boolean } {
+	const K0 = calcK(jdBirth);
+	const Kbase = roundK(K0);
+	const jdNew = calcSyzygyJD(Kbase);
+	const jdFull = calcSyzygyJD(Kbase + 0.5);
+	if (jdFull <= jdBirth && jdFull > jdNew) {
+		return { jd: jdFull, isFull: true };
+	}
+	return { jd: jdNew, isFull: false };
 }
 
 // ── API Handler ─────────────────────────────────────────────────────────────
@@ -219,17 +322,31 @@ export async function POST({ request }) {
 			signName: ascSign.signName
 		};
 
+		// main ephemeris
+		const mainEph = computeEphAtJd(jdUT, lat, lng);
+
+		// prenatal syzygy
+		const { jd: jdSyzygy, isFull } = await findPrenatalSyzygy(jdUT, lat, lng);
+		const syzEph = computeEphAtJd(jdSyzygy, lat, lng);
+		const moonLon = syzEph.planetPositions.Moon.position.longitude;
+		const dms = degreesToDms(moonLon);
+		const { signName } = getZodiacInfo(moonLon);
+
 		return json({
-			planetPositions,
-			ascendant,
-			houses: houseData.data.houses,
+			...mainEph,
 			dayNight: dayNight,
 			dayRuler: dayRuler.toLowerCase(),
 			hourRuler: hourRuler.toLowerCase(),
 			planetaryHour: hourNumber,
 			usedTimezone: tz,
 			usedCoordinates: { latitude: lat, longitude: lng },
-			utcTime: utcTime.format()
+			utcTime: utcTime.format(),
+			prenatalSyzygy: {
+				type: isFull ? 'Lua Cheia' : 'Lua Nova',
+				degrees: dms.degrees,
+				minutes: dms.minutes,
+				sign: signName
+			}
 		});
 	} catch (err: any) {
 		console.error('Error in /api/ephemeris:', err);

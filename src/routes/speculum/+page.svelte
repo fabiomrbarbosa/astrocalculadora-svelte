@@ -1,9 +1,7 @@
 <script lang="ts">
-	import { syncChartToData } from '$lib/syncChartToData';
-	import { chartData } from '$lib/chartData.svelte'; // persistent state
 	import SpeculumTable from '$lib/components/SpeculumTable.svelte';
-
-	let ephemerisResult = $state(chartData.rawEphemeris);
+	import { loadEphemeris } from '$lib/loadEphemeris';
+	import { chartData } from '$lib/chartData.svelte'; // persistent state
 
 	function safePad(value: string, min: number, max: number, fallback = '00') {
 		const num = Number(value);
@@ -16,29 +14,21 @@
 		return Number.isNaN(num) || num < 0 ? '0000' : String(num).padStart(4, '0');
 	}
 
-	async function submitChart() {
+	async function handleSubmit() {
 		const meta = chartData.meta;
 		const date = `${safeYear(meta.year)}-${safePad(meta.month, 1, 12)}-${safePad(meta.day, 1, 31)}`;
 		const time = `${safePad(meta.hour, 0, 23)}:${safePad(meta.minute, 0, 59)}:${safePad(meta.second, 0, 59)}`;
 
 		try {
-			const res = await fetch('/api/ephemeris', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ date: date, time: time, city: meta.city, country: meta.country })
-			});
-			if (!res.ok) throw new Error(await res.text());
-
-			ephemerisResult = await res.json();
-			syncChartToData(ephemerisResult);
+			await loadEphemeris(date, time, meta.city, meta.country);
 		} catch (err) {
-			console.error('Error fetching chart:', err);
+			console.error('Error loading full chart:', err);
 		}
 	}
 </script>
 
 <div class="grid h-full gap-4">
-	<form class="bg-base-100 rounded-box p-4 shadow-sm" onsubmit={submitChart}>
+	<form class="bg-base-100 rounded-box p-4 shadow-sm" onsubmit={handleSubmit}>
 		<h2 class="text-xl font-bold">Dados do Mapa</h2>
 
 		<div class="mt-4 grid items-stretch gap-4 lg:grid-cols-2">
@@ -123,11 +113,11 @@
 		<button type="submit" class="btn btn-primary mt-4 w-full">Preencher Speculum</button>
 	</form>
 
-	{#if ephemerisResult}
+	{#if chartData.rawEphemeris}
 		<SpeculumTable
-			planetPositions={ephemerisResult.planetPositions}
-			ascendant={ephemerisResult.ascendant}
-			houses={ephemerisResult.houses}
+			planetPositions={chartData.rawEphemeris.planetPositions}
+			ascendant={chartData.rawEphemeris.ascendant}
+			houses={chartData.rawEphemeris.houses}
 		/>
 	{/if}
 </div>

@@ -1,5 +1,4 @@
 import { chartData } from '$lib/chartData.svelte';
-import { calculateAll } from './calcs';
 import { signs } from './staticData';
 
 type PlanetPosition = {
@@ -24,6 +23,7 @@ type SyncChartInput = {
 	hourRuler?: string;
 	usedCoordinates?: Record<string, any>;
 	usedTimezone?: Record<string, any>;
+	prenatalSyzygy?: { type: string; degrees: number; minutes: number; sign: string };
 };
 
 function findSignKey(signName: string): keyof typeof signs {
@@ -31,17 +31,18 @@ function findSignKey(signName: string): keyof typeof signs {
 	return (norm in signs ? norm : 'aries') as keyof typeof signs;
 }
 
-export function syncChartToData(input: SyncChartInput) {
+export function syncEphToChartData(input: SyncChartInput) {
 	const {
 		planetPositions,
 		ascendant,
 		houses,
+		meta,
 		dayNight,
 		dayRuler,
 		hourRuler,
 		usedCoordinates,
 		usedTimezone,
-		meta
+		prenatalSyzygy
 	} = input;
 
 	// ——————————————————————————————
@@ -146,7 +147,19 @@ export function syncChartToData(input: SyncChartInput) {
 	}
 
 	// ————————————————————————————
-	// 6) Save raw ephemeris result
+	// 6) Syzygy point (if present)
+	// ————————————————————————————
+	if (prenatalSyzygy) {
+		chartData.points.syzygy = {
+			label: `Sizígia Pré-Natal (${prenatalSyzygy.type})`,
+			degrees: prenatalSyzygy.degrees,
+			minutes: prenatalSyzygy.minutes,
+			sign: prenatalSyzygy.sign
+		};
+	}
+
+	// ————————————————————————————
+	// 7) Save raw ephemeris result
 	// ————————————————————————————
 
 	chartData.rawEphemeris = {
@@ -159,9 +172,4 @@ export function syncChartToData(input: SyncChartInput) {
 		usedCoordinates: usedCoordinates!,
 		usedTimezone: usedTimezone!
 	};
-
-	// ——————————————————————
-	// 7) Re‐run every calculation
-	// ——————————————————————
-	calculateAll();
 }

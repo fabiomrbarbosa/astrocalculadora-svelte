@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { chartData } from '$lib/chartData.svelte';
 	import { signs as signData } from '$lib/staticData';
 
 	let { houses, planetPositions, ascendant } = $props();

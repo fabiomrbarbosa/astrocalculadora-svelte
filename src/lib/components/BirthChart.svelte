@@ -1,7 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { chartData } from '$lib/chartData.svelte';
-
 	type Glyph = { name: string; glyph: string };
 
 	export const signs: Glyph[] = [
@@ -34,8 +31,6 @@
 	];
 
 	const planetMap = Object.fromEntries(planets.map((p) => [p.name, p.glyph]));
-
-	let svgRef: SVGSVGElement | null = null;
 
 	let {
 		houses,
@@ -129,7 +124,6 @@
 </script>
 
 <svg
-	bind:this={svgRef}
 	class="color-base-content"
 	viewBox={`0 0 ${size} ${size}`}
 	preserveAspectRatio="xMidYMid meet"
