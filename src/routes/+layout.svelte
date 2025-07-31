@@ -23,14 +23,14 @@
 
 	// Implement data persistence via localStorage
 	$effect(() => {
-		const savedChartData = localStorage.getItem('chartData');
+		const savedChartData = localStorage.getItem('chartData_v2');
 		if (savedChartData) {
 			Object.assign(chartData, JSON.parse(savedChartData));
 		}
 	});
 
 	$effect(() => {
-		localStorage.setItem('chartData', JSON.stringify(chartData));
+		localStorage.setItem('chartData_v2', JSON.stringify(chartData));
 	});
 </script>
 
