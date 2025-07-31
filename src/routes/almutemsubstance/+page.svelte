@@ -34,7 +34,9 @@
 					<tr>
 						<th>Significadores</th>
 						{#each planetKeys as planetKey}
-							<th class="text-lg">{chartData.planets[planetKey].icon}</th>
+							<th class="font-astronomicon text-lg"
+								>{chartData.planets[planetKey].iconReplacement}</th
+							>
 						{/each}
 					</tr>
 				</thead>

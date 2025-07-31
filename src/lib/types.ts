@@ -12,6 +12,7 @@ export interface Sign {
 	value: string;
 	label: string;
 	icon: string;
+	iconReplacement: string;
 	degrees: number;
 	dignities: Dignities;
 }

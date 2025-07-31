@@ -23,7 +23,7 @@
 		<!-- Positions per House -->
 		<fieldset class="fieldset">
 			<legend class="fieldset-legend">Posições por Casa</legend>
-			<div class="flex flex-col gap-2 md:flex-row">
+			<div class="flex flex-col gap-2 lg:flex-row">
 				{#each Object.entries(chartData.planets) as [planet]}
 					<div class="house-field w-full">
 						<label class="select w-full">
@@ -74,7 +74,9 @@
 					<tr>
 						<th>Pontos Hilégicos</th>
 						{#each planetKeys as planetKey}
-							<th class="text-lg">{chartData.planets[planetKey].icon}</th>
+							<th class="font-astronomicon text-lg">
+								{chartData.planets[planetKey].iconReplacement}
+							</th>
 						{/each}
 					</tr>
 				</thead>

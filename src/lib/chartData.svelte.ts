@@ -70,6 +70,7 @@ export let chartData: ChartData = $state({
 		moon: {
 			label: 'Lua',
 			icon: '☽',
+			iconReplacement: 'R',
 			degrees: 0,
 			minutes: 0,
 			sign: 'aries',
@@ -79,6 +80,7 @@ export let chartData: ChartData = $state({
 		mercury: {
 			label: 'Mercúrio',
 			icon: '☿',
+			iconReplacement: 'S',
 			degrees: 0,
 			minutes: 0,
 			sign: 'aries',
@@ -89,6 +91,7 @@ export let chartData: ChartData = $state({
 		venus: {
 			label: 'Vénus',
 			icon: '♀',
+			iconReplacement: 'T',
 			degrees: 0,
 			minutes: 0,
 			sign: 'aries',
@@ -99,6 +102,7 @@ export let chartData: ChartData = $state({
 		sun: {
 			label: 'Sol',
 			icon: '☉',
+			iconReplacement: 'Q',
 			degrees: 0,
 			minutes: 0,
 			sign: 'aries',
@@ -108,6 +112,7 @@ export let chartData: ChartData = $state({
 		mars: {
 			label: 'Marte',
 			icon: '♂',
+			iconReplacement: 'U',
 			degrees: 0,
 			minutes: 0,
 			sign: 'aries',
@@ -118,6 +123,7 @@ export let chartData: ChartData = $state({
 		jupiter: {
 			label: 'Júpiter',
 			icon: '♃',
+			iconReplacement: 'V',
 			degrees: 0,
 			minutes: 0,
 			sign: 'aries',
@@ -128,6 +134,7 @@ export let chartData: ChartData = $state({
 		saturn: {
 			label: 'Saturno',
 			icon: '♄',
+			iconReplacement: 'W',
 			degrees: 0,
 			minutes: 0,
 			sign: 'aries',

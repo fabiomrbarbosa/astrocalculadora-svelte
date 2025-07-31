@@ -4,6 +4,7 @@ export const signs: Signs = {
 		value: 'Aries',
 		label: 'Carneiro',
 		icon: '♈︎',
+		iconReplacement: 'A',
 		degrees: 0,
 		dignities: {
 			domicile: 'mars',
@@ -23,6 +24,7 @@ export const signs: Signs = {
 		value: 'Taurus',
 		label: 'Touro',
 		icon: '♉︎',
+		iconReplacement: 'B',
 		degrees: 30,
 		dignities: {
 			domicile: 'venus',
@@ -42,6 +44,7 @@ export const signs: Signs = {
 		value: 'Gemini',
 		label: 'Gémeos',
 		icon: '♊︎',
+		iconReplacement: 'C',
 		degrees: 60,
 		dignities: {
 			domicile: 'mercury',
@@ -65,6 +68,7 @@ export const signs: Signs = {
 		value: 'Cancer',
 		label: 'Caranguejo',
 		icon: '♋︎',
+		iconReplacement: 'D',
 		degrees: 90,
 		dignities: {
 			domicile: 'moon',
@@ -88,6 +92,7 @@ export const signs: Signs = {
 		value: 'Leo',
 		label: 'Leão',
 		icon: '♌︎',
+		iconReplacement: 'E',
 		degrees: 120,
 		dignities: {
 			domicile: 'sun',
@@ -111,6 +116,7 @@ export const signs: Signs = {
 		value: 'Virgo',
 		label: 'Virgem',
 		icon: '♍︎',
+		iconReplacement: 'F',
 		degrees: 150,
 		dignities: {
 			domicile: 'mercury',
@@ -134,6 +140,7 @@ export const signs: Signs = {
 		value: 'Libra',
 		label: 'Balança',
 		icon: '♎︎',
+		iconReplacement: 'G',
 		degrees: 180,
 		dignities: {
 			domicile: 'venus',
@@ -157,6 +164,7 @@ export const signs: Signs = {
 		value: 'Scorpio',
 		label: 'Escorpião',
 		icon: '♏︎',
+		iconReplacement: 'H',
 		degrees: 210,
 		dignities: {
 			domicile: 'mars',
@@ -180,6 +188,7 @@ export const signs: Signs = {
 		value: 'Sagittarius',
 		label: 'Sagitário',
 		icon: '♐︎',
+		iconReplacement: 'I',
 		degrees: 240,
 		dignities: {
 			domicile: 'jupiter',
@@ -203,6 +212,7 @@ export const signs: Signs = {
 		value: 'Capricorn',
 		label: 'Capricórnio',
 		icon: '♑︎',
+		iconReplacement: 'J',
 		degrees: 270,
 		dignities: {
 			domicile: 'saturn',
@@ -226,6 +236,7 @@ export const signs: Signs = {
 		value: 'Aquarius',
 		label: 'Aquário',
 		icon: '♒︎',
+		iconReplacement: 'K',
 		degrees: 300,
 		dignities: {
 			domicile: 'saturn',
@@ -249,6 +260,7 @@ export const signs: Signs = {
 		value: 'Pisces',
 		label: 'Peixes',
 		icon: '♓︎',
+		iconReplacement: 'L',
 		degrees: 330,
 		dignities: {
 			domicile: 'jupiter',
