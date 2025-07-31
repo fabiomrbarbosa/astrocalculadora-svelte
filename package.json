@@ -1,7 +1,7 @@
 {
 	"name": "astrocalculadora-svelte",
 	"private": true,
-	"version": "0.2.4",
+	"version": "0.2.5",
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
@@ -20,6 +20,7 @@
 		"@sveltejs/vite-plugin-svelte": "^5.1.0",
 		"@tailwindcss/vite": "^4.1.11",
 		"@types/node": "^24.0.14",
+		"@types/suncalc": "^1.9.2",
 		"prettier": "^3.6.2",
 		"prettier-plugin-svelte": "^3.4.0",
 		"prettier-plugin-tailwindcss": "^0.6.14",
