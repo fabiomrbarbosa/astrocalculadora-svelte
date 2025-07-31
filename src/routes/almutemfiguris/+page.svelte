@@ -74,7 +74,7 @@
 					<tr>
 						<th>Pontos Hilégicos</th>
 						{#each planetKeys as planetKey}
-							<th>{chartData.planets[planetKey].icon}</th>
+							<th class="text-lg">{chartData.planets[planetKey].icon}</th>
 						{/each}
 					</tr>
 				</thead>
