@@ -326,7 +326,7 @@ export async function POST({ request }) {
 		const mainEph = computeEphAtJd(jdUT, lat, lng);
 
 		// prenatal syzygy
-		const { jd: jdSyzygy, isFull } = await findPrenatalSyzygy(jdUT, lat, lng);
+		const { jd: jdSyzygy, isFull } = await findPrenatalSyzygy(jdUT);
 		const syzEph = computeEphAtJd(jdSyzygy, lat, lng);
 		const moonLon = syzEph.planetPositions.Moon.position.longitude;
 		const dms = degreesToDms(moonLon);
