@@ -27,8 +27,8 @@ const PLANETS = {
 	Mars: sweph.constants.SE_MARS,
 	Jupiter: sweph.constants.SE_JUPITER,
 	Saturn: sweph.constants.SE_SATURN,
-	NorthNode: sweph.constants.SE_MEAN_NODE,
-	SouthNode: sweph.constants.SE_MEAN_NODE
+	NorthNode: sweph.constants.SE_TRUE_NODE,
+	SouthNode: sweph.constants.SE_TRUE_NODE
 };
 const SIGNS = [
 	'aries',
