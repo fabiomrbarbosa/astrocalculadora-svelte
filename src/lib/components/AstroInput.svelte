@@ -68,11 +68,7 @@
 				</div>
 				<div class="flex gap-2 md:flex-row">
 					<PlanetInput keyName={planetKey} data={chartData.planets[planetKey]} />
-					<button
-						type="button"
-						class="submit submit--danger w-full"
-						onclick={() => data.splice(index, 1)}
-					>
+					<button type="button" class="submit--danger w-full" onclick={() => data.splice(index, 1)}>
 						✕
 					</button>
 				</div>
