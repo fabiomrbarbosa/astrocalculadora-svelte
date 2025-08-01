@@ -184,19 +184,21 @@
 		</text>
 	{/each}
 
-	<!-- Degree Ticks -->
-	{#each degreeTicks as tick}
-		{@const inner = polarToCartesian(center, center, tick.startRadius, tick.angle)}
-		{@const outer = polarToCartesian(center, center, tick.endRadius, tick.angle)}
+	<!-- Degree Ticks (without overlapping the sign dividers) -->
+	{#each degreeTicks as tick, i}
+		{#if i !== 0 && i % 30 !== 0}
+			{@const inner = polarToCartesian(center, center, tick.startRadius, tick.angle)}
+			{@const outer = polarToCartesian(center, center, tick.endRadius, tick.angle)}
 
-		<line
-			class="chart-degree-tick stroke-current"
-			x1={inner.x}
-			y1={inner.y}
-			x2={outer.x}
-			y2={outer.y}
-			stroke-width="0.5"
-		/>
+			<line
+				class="chart-degree-tick stroke-current"
+				x1={inner.x}
+				y1={inner.y}
+				x2={outer.x}
+				y2={outer.y}
+				stroke-width="0.5"
+			/>
+		{/if}
 	{/each}
 
 	<!-- House Cusp Label Ring -->
