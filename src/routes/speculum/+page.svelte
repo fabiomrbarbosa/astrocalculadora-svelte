@@ -1,7 +1,7 @@
 <script lang="ts">
 	import SpeculumTable from '$lib/components/SpeculumTable.svelte';
-	import { loadEphemeris } from '$lib/loadEphemeris';
 	import { chartData } from '$lib/chartData.svelte'; // persistent state
+	import { loadEphemeris } from '$lib/utils';
 
 	function safePad(value: string, min: number, max: number, fallback = '00') {
 		const num = Number(value);
