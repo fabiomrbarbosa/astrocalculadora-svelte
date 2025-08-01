@@ -25,7 +25,7 @@ COPY --from=builder /app/node_modules node_modules/
 COPY package.json .
 
 # copy the ephemeris data into the runtime image
-COPY --from=builder /app/src/lib/vendor/ephemeris src/lib/vendor/ephemeris/
+COPY --from=builder /app/src/lib/server/ephemeris src/lib/server/ephemeris/
 
 EXPOSE 3000
 ENV NODE_ENV=production
