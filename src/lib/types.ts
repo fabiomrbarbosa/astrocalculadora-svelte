@@ -48,3 +48,28 @@ export interface ResourceSignifier {
 
 /** List of Resource Signifiers */
 export type ResourceSignifiers = Record<string, ResourceSignifier>;
+
+export type PlanetPosition = {
+	position: { degrees: number; minutes: number; longitude: number };
+	signName: string;
+	retrograde: boolean;
+	longitude: number;
+};
+
+export type Ascendant = {
+	position: { degrees: number; minutes: number };
+	signName: string;
+};
+
+export type SyncChartInput = {
+	planetPositions: Record<string, PlanetPosition>;
+	ascendant: Ascendant;
+	houses: number[]; // 12 cusp longitudes in absolute degrees [0–360)
+	meta?: Record<string, any>;
+	dayNight?: 'day' | 'night';
+	dayRuler?: string;
+	hourRuler?: string;
+	usedCoordinates?: Record<string, any>;
+	usedTimezone?: Record<string, any>;
+	prenatalSyzygy?: { type: string; degrees: number; minutes: number; sign: string };
+};

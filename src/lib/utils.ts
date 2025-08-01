@@ -1,6 +1,7 @@
 import { calculateAll } from './calcs';
 import { chartData } from './chartData.svelte';
 import { signs } from './staticData';
+import type { SyncChartInput } from './types';
 
 /** Type Definitions */
 type PlanetKey = keyof typeof chartData.planets;
@@ -140,31 +141,6 @@ export function getHouseScore(house: number): number {
 	return houseScores[house] || 0;
 }
 
-type PlanetPosition = {
-	position: { degrees: number; minutes: number; longitude: number };
-	signName: string;
-	retrograde: boolean;
-	longitude: number;
-};
-
-type Ascendant = {
-	position: { degrees: number; minutes: number };
-	signName: string;
-};
-
-type SyncChartInput = {
-	planetPositions: Record<string, PlanetPosition>;
-	ascendant: Ascendant;
-	houses: number[]; // 12 cusp longitudes in absolute degrees [0–360)
-	meta?: Record<string, any>;
-	dayNight?: 'day' | 'night';
-	dayRuler?: string;
-	hourRuler?: string;
-	usedCoordinates?: Record<string, any>;
-	usedTimezone?: Record<string, any>;
-	prenatalSyzygy?: { type: string; degrees: number; minutes: number; sign: string };
-};
-
 function findSignKey(signName: string): keyof typeof signs {
 	const norm = signName.trim().toLowerCase();
 	return (norm in signs ? norm : 'aries') as keyof typeof signs;
@@ -187,7 +163,6 @@ export async function loadEphemeris(date: string, time: string, city: string, co
 	chartData.meta.city = city;
 	chartData.meta.country = country;
 	syncEphToChartData(eph);
-	chartData.rawEphemeris = eph;
 
 	// 3) final recalculation (includes syzygy in aspects, tables, etc.)
 	calculateAll();
