@@ -43,7 +43,7 @@
 		hourRuler,
 		usedCoordinates,
 		usedTimezone,
-		labelOffsetStep = 3, // degrees to push each additional clustered planet
+		labelOffsetStep = 4, // degrees to push each additional clustered planet
 		clusterSpacingThreshold = 5 // max° gap to consider “clustered”
 	} = $props();
 
