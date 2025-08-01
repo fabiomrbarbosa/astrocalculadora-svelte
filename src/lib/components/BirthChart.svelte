@@ -1,4 +1,5 @@
 <script lang="ts">
+	//–– Glyph definitions
 	type Glyph = { name: string; glyph: string };
 
 	export const signs: Glyph[] = [
@@ -32,6 +33,7 @@
 
 	const planetMap = Object.fromEntries(planets.map((p) => [p.name, p.glyph]));
 
+	//–– Props (including our two new tuning knobs)
 	let {
 		houses,
 		planetPositions,
@@ -40,11 +42,15 @@
 		dayRuler,
 		hourRuler,
 		usedCoordinates,
-		usedTimezone
+		usedTimezone,
+		labelOffsetStep = 3, // degrees to push each additional clustered planet
+		clusterSpacingThreshold = 5 // max° gap to consider “clustered”
 	} = $props();
 
+	//–– Geometry constants
 	const size = 600;
 	const center = size / 2;
+
 	const outerRadius = center - 20;
 	const zodiacOuter = outerRadius;
 	const zodiacInner = zodiacOuter - 30;
@@ -60,14 +66,11 @@
 	const houseNumberRadius = clearRadiusInner + 20;
 	const houseNumbers = Array.from({ length: 12 }, (_, i) => (i + 1).toString());
 
+	//–– Helpers
 	function midpointAngle(a: number, b: number): number {
 		const diff = ((b - a + 360) % 360) / 2;
 		return (a + diff) % 360;
 	}
-
-	let rotationOffset = $derived(
-		ascendant?.position?.longitude != null ? (0 - ascendant.position.longitude + 360) % 360 : 0
-	);
 
 	function polarToCartesian(cx: number, cy: number, r: number, angle: number) {
 		const rad = (180 - angle) * (Math.PI / 180);
@@ -77,28 +80,28 @@
 		};
 	}
 
+	//–– Base rotation so ascendant is at 0°
+	let rotationOffset = $derived(
+		ascendant?.position?.longitude != null ? (0 - ascendant.position.longitude + 360) % 360 : 0
+	);
+
+	//–– Zodiac markers, degree ticks, house‐cusp labels (unchanged) …
 	const zodiacMarkers = $derived(
 		signs.map((sign, i) => {
 			const start = (i * 30 + rotationOffset) % 360;
-			return {
-				start,
-				mid: (start + 15) % 360,
-				glyph: sign.glyph,
-				name: sign.name
-			};
+			return { start, mid: (start + 15) % 360, glyph: sign.glyph, name: sign.name };
 		})
 	);
 
 	const degreeTicks = $derived(
-		zodiacMarkers.flatMap(({ start }, signIndex) =>
+		zodiacMarkers.flatMap(({ start }) =>
 			Array.from({ length: 30 }, (_, i) => {
 				const absoluteDegree = (start + i) % 360;
 				const isLong = i % 10 === 0;
-				const tickLength = isLong ? 10 : 5;
 				return {
 					angle: absoluteDegree,
 					startRadius: zodiacInner,
-					endRadius: zodiacInner + tickLength
+					endRadius: zodiacInner + (isLong ? 10 : 5)
 				};
 			})
 		)
@@ -110,7 +113,6 @@
 			const degrees = Math.floor(cusp % 30);
 			const minutes = Math.floor(((cusp % 30) - degrees) * 60);
 			const signIndex = Math.floor(cusp / 30) % 12;
-
 			return {
 				angle,
 				degrees: `${degrees}°`,
@@ -121,6 +123,49 @@
 			};
 		})
 	);
+
+	//–– NEW: compute a bumped‐angle for each planet label to avoid overlap
+	const adjustedPlanetAngles = $derived.by(() => {
+		// 1. build list of actual longitudes
+		const list = Object.entries(planetPositions)
+			.filter(([, pt]) => pt.position)
+			.map(([name, pt]) => ({
+				name,
+				orig: (pt.position.longitude + rotationOffset) % 360
+			}));
+
+		// 2. sort ascending
+		list.sort((a, b) => a.orig - b.orig);
+
+		// 3. handle wrap‐around cluster at 360°→0°
+		if (list.length) {
+			const first = list[0].orig;
+			const last = list[list.length - 1].orig;
+			if (first + 360 - last < clusterSpacingThreshold) {
+				list[0].orig += 360;
+				list.sort((a, b) => a.orig - b.orig);
+			}
+		}
+
+		// 4. walk and bump tightly spaced neighbors
+		const result: Record<string, number> = {};
+		let prevOrig: number | null = null;
+		let clusterCount = 0;
+
+		for (const { name, orig } of list) {
+			if (prevOrig !== null && orig - prevOrig < clusterSpacingThreshold) {
+				clusterCount += 1;
+			} else {
+				clusterCount = 0;
+			}
+			const bumped = orig + clusterCount * labelOffsetStep;
+			// mod back into [0,360)
+			result[name] = ((bumped % 360) + 360) % 360;
+			prevOrig = orig;
+		}
+
+		return result;
+	});
 </script>
 
 <svg
@@ -129,9 +174,8 @@
 	preserveAspectRatio="xMidYMid meet"
 	style="width: 100%; height: auto; display: block;"
 >
-	<!-- Zodiac Ring Label Belt -->
+	<!-- Zodiac outer/inner rings -->
 	<circle
-		id="chart-outer-border"
 		cx={center}
 		cy={center}
 		r={zodiacOuter + 4}
@@ -139,7 +183,6 @@
 		stroke-width="0.5"
 	/>
 	<circle
-		id="chart-zodiac-outer"
 		cx={center}
 		cy={center}
 		r={zodiacOuter}
@@ -147,7 +190,6 @@
 		stroke-width="0.5"
 	/>
 	<circle
-		id="chart-zodiac-inner"
 		cx={center}
 		cy={center}
 		r={zodiacInner}
@@ -155,7 +197,7 @@
 		stroke-width="0.5"
 	/>
 
-	<!-- Sign Division Lines -->
+	<!-- Sign dividers & glyphs -->
 	{#each zodiacMarkers as marker}
 		{@const outer = polarToCartesian(center, center, zodiacOuter, marker.start)}
 		{@const inner = polarToCartesian(center, center, zodiacInner, marker.start)}
@@ -169,7 +211,6 @@
 		/>
 	{/each}
 
-	<!-- Sign Glyphs -->
 	{#each zodiacMarkers as marker}
 		{@const mid = polarToCartesian(center, center, (zodiacOuter + zodiacInner) / 2, marker.mid)}
 		<text
@@ -184,79 +225,65 @@
 		</text>
 	{/each}
 
-	<!-- Degree Ticks (without overlapping the sign dividers) -->
+	<!-- Degree ticks -->
 	{#each degreeTicks as tick, i}
-		{#if i !== 0 && i % 30 !== 0}
+		{#if i % 30 !== 0}
 			{@const inner = polarToCartesian(center, center, tick.startRadius, tick.angle)}
 			{@const outer = polarToCartesian(center, center, tick.endRadius, tick.angle)}
-
 			<line
-				class="chart-degree-tick stroke-current"
 				x1={inner.x}
 				y1={inner.y}
 				x2={outer.x}
 				y2={outer.y}
+				class="chart-degree-tick stroke-current"
 				stroke-width="0.5"
 			/>
 		{/if}
 	{/each}
 
-	<!-- House Cusp Label Ring -->
+	<!-- House cusp labels -->
 	<circle
-		id="chart-houselabel-outer"
 		cx={center}
 		cy={center}
 		r={houseCuspLabelRadiusOuter}
 		class="fill-none stroke-current"
 		stroke-width="0.5"
 	/>
-
 	{#each houseCuspLabels as cusp}
-		{@const baseRadius = houseCuspLabelRadius}
-		{@const angleOffset = 4}
-		{@const angle = cusp.angle}
-		{@const reversed = cusp.index >= 6}
-		<!-- Houses 7–12 (indexes 6–11) -->
+		{@const base = houseCuspLabelRadius}
+		{@const off = 4}
+		{@const rev = cusp.index >= 6}
+		{@const angDeg = rev ? cusp.angle + off : cusp.angle - off}
+		{@const angSign = cusp.angle}
+		{@const angMin = rev ? cusp.angle - off : cusp.angle + off}
+		{@const posDeg = polarToCartesian(center, center, base, angDeg)}
+		{@const posSign = polarToCartesian(center, center, base, angSign)}
+		{@const posMin = polarToCartesian(center, center, base, angMin)}
 
-		<!-- Calculate angles conditionally -->
-		{@const degreesAngle = reversed ? angle + angleOffset : angle - angleOffset}
-		{@const signAngle = angle}
-		{@const minutesAngle = reversed ? angle - angleOffset : angle + angleOffset}
-
-		<!-- Positions along the ring -->
-		{@const degreesPos = polarToCartesian(center, center, baseRadius, degreesAngle)}
-		{@const signPos = polarToCartesian(center, center, baseRadius, signAngle)}
-		{@const minutesPos = polarToCartesian(center, center, baseRadius, minutesAngle)}
-
-		<!-- Degrees -->
 		<text
 			class="fill-current"
-			x={degreesPos.x}
-			y={degreesPos.y}
+			x={posDeg.x}
+			y={posDeg.y}
 			font-size="10"
 			text-anchor="middle"
 			dominant-baseline="central"
 		>
 			{cusp.degrees}
 		</text>
-
-		<!-- Sign Glyph -->
 		<text
 			class="font-astronomicon fill-current"
-			x={signPos.x}
-			y={signPos.y}
+			x={posSign.x}
+			y={posSign.y}
 			font-size="14"
 			text-anchor="middle"
 			dominant-baseline="central"
 		>
 			{cusp.sign}
 		</text>
-
-		<!-- Minutes -->
 		<text
 			class="fill-current"
-			x={minutesPos.x}
-			y={minutesPos.y}
+			x={posMin.x}
+			y={posMin.y}
 			font-size="10"
 			text-anchor="middle"
 			dominant-baseline="central"
@@ -265,86 +292,60 @@
 		</text>
 	{/each}
 
-	<!-- Planet Ring Boundary -->
+	<!-- Planet ring & house cusp lines -->
 	<circle
-		id="chart-planetspoints-outer"
 		cx={center}
 		cy={center}
 		r={planetRingOuter}
 		class="fill-none stroke-current"
 		stroke-width="0.5"
 	/>
-
-	<!-- House Cusps -->
 	{#each houses as cusp, i}
-		{@const angle = (cusp + rotationOffset) % 360}
-		{@const pos = polarToCartesian(center, center, planetRingInner + 30, angle)}
-		{@const inner = polarToCartesian(center, center, clearRadiusInner, angle)}
-
+		{@const a = (cusp + rotationOffset) % 360}
+		{@const pInner = polarToCartesian(center, center, clearRadiusInner, a)}
+		{@const pOuter = polarToCartesian(center, center, planetRingInner + 30, a)}
 		<line
-			x1={inner.x}
-			y1={inner.y}
-			x2={pos.x}
-			y2={pos.y}
+			x1={pInner.x}
+			y1={pInner.y}
+			x2={pOuter.x}
+			y2={pOuter.y}
 			class="stroke-current"
-			stroke-width={i === 0 || i === 3 || i === 6 || i === 9 ? 2.5 : 0.5}
+			stroke-width={i % 3 === 0 ? 2.5 : 0.5}
 		/>
 	{/each}
 
-	<!-- Planet Points -->
+	<!-- Planet points & labels -->
 	{#each Object.entries(planetPositions) as [name, point]}
 		{#if point.position}
 			{@const angle = (point.position.longitude + rotationOffset) % 360}
+			{@const labelAngle = adjustedPlanetAngles[name]}
 
-			<!-- Ticks -->
-			{@const tickOuterStart = polarToCartesian(center, center, planetRingOuter, angle)}
-			{@const tickOuterEnd = polarToCartesian(center, center, planetRingOuter - 6, angle)}
-			{@const tickInnerStart = polarToCartesian(center, center, houseNumberRadius, angle)}
-			{@const tickInnerEnd = polarToCartesian(center, center, houseNumberRadius + 6, angle)}
+			<!-- Outer tick -->
+			{@const o1 = polarToCartesian(center, center, planetRingOuter, angle)}
+			{@const o2 = polarToCartesian(center, center, planetRingOuter - 6, angle)}
+			<line x1={o1.x} y1={o1.y} x2={o2.x} y2={o2.y} class="stroke-current" stroke-width="0.5" />
 
-			<!-- Outer Tick -->
-			<line
-				x1={tickOuterStart.x}
-				y1={tickOuterStart.y}
-				x2={tickOuterEnd.x}
-				y2={tickOuterEnd.y}
-				class="stroke-current"
-				stroke-width="0.5"
-			/>
+			<!-- Inner tick -->
+			{@const i1 = polarToCartesian(center, center, houseNumberRadius, angle)}
+			{@const i2 = polarToCartesian(center, center, houseNumberRadius + 6, angle)}
+			<line x1={i1.x} y1={i1.y} x2={i2.x} y2={i2.y} class="stroke-current" stroke-width="0.5" />
 
-			<!-- Inner Tick -->
-			<line
-				x1={tickInnerStart.x}
-				y1={tickInnerStart.y}
-				x2={tickInnerEnd.x}
-				y2={tickInnerEnd.y}
-				class="stroke-current"
-				stroke-width="0.5"
-			/>
-
-			<!-- Radial staggering parameters -->
+			<!-- Radial staggering -->
 			{@const glyphRadius = planetRingOuter - 20}
-			<!-- closer to outer ring -->
 			{@const radialStep = 16}
-			<!-- spacing between sub-elements -->
 
-			<!-- Positions calculated radially -->
-			{@const glyphPos = polarToCartesian(center, center, glyphRadius, angle)}
-			{@const degreesPos = polarToCartesian(center, center, glyphRadius - radialStep * 1.35, angle)}
-			{@const signPos = polarToCartesian(center, center, glyphRadius - radialStep * 2.45, angle)}
-			{@const minutesPos = polarToCartesian(center, center, glyphRadius - radialStep * 3.5, angle)}
-			{@const retrogradePos = polarToCartesian(
-				center,
-				center,
-				glyphRadius - radialStep * 4.5,
-				angle
-			)}
+			<!-- Label placements at bumped angle -->
+			{@const gp = polarToCartesian(center, center, glyphRadius, labelAngle)}
+			{@const dp = polarToCartesian(center, center, glyphRadius - radialStep * 1.35, labelAngle)}
+			{@const sp = polarToCartesian(center, center, glyphRadius - radialStep * 2.45, labelAngle)}
+			{@const mp = polarToCartesian(center, center, glyphRadius - radialStep * 3.5, labelAngle)}
+			{@const rp = polarToCartesian(center, center, glyphRadius - radialStep * 4.5, labelAngle)}
 
-			<!-- Planet Glyph -->
+			<!-- Planet glyph -->
 			<text
 				class="font-astronomicon fill-current birth-chart__{name.toLowerCase()}"
-				x={glyphPos.x}
-				y={glyphPos.y}
+				x={gp.x}
+				y={gp.y}
 				font-size="24"
 				text-anchor="middle"
 				dominant-baseline="central"
@@ -355,8 +356,8 @@
 			<!-- Degrees -->
 			<text
 				class="fill-current"
-				x={degreesPos.x}
-				y={degreesPos.y}
+				x={dp.x}
+				y={dp.y}
 				font-size="12"
 				text-anchor="middle"
 				dominant-baseline="central"
@@ -364,11 +365,11 @@
 				{point.position.degrees}°
 			</text>
 
-			<!-- Sign Glyph -->
+			<!-- Sign glyph -->
 			<text
 				class="font-astronomicon fill-current"
-				x={signPos.x}
-				y={signPos.y}
+				x={sp.x}
+				y={sp.y}
 				font-size="16"
 				text-anchor="middle"
 				dominant-baseline="central"
@@ -379,8 +380,8 @@
 			<!-- Minutes -->
 			<text
 				class="fill-current"
-				x={minutesPos.x}
-				y={minutesPos.y}
+				x={mp.x}
+				y={mp.y}
 				font-size="10"
 				text-anchor="middle"
 				dominant-baseline="central"
@@ -388,12 +389,12 @@
 				{point.position.minutes.toString().padStart(2, '0')}'
 			</text>
 
-			<!-- Retrograde -->
+			<!-- Retrograde marker -->
 			{#if point.retrograde}
 				<text
 					class="fill-current"
-					x={retrogradePos.x}
-					y={retrogradePos.y}
+					x={rp.x}
+					y={rp.y}
 					font-size="10"
 					text-anchor="middle"
 					dominant-baseline="central"
@@ -404,22 +405,18 @@
 		{/if}
 	{/each}
 
-	<!-- House Number Ring -->
+	<!-- House numbers -->
 	<circle
-		id="chart-housenumber-outer"
 		cx={center}
 		cy={center}
 		r={houseNumberRadius}
 		class="fill-none stroke-current"
 		stroke-width="0.5"
 	/>
-
-	<!-- House Numbers -->
 	{#each houses as cusp, i}
-		{@const nextCusp = houses[(i + 1) % 12]}
-		{@const angle = (midpointAngle(cusp, nextCusp) + rotationOffset) % 360}
-		{@const pos = polarToCartesian(center, center, houseNumberRadius - 10, angle)}
-
+		{@const next = houses[(i + 1) % 12]}
+		{@const ang = (midpointAngle(cusp, next) + rotationOffset) % 360}
+		{@const pos = polarToCartesian(center, center, houseNumberRadius - 10, ang)}
 		<text
 			class="fill-current"
 			x={pos.x}
@@ -432,13 +429,11 @@
 		</text>
 	{/each}
 
-	<!-- Inner Clear Boundary -->
+	<!-- Inner clear circle -->
 	<circle
-		id="chart-inner-border"
 		cx={center}
 		cy={center}
 		r={clearRadiusInner}
-		fill="none"
 		class="fill-none stroke-current"
 		stroke-width="0.5"
 	/>
