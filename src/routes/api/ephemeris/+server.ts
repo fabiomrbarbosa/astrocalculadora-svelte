@@ -274,8 +274,6 @@ export async function POST({ request }) {
 		);
 		const jdUT = jd.data[1];
 
-		const flags = sweph.constants.SEFLG_TROPICAL | sweph.constants.SEFLG_SPEED;
-
 		// Sunrise/Sunset
 		const { sunrise, sunset } = getSunriseSunsetLocal(date, lat, lng, tz);
 		const tomorrow = dayjs.tz(`${date}T00:00:00`, tz).add(1, 'day').format('YYYY-MM-DD');

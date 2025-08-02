@@ -70,7 +70,7 @@
 	>
 		<h2 class="mb-4 text-xl font-bold">Dados a Calcular</h2>
 
-		<div class="grid grow gap-4 lg:grid-cols-2">
+		<div class="grid grow lg:grid-cols-2 lg:gap-4">
 			<div class="lg:col-span-1">
 				<fieldset class="fieldset flex space-x-2 lg:col-span-2">
 					<legend class="fieldset-legend">Nome</legend>
