@@ -32,7 +32,7 @@
 	}
 </script>
 
-<label class="flex cursor-pointer gap-2" aria-label="Ligar modo escuro">
+<label class="flex cursor-pointer gap-2 pr-4 pl-4" aria-label="Ligar modo escuro">
 	<svg
 		xmlns="http://www.w3.org/2000/svg"
 		width="20"

@@ -33,18 +33,22 @@
 
 	const planetMap = Object.fromEntries(planets.map((p) => [p.name, p.glyph]));
 
-	//–– Props (including our two new tuning knobs)
+	//–– Props
 	let {
-		houses,
+		name,
+		date,
+		weekday,
+		time,
+		city,
+		country,
 		planetPositions,
+		houses,
 		ascendant,
-		dayNight,
-		dayRuler,
-		hourRuler,
 		usedCoordinates,
 		usedTimezone,
-		labelOffsetStep = 4, // degrees to push each additional clustered planet
-		clusterSpacingThreshold = 5 // max° gap to consider “clustered”
+		dayNight,
+		dayRuler,
+		hourRuler
 	} = $props();
 
 	//–– Geometry constants
@@ -66,6 +70,9 @@
 	const houseNumberRadius = clearRadiusInner + 20;
 	const houseNumbers = Array.from({ length: 12 }, (_, i) => (i + 1).toString());
 
+	const labelOffsetStep = 4; // degrees to push each additional clustered planet
+	const clusterSpacingThreshold = 5; // max° gap to consider “clustered”
+
 	//–– Helpers
 	function midpointAngle(a: number, b: number): number {
 		const diff = ((b - a + 360) % 360) / 2;
@@ -80,15 +87,23 @@
 		};
 	}
 
+	function toDMS(deg: number, isLat: boolean): string {
+		const abs = Math.abs(deg);
+		const degrees = Math.floor(abs);
+		const minutes = Math.round((abs - degrees) * 60);
+		const direction = isLat ? (deg >= 0 ? 'N' : 'S') : deg >= 0 ? 'E' : 'W';
+		return `${degrees}°${direction}${minutes}'`;
+	}
+
 	//–– Base rotation so ascendant is at 0°
-	let rotationOffset = $derived(
+	let rotationOffset: number = $derived(
 		ascendant?.position?.longitude != null ? (0 - ascendant.position.longitude + 360) % 360 : 0
 	);
 
 	//–– Zodiac markers, degree ticks, house‐cusp labels (unchanged) …
 	const zodiacMarkers = $derived(
-		signs.map((sign, i) => {
-			const start = (i * 30 + rotationOffset) % 360;
+		signs.map((sign, i: number) => {
+			const start: number = (i * 30 + rotationOffset) % 360;
 			return { start, mid: (start + 15) % 360, glyph: sign.glyph, name: sign.name };
 		})
 	);
@@ -108,7 +123,7 @@
 	);
 
 	const houseCuspLabels = $derived(
-		houses.map((cusp, i) => {
+		houses.map((cusp: number, i) => {
 			const angle = (cusp + rotationOffset) % 360;
 			const degrees = Math.floor(cusp % 30);
 			const minutes = Math.floor(((cusp % 30) - degrees) * 60);
@@ -124,7 +139,7 @@
 		})
 	);
 
-	//–– NEW: compute a bumped‐angle for each planet label to avoid overlap
+	//–– Compute a bumped‐angle for each planet label to avoid overlap
 	const adjustedPlanetAngles = $derived.by(() => {
 		// 1. build list of actual longitudes
 		const list = Object.entries(planetPositions)
@@ -174,6 +189,19 @@
 	preserveAspectRatio="xMidYMid meet"
 	style="width: 100%; height: auto; display: block;"
 >
+	<!-- Chart info -->
+	<g id="chart-info" class="fill-current text-xs" transform={`translate(${center}, ${center})`}>
+		<text text-anchor="middle" class="font-bold" dy="-40">{name}</text>
+		<text text-anchor="middle" dy="-24">{date}, {weekday}</text>
+		<text text-anchor="middle" dy="-8">{time} (GMT {usedTimezone.offset})</text>
+		<text text-anchor="middle" dy="8">{city}, {country}</text>
+		<text text-anchor="middle" dy="24"
+			>{toDMS(usedCoordinates.latitude, true)} {toDMS(usedCoordinates.longitude, false)}</text
+		>
+		<text class="italic" text-anchor="middle" dy="40">Tropical</text>
+		<text class="italic" text-anchor="middle" dy="56">Alcabitius</text>
+	</g>
+
 	<!-- Zodiac outer/inner rings -->
 	<circle
 		cx={center}

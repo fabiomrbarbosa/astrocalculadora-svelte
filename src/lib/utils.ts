@@ -149,19 +149,30 @@ function findSignKey(signName: string): keyof typeof signs {
 /**
  * Fetches the full ephemeris (including prenatal syzygy) and syncs into chartData
  */
-export async function loadEphemeris(date: string, time: string, city: string, country: string) {
+export async function loadEphemeris(
+	name: string,
+	date: string,
+	time: string,
+	city: string,
+	country: string
+) {
 	// 1) fetch the combined birth-chart + syzygy
 	const res = await fetch('/api/ephemeris', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ date, time, city, country })
+		body: JSON.stringify({
+			name,
+			date,
+			time,
+			city,
+			country
+		})
 	});
 	if (!res.ok) throw new Error(await res.text());
 	const eph = await res.json();
+	console.log(eph);
 
 	// 2) sync the main chart into your store
-	chartData.meta.city = city;
-	chartData.meta.country = country;
 	syncEphToChartData(eph);
 
 	// 3) final recalculation (includes syzygy in aspects, tables, etc.)
@@ -174,10 +185,10 @@ export async function loadEphemeris(date: string, time: string, city: string, co
 
 export function syncEphToChartData(input: SyncChartInput) {
 	const {
+		meta,
 		planetPositions,
 		ascendant,
 		houses,
-		meta,
 		dayNight,
 		dayRuler,
 		hourRuler,
@@ -187,9 +198,14 @@ export function syncEphToChartData(input: SyncChartInput) {
 	} = input;
 
 	// ——————————————————————————————
-	// 1) Meta / timezone
+	// 1) Meta
 	// ——————————————————————————————
-	chartData.meta.utcTime = meta?.utcTime || '';
+	chartData.meta.name = meta.name || '';
+
+	chartData.meta.city = meta.city || '';
+	chartData.meta.country = meta.country || '';
+
+	chartData.meta.utcTime = meta.utcTime || '';
 	chartData.meta.utcOffset = usedTimezone?.offset || '+00:00';
 	chartData.meta.timezone = usedTimezone?.name || 'UTC';
 
@@ -314,4 +330,6 @@ export function syncEphToChartData(input: SyncChartInput) {
 		usedCoordinates: usedCoordinates!,
 		usedTimezone: usedTimezone!
 	};
+
+	console.log(chartData);
 }

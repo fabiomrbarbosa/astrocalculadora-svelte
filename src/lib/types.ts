@@ -1,3 +1,67 @@
+/** Chart Data type **/
+export type ChartInput = {
+	name: string;
+	city: string;
+	country: string;
+	year: number;
+	month: number;
+	day: number;
+	hour: number;
+	minute: number;
+	second: number;
+};
+
+export type ChartData = {
+	meta: {
+		name: string;
+		year: number;
+		month: number;
+		day: number;
+		hour: number;
+		minute: number;
+		second: number;
+		utcTime?: string; // ISO string if needed
+		utcOffset: string; // '+02:00'
+		timezone: string; // 'Europe/Berlin'
+		latitude: number;
+		longitude: number;
+		city: string;
+		country: string;
+	};
+	dayNight: string;
+	maleFemale: string;
+	rulerOfDay: string;
+	rulerOfHour: string;
+	planets: Record<string, any>; // Allow flexibility
+	points: Record<string, any>;
+	houses: Record<string, any>;
+	results: Record<string, any>; // Loose typing for deep nesting
+	partFortuneDispositor: string;
+	partSubstanceDispositor: string;
+	syzygy?: {
+		label: string;
+		type: string;
+		degrees: number;
+		minutes: number;
+		sign: string;
+	};
+	rawEphemeris?: {
+		planetPositions: Record<string, any>;
+		ascendant: any;
+		houses: number[];
+		dayNight: 'day' | 'night';
+		dayRuler: string;
+		hourRuler: string;
+		usedCoordinates: Record<string, any>;
+		usedTimezone: TimezoneInfo;
+	} | null;
+};
+
+export type TimezoneInfo = {
+	name: string; // timezone identifier, e.g. 'Europe/Berlin'
+	offset: string; // offset from UTC in hours, e.g. +02:00 or -05:00
+};
+
 /** Dignities (Rulership, Exaltation, Triplicity, Terms, and Faces) */
 export interface Dignities {
 	domicile: string;
@@ -62,14 +126,14 @@ export type Ascendant = {
 };
 
 export type SyncChartInput = {
+	meta: Record<string, any>;
 	planetPositions: Record<string, PlanetPosition>;
 	ascendant: Ascendant;
 	houses: number[]; // 12 cusp longitudes in absolute degrees [0–360)
-	meta?: Record<string, any>;
 	dayNight?: 'day' | 'night';
 	dayRuler?: string;
 	hourRuler?: string;
 	usedCoordinates?: Record<string, any>;
-	usedTimezone?: Record<string, any>;
+	usedTimezone?: TimezoneInfo;
 	prenatalSyzygy?: { type: string; degrees: number; minutes: number; sign: string };
 };

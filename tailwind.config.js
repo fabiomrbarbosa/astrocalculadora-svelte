@@ -8,6 +8,9 @@ module.exports = {
 	},
 	theme: {
 		extend: {
+			screens: {
+				print: { raw: 'print' }
+			},
 			colors: {
 				// overwrite all of `gray` with Tailwind’s official `stone` palette
 				gray: colors.stone

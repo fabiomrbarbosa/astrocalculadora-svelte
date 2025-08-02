@@ -1,8 +1,10 @@
 <script lang="ts">
 	import DarkModeToggle from './../lib/components/DarkModeToggle.svelte';
-	import { chartData } from './../lib/chartData.svelte';
+	import { chartData, chartInput } from './../lib/chartData.svelte';
 	import '../app.css';
 	import { page } from '$app/state';
+	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	let { children } = $props();
 
 	// Menu items
@@ -22,20 +24,41 @@
 	];
 
 	// Implement data persistence via localStorage
-	$effect(() => {
-		const savedChartData = localStorage.getItem('chartData_v2');
-		if (savedChartData) {
-			Object.assign(chartData, JSON.parse(savedChartData));
-		}
+	//–– Debounce utility ––
+	function debounce<T extends (...args: any[]) => void>(fn: T, ms: number) {
+		let timeout: ReturnType<typeof setTimeout>;
+		return (...args: Parameters<T>) => {
+			clearTimeout(timeout);
+			timeout = setTimeout(() => fn(...args), ms);
+		};
+	}
+
+	//–– Load once, on client ––
+	onMount(() => {
+		const saved = localStorage.getItem('chartData_v2');
+		if (saved) Object.assign(chartData, JSON.parse(saved));
+
+		const savedInput = localStorage.getItem('chartInput_v1');
+		if (savedInput) Object.assign(chartInput, JSON.parse(savedInput));
 	});
 
+	//–– Persist whenever chartData/meta changes ––
 	$effect(() => {
+		if (!browser) return;
+		// reading `chartData` here makes this effect re-run on any change
 		localStorage.setItem('chartData_v2', JSON.stringify(chartData));
+	});
+
+	//–– Persist whenever the input object changes ––
+	$effect(() => {
+		if (!browser) return;
+		// reading `chartInput` here makes this effect re-run on any change
+		localStorage.setItem('chartInput_v1', JSON.stringify(chartInput));
 	});
 </script>
 
 <div class="grid grid-cols-1 gap-4 lg:grid-cols-5">
-	<div class="lg:col-span-5">
+	<div id="navbar" class="lg:col-span-5 print:hidden">
 		<div class="navbar bg-base-100 rounded-box shadow-sm">
 			<div class="navbar-start">
 				<div class="dropdown">
@@ -71,12 +94,14 @@
 						{/each}
 					</ul>
 				</div>
-				<a href="/" class="btn btn-ghost text-xl">AstroCalculadora<sup>β</sup></a>
+				<a href="/" class=" pr-4 pl-4 text-xl font-bold">AstroCalculadora<sup>β</sup></a>
+			</div>
+			<div class="navbar-end">
 				<DarkModeToggle />
 			</div>
 		</div>
 	</div>
-	<div class="hidden lg:row-start-2 lg:block">
+	<div id="sidebar" class="hidden lg:row-start-2 lg:block print:hidden">
 		<div class="bg-base-100 rounded-box sticky top-4 shadow-sm">
 			<ul class="menu sticky top-0 w-full">
 				{#each menuItems as { href, label }}
@@ -93,5 +118,5 @@
 			</ul>
 		</div>
 	</div>
-	<div class="lg:col-span-4 lg:row-start-2">{@render children()}</div>
+	<div id="body" class="lg:col-span-4 lg:row-start-2">{@render children()}</div>
 </div>
