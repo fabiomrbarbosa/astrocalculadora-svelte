@@ -238,9 +238,9 @@ function findPrenatalSyzygy(jdBirth: number): { jd: number; isFull: boolean } {
 // ── API Handler ─────────────────────────────────────────────────────────────
 export async function POST({ request }) {
 	try {
-		const { date, time, city, country } = await request.json();
-		if (!date || !time || !city || !country) {
-			throw error(400, 'Missing required fields: date, time, city, or country');
+		const { name, date, time, city, country } = await request.json();
+		if (!name || !date || !time || !city || !country) {
+			throw error(400, 'Missing required fields: name, date, time, city, or country');
 		}
 
 		// Geocode
@@ -308,13 +308,20 @@ export async function POST({ request }) {
 
 		return json({
 			...mainEph,
+			meta: {
+				name: name,
+				city: city,
+				country: country,
+				date: date,
+				time: time,
+				utcTime: utcTime.format()
+			},
 			dayNight: dayNight,
 			dayRuler: dayRuler.toLowerCase(),
 			hourRuler: hourRuler.toLowerCase(),
 			planetaryHour: hourNumber,
 			usedTimezone: tz,
 			usedCoordinates: { latitude: lat, longitude: lng },
-			utcTime: utcTime.format(),
 			prenatalSyzygy: {
 				type: isFull ? 'Lua Cheia' : 'Lua Nova',
 				degrees: dms.degrees,

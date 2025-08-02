@@ -62,10 +62,10 @@ export type Ascendant = {
 };
 
 export type SyncChartInput = {
+	meta: Record<string, any>;
 	planetPositions: Record<string, PlanetPosition>;
 	ascendant: Ascendant;
 	houses: number[]; // 12 cusp longitudes in absolute degrees [0–360)
-	meta?: Record<string, any>;
 	dayNight?: 'day' | 'night';
 	dayRuler?: string;
 	hourRuler?: string;

@@ -3,24 +3,35 @@
 	import { chartData } from '$lib/chartData.svelte'; // persistent state
 	import { loadEphemeris } from '$lib/utils';
 
-	function safePad(value: string, min: number, max: number, fallback = '00') {
+	function safePad(value: number, min: number, max: number, fallback = '00') {
 		const num = Number(value);
 		if (Number.isNaN(num) || num < min || num > max) return fallback;
 		return String(num).padStart(2, '0');
 	}
 
-	function safeYear(value: string) {
+	function safeYear(value: number) {
 		const num = Number(value);
 		return Number.isNaN(num) || num < 0 ? '0000' : String(num).padStart(4, '0');
 	}
 
-	async function handleSubmit() {
-		const meta = chartData.meta;
-		const date = `${safeYear(meta.year)}-${safePad(meta.month, 1, 12)}-${safePad(meta.day, 1, 31)}`;
-		const time = `${safePad(meta.hour, 0, 23)}:${safePad(meta.minute, 0, 59)}:${safePad(meta.second, 0, 59)}`;
+	let meta = chartData.meta;
 
+	let date = $derived(
+		`${safePad(meta.day, 1, 31)}/${safePad(meta.month, 1, 12)}/${safeYear(meta.year)}`
+	);
+
+	let ISODate = $derived(
+		`${safeYear(meta.year)}-${safePad(meta.month, 1, 12)}-${safePad(meta.day, 1, 31)}`
+	);
+
+	let time = $derived(
+		`${safePad(meta.hour, 0, 23)}:${safePad(meta.minute, 0, 59)}:${safePad(meta.second, 0, 59)}`
+	);
+
+	async function handleSubmit(event: Event) {
 		try {
-			await loadEphemeris(date, time, meta.city, meta.country);
+			event.preventDefault();
+			await loadEphemeris(meta.name, ISODate, time, meta.city, meta.country);
 		} catch (err) {
 			console.error('Error loading full chart:', err);
 		}
@@ -28,10 +39,23 @@
 </script>
 
 <div class="grid h-full gap-4">
-	<form class="bg-base-100 rounded-box p-4 shadow-sm" onsubmit={handleSubmit}>
+	<form
+		id="input"
+		class="bg-base-100 rounded-box p-4 shadow-sm print:hidden"
+		onsubmit={handleSubmit}
+	>
 		<h2 class="text-xl font-bold">Dados do Mapa</h2>
 
 		<div class="mt-4 grid items-stretch gap-4 lg:grid-cols-2">
+			<fieldset class="fieldset mt-4 flex space-x-2 lg:col-span-2">
+				<legend class="fieldset-legend">Nome</legend>
+				<input
+					type="text"
+					placeholder="Nome"
+					bind:value={chartData.meta.name}
+					class="input input-bordered w-full"
+				/>
+			</fieldset>
 			<fieldset class="fieldset flex space-x-2 lg:col-span-2">
 				<legend class="fieldset-legend">Local</legend>
 				<input

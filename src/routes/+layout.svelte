@@ -35,7 +35,7 @@
 </script>
 
 <div class="grid grid-cols-1 gap-4 lg:grid-cols-5">
-	<div class="lg:col-span-5">
+	<div id="navbar" class="lg:col-span-5 print:hidden">
 		<div class="navbar bg-base-100 rounded-box shadow-sm">
 			<div class="navbar-start">
 				<div class="dropdown">
@@ -76,7 +76,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="hidden lg:row-start-2 lg:block">
+	<div id="sidebar" class="lg:row-start-2 lg:block print:hidden">
 		<div class="bg-base-100 rounded-box sticky top-4 shadow-sm">
 			<ul class="menu sticky top-0 w-full">
 				{#each menuItems as { href, label }}
@@ -93,5 +93,5 @@
 			</ul>
 		</div>
 	</div>
-	<div class="lg:col-span-4 lg:row-start-2">{@render children()}</div>
+	<div id="body" class="lg:col-span-4 lg:row-start-2">{@render children()}</div>
 </div>

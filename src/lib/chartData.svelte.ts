@@ -2,6 +2,7 @@ import { signs } from './staticData';
 
 export type ChartData = {
 	meta: {
+		name: string;
 		year: number;
 		month: number;
 		day: number;
@@ -12,8 +13,8 @@ export type ChartData = {
 		timezone: string; // 'Europe/Berlin'
 		latitude: number;
 		longitude: number;
-		city?: string;
-		country?: string;
+		city: string;
+		country: string;
 		utcTime?: string; // ISO string if needed
 	};
 	dayNight: string;
@@ -47,6 +48,7 @@ export type ChartData = {
 
 export let chartData: ChartData = $state({
 	meta: {
+		name: '',
 		year: 2000,
 		month: 1,
 		day: 1,
@@ -55,11 +57,11 @@ export let chartData: ChartData = $state({
 		second: 0,
 		utcOffset: '+00:00',
 		timezone: 'UTC',
-		latitude: 0,
-		longitude: 0,
+		utcTime: '',
 		city: '',
 		country: '',
-		utcTime: ''
+		latitude: 0,
+		longitude: 0
 	},
 	dayNight: 'day',
 	maleFemale: 'male',

@@ -33,16 +33,21 @@
 
 	const planetMap = Object.fromEntries(planets.map((p) => [p.name, p.glyph]));
 
-	//–– Props (including our two new tuning knobs)
+	//–– Props
 	let {
-		houses,
+		name,
+		date,
+		time,
+		city,
+		country,
 		planetPositions,
+		houses,
 		ascendant,
+		usedCoordinates,
+		usedTimezone,
 		dayNight,
 		dayRuler,
 		hourRuler,
-		usedCoordinates,
-		usedTimezone,
 		labelOffsetStep = 4, // degrees to push each additional clustered planet
 		clusterSpacingThreshold = 5 // max° gap to consider “clustered”
 	} = $props();
@@ -81,14 +86,14 @@
 	}
 
 	//–– Base rotation so ascendant is at 0°
-	let rotationOffset = $derived(
+	let rotationOffset: number = $derived(
 		ascendant?.position?.longitude != null ? (0 - ascendant.position.longitude + 360) % 360 : 0
 	);
 
 	//–– Zodiac markers, degree ticks, house‐cusp labels (unchanged) …
 	const zodiacMarkers = $derived(
-		signs.map((sign, i) => {
-			const start = (i * 30 + rotationOffset) % 360;
+		signs.map((sign, i: number) => {
+			const start: number = (i * 30 + rotationOffset) % 360;
 			return { start, mid: (start + 15) % 360, glyph: sign.glyph, name: sign.name };
 		})
 	);
@@ -108,7 +113,7 @@
 	);
 
 	const houseCuspLabels = $derived(
-		houses.map((cusp, i) => {
+		houses.map((cusp: number, i) => {
 			const angle = (cusp + rotationOffset) % 360;
 			const degrees = Math.floor(cusp % 30);
 			const minutes = Math.floor(((cusp % 30) - degrees) * 60);
@@ -124,44 +129,54 @@
 		})
 	);
 
-	//–– NEW: compute a bumped‐angle for each planet label to avoid overlap
+	//–– Compute a bumped‐angle for each planet label to avoid overlap
 	const adjustedPlanetAngles = $derived.by(() => {
-		// 1. build list of actual longitudes
 		const list = Object.entries(planetPositions)
 			.filter(([, pt]) => pt.position)
-			.map(([name, pt]) => ({
-				name,
-				orig: (pt.position.longitude + rotationOffset) % 360
-			}));
+			.map(([name, pt]) => {
+				const longitude = pt.position.longitude;
+				const sign = pt.signNumber;
+				const orig = (longitude + rotationOffset) % 360;
+				return { name, longitude, sign, orig };
+			});
 
-		// 2. sort ascending
-		list.sort((a, b) => a.orig - b.orig);
-
-		// 3. handle wrap‐around cluster at 360°→0°
-		if (list.length) {
-			const first = list[0].orig;
-			const last = list[list.length - 1].orig;
-			if (first + 360 - last < clusterSpacingThreshold) {
-				list[0].orig += 360;
-				list.sort((a, b) => a.orig - b.orig);
-			}
-		}
-
-		// 4. walk and bump tightly spaced neighbors
 		const result: Record<string, number> = {};
-		let prevOrig: number | null = null;
-		let clusterCount = 0;
+		let i = 0;
 
-		for (const { name, orig } of list) {
-			if (prevOrig !== null && orig - prevOrig < clusterSpacingThreshold) {
-				clusterCount += 1;
-			} else {
-				clusterCount = 0;
+		while (i < list.length) {
+			// Build a cluster
+			let cluster = [list[i]];
+			let j = i + 1;
+			while (
+				j < list.length &&
+				list[j].orig - cluster[cluster.length - 1].orig < clusterSpacingThreshold
+			) {
+				cluster.push(list[j]);
+				j++;
 			}
-			const bumped = orig + clusterCount * labelOffsetStep;
-			// mod back into [0,360)
-			result[name] = ((bumped % 360) + 360) % 360;
-			prevOrig = orig;
+
+			// Check whether the cluster is in the end of a sign
+			const last = cluster[cluster.length - 1];
+			const lastRawLong = (last.orig - rotationOffset + 360) % 360;
+			const lastDegInSign = lastRawLong % 30;
+
+			if (lastDegInSign > 26) {
+				// End-of-sign cluster: sort descending, displace backward
+				cluster.sort((a, b) => b.orig - a.orig);
+				cluster.forEach((p, index) => {
+					const bumped = p.orig - Math.log2(index + 1) * labelOffsetStep;
+					result[p.name] = ((bumped % 360) + 360) % 360;
+				});
+			} else {
+				// Normal cluster: sort ascending, displace forward
+				cluster.sort((a, b) => a.orig - b.orig);
+				cluster.forEach((p, index) => {
+					const bumped = p.orig + index * labelOffsetStep;
+					result[p.name] = ((bumped % 360) + 360) % 360;
+				});
+			}
+
+			i = j;
 		}
 
 		return result;
@@ -174,6 +189,18 @@
 	preserveAspectRatio="xMidYMid meet"
 	style="width: 100%; height: auto; display: block;"
 >
+	<!-- Chart info -->
+	<g id="chart-info" class="fill-current text-xs" transform={`translate(${center}, ${center})`}>
+		<text text-anchor="middle" class="font-bold" dy="-40">{name}</text>
+		<text text-anchor="middle" dy="-24">{date} {time}</text>
+		<text text-anchor="middle" dy="-8">{city}</text>
+		<text text-anchor="middle" dy="8">{country}</text>
+		<text text-anchor="middle" dy="24">{usedCoordinates.latitude}, {usedCoordinates.longitude}</text
+		>
+		<text text-anchor="middle" dy="40">{usedTimezone}</text>
+		<text text-anchor="middle" dy="56">Alcabitius</text>
+	</g>
+
 	<!-- Zodiac outer/inner rings -->
 	<circle
 		cx={center}

@@ -79,7 +79,7 @@ body {
 }
 
 .table-container {
-	@apply rounded-box border-base-300 bg-base-100 overflow-x-auto border shadow-xs;
+	@apply rounded-box border-base-300 bg-base-100 overflow-x-auto border shadow-xs print:shadow-none;
 }
 
 .table th + th,
@@ -109,8 +109,28 @@ body {
 	min-width: 5%;
 }
 
+.floatingchat-donate-button,
 .floatingchat-container {
 	width: 214px !important;
 	height: 46px !important;
 	border-radius: 3rem;
+	overflow: hidden;
+}
+
+@media print {
+	/* Hide all Ko-fi overlay wrappers */
+	[id^='kofi-widget-overlay'] {
+		display: none !important;
+		visibility: hidden !important;
+	}
+
+	.floatingchat-container,
+	.floatingchat-container-wrap,
+	.floatingchat-container-mobi,
+	.floatingchat-container-wrap-mobi,
+	.floating-chat-kofi-popup-iframe,
+	.floating-chat-kofi-popup-iframe-mobi {
+		display: none !important;
+		visibility: hidden !important;
+	}
 }
