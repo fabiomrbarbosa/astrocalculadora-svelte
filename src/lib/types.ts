@@ -48,6 +48,7 @@ export type ChartData = {
 	rawEphemeris?: {
 		planetPositions: Record<string, any>;
 		ascendant: any;
+		midheaven: any;
 		houses: number[];
 		dayNight: 'day' | 'night';
 		dayRuler: string;
@@ -120,7 +121,7 @@ export type PlanetPosition = {
 	longitude: number;
 };
 
-export type Ascendant = {
+export type Angle = {
 	position: { degrees: number; minutes: number };
 	signName: string;
 };
@@ -128,7 +129,8 @@ export type Ascendant = {
 export type SyncChartInput = {
 	meta: Record<string, any>;
 	planetPositions: Record<string, PlanetPosition>;
-	ascendant: Ascendant;
+	ascendant: Angle;
+	midheaven: Angle;
 	houses: number[]; // 12 cusp longitudes in absolute degrees [0–360)
 	dayNight?: 'day' | 'night';
 	dayRuler?: string;

@@ -120,6 +120,12 @@ export let chartData: ChartData = $state({
 			minutes: 0,
 			sign: 'aries'
 		},
+		midheaven: {
+			label: 'Meio-Céu',
+			degrees: 0,
+			minutes: 0,
+			sign: 'aries'
+		},
 		partFortune: {
 			label: 'Parte da Fortuna',
 			degrees: 0,

@@ -88,10 +88,14 @@ function computeEphAtJd(jdUT: number, lat: number, lng: number) {
 	const ascLon = housesData.data.points[0];
 	const asc = degreesToDms(ascLon);
 	const ascInfo = getZodiacInfo(ascLon);
+	const mcLon = housesData.data.points[3];
+	const mc = degreesToDms(mcLon);
+	const mcInfo = getZodiacInfo(mcLon);
 
 	return {
 		planetPositions,
 		ascendant: { position: asc, ...ascInfo },
+		midheaven: { position: mc, ...mcInfo },
 		houses: housesData.data.houses
 	};
 }
@@ -288,17 +292,6 @@ export async function POST({ request }) {
 		// Planetary positions: call main ephemeris
 		const mainEph = computeEphAtJd(jdUT, lat, lng);
 		const timezoneOffsetString = localTime.format('Z'); // e.g. "+02:00"
-
-		// Houses & Ascendant
-		const houseData = sweph.houses_ex2(jdUT, flags, lat, lng, 'B');
-		const ascLon = houseData.data.points[0];
-		const ascPos = degreesToDms(ascLon);
-		const ascSign = getZodiacInfo(ascLon);
-		const ascendant = {
-			position: ascPos,
-			signNumber: ascSign.signNumber,
-			signName: ascSign.signName
-		};
 
 		// prenatal syzygy
 		const { jd: jdSyzygy, isFull } = await findPrenatalSyzygy(jdUT);

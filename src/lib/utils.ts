@@ -188,6 +188,7 @@ export function syncEphToChartData(input: SyncChartInput) {
 		meta,
 		planetPositions,
 		ascendant,
+		midheaven,
 		houses,
 		dayNight,
 		dayRuler,
@@ -235,9 +236,18 @@ export function syncEphToChartData(input: SyncChartInput) {
 	// ——————————————————————————————
 	// 3) Sync Ascendant
 	// ——————————————————————————————
+	chartData.points.ascendant ??= {};
 	chartData.points.ascendant.degrees = ascendant.position.degrees;
 	chartData.points.ascendant.minutes = ascendant.position.minutes;
 	chartData.points.ascendant.sign = findSignKey(ascendant.signName);
+
+	// ——————————————————————————————
+	// 3) Sync Midheaven
+	// ——————————————————————————————
+	chartData.points.midheaven ??= {};
+	chartData.points.midheaven.degrees = midheaven.position.degrees;
+	chartData.points.midheaven.minutes = midheaven.position.minutes;
+	chartData.points.midheaven.sign = findSignKey(midheaven.signName);
 
 	// ——————————————————————————————
 	// 4) Initialize each house
@@ -323,6 +333,7 @@ export function syncEphToChartData(input: SyncChartInput) {
 	chartData.rawEphemeris = {
 		planetPositions,
 		ascendant,
+		midheaven,
 		houses,
 		dayNight: dayNight!,
 		dayRuler: dayRuler!,

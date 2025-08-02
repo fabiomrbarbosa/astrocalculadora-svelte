@@ -15,6 +15,7 @@
 		<AstroInput keyName="mars" showRetrograde={true} data={chartData.planets.mars} />
 		<AstroInput keyName="jupiter" showRetrograde={true} data={chartData.planets.jupiter} />
 		<AstroInput keyName="saturn" showRetrograde={true} data={chartData.planets.saturn} />
+		<AstroInput keyName="ascendant" data={chartData.points.ascendant} />
 
 		<button class="submit">Calcular Aspectos</button>
 	</form>
