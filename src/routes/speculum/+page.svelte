@@ -79,6 +79,7 @@
 						placeholder="Nome"
 						bind:value={chartInput.name}
 						class="input input-bordered w-full"
+						required
 					/>
 				</fieldset>
 				<fieldset class="fieldset flex space-x-2">
@@ -88,12 +89,14 @@
 						placeholder="Cidade"
 						bind:value={chartInput.city}
 						class="input input-bordered w-full"
+						required
 					/>
 					<input
 						type="text"
 						placeholder="País"
 						bind:value={chartInput.country}
 						class="input input-bordered w-full"
+						required
 					/>
 				</fieldset>
 			</div>
@@ -107,8 +110,9 @@
 						placeholder="Dia"
 						bind:value={chartInput.day}
 						class="input input-bordered"
+						required
 					/>
-					<select class="select grow" bind:value={chartInput.month}>
+					<select class="select grow" bind:value={chartInput.month} required>
 						<option value={1}>Janeiro</option>
 						<option value={2}>Fevereiro</option>
 						<option value={3}>Março</option>
@@ -129,6 +133,7 @@
 						placeholder="Ano"
 						bind:value={chartInput.year}
 						class="input input-bordered"
+						required
 					/>
 				</fieldset>
 
@@ -141,6 +146,7 @@
 						placeholder="Horas"
 						bind:value={chartInput.hour}
 						class="input input-bordered w-full"
+						required
 					/>
 					<input
 						type="number"
@@ -149,6 +155,7 @@
 						placeholder="Minutos"
 						bind:value={chartInput.minute}
 						class="input input-bordered w-full"
+						required
 					/>
 					<input
 						type="number"
@@ -157,6 +164,7 @@
 						placeholder="Segundos"
 						bind:value={chartInput.second}
 						class="input input-bordered w-full"
+						required
 					/>
 				</fieldset>
 			</div>
