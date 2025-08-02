@@ -131,52 +131,42 @@
 
 	//–– Compute a bumped‐angle for each planet label to avoid overlap
 	const adjustedPlanetAngles = $derived.by(() => {
+		// 1. build list of actual longitudes
 		const list = Object.entries(planetPositions)
 			.filter(([, pt]) => pt.position)
-			.map(([name, pt]) => {
-				const longitude = pt.position.longitude;
-				const sign = pt.signNumber;
-				const orig = (longitude + rotationOffset) % 360;
-				return { name, longitude, sign, orig };
-			});
+			.map(([name, pt]) => ({
+				name,
+				orig: (pt.position.longitude + rotationOffset) % 360
+			}));
 
+		// 2. sort ascending
+		list.sort((a, b) => a.orig - b.orig);
+
+		// 3. handle wrap‐around cluster at 360°→0°
+		if (list.length) {
+			const first = list[0].orig;
+			const last = list[list.length - 1].orig;
+			if (first + 360 - last < clusterSpacingThreshold) {
+				list[0].orig += 360;
+				list.sort((a, b) => a.orig - b.orig);
+			}
+		}
+
+		// 4. walk and bump tightly spaced neighbors
 		const result: Record<string, number> = {};
-		let i = 0;
+		let prevOrig: number | null = null;
+		let clusterCount = 0;
 
-		while (i < list.length) {
-			// Build a cluster
-			let cluster = [list[i]];
-			let j = i + 1;
-			while (
-				j < list.length &&
-				list[j].orig - cluster[cluster.length - 1].orig < clusterSpacingThreshold
-			) {
-				cluster.push(list[j]);
-				j++;
-			}
-
-			// Check whether the cluster is in the end of a sign
-			const last = cluster[cluster.length - 1];
-			const lastRawLong = (last.orig - rotationOffset + 360) % 360;
-			const lastDegInSign = lastRawLong % 30;
-
-			if (lastDegInSign > 26) {
-				// End-of-sign cluster: sort descending, displace backward
-				cluster.sort((a, b) => b.orig - a.orig);
-				cluster.forEach((p, index) => {
-					const bumped = p.orig - Math.log2(index + 1) * labelOffsetStep;
-					result[p.name] = ((bumped % 360) + 360) % 360;
-				});
+		for (const { name, orig } of list) {
+			if (prevOrig !== null && orig - prevOrig < clusterSpacingThreshold) {
+				clusterCount += 1;
 			} else {
-				// Normal cluster: sort ascending, displace forward
-				cluster.sort((a, b) => a.orig - b.orig);
-				cluster.forEach((p, index) => {
-					const bumped = p.orig + index * labelOffsetStep;
-					result[p.name] = ((bumped % 360) + 360) % 360;
-				});
+				clusterCount = 0;
 			}
-
-			i = j;
+			const bumped = orig + clusterCount * labelOffsetStep;
+			// mod back into [0,360)
+			result[name] = ((bumped % 360) + 360) % 360;
+			prevOrig = orig;
 		}
 
 		return result;
