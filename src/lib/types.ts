@@ -1,4 +1,15 @@
 /** Chart Data type **/
+export type ChartInput = {
+	name: string;
+	city: string;
+	country: string;
+	year: number;
+	month: number;
+	day: number;
+	hour: number;
+	minute: number;
+	second: number;
+};
 
 export type ChartData = {
 	meta: {

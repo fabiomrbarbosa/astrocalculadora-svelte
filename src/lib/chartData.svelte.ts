@@ -1,7 +1,7 @@
 import { signs } from './staticData';
-import type { ChartData } from './types';
+import type { ChartData, ChartInput } from './types';
 
-export let chartInput = $state({
+export let chartInput: ChartInput = $state({
 	name: '',
 	city: '',
 	country: '',

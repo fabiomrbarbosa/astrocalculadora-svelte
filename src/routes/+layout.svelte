@@ -3,6 +3,8 @@
 	import { chartData, chartInput } from './../lib/chartData.svelte';
 	import '../app.css';
 	import { page } from '$app/state';
+	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	let { children } = $props();
 
 	// Menu items
@@ -22,60 +24,36 @@
 	];
 
 	// Implement data persistence via localStorage
-
-	// minimal persistence: load once and debounce saves
+	//–– Debounce utility ––
 	function debounce<T extends (...args: any[]) => void>(fn: T, ms: number) {
-		let timeout: number | null = null;
+		let timeout: ReturnType<typeof setTimeout>;
 		return (...args: Parameters<T>) => {
-			if (timeout !== null) clearTimeout(timeout);
-			timeout = window.setTimeout(() => fn(...args), ms) as unknown as number;
+			clearTimeout(timeout);
+			timeout = setTimeout(() => fn(...args), ms);
 		};
 	}
 
-	let _loadedChartData = false;
-	let _loadedChartInput = false;
+	//–– Load once, on client ––
+	onMount(() => {
+		const saved = localStorage.getItem('chartData_v2');
+		if (saved) Object.assign(chartData, JSON.parse(saved));
 
-	$effect(() => {
-		if (typeof localStorage === 'undefined') return; // guard for SSR
-		if (!_loadedChartData) {
-			const saved = localStorage.getItem('chartData_v2');
-			if (saved) Object.assign(chartData, JSON.parse(saved));
-			_loadedChartData = true;
-		}
-		if (!_loadedChartInput) {
-			const savedInput = localStorage.getItem('chartInput_v1');
-			if (savedInput) Object.assign(chartInput, JSON.parse(savedInput));
-			_loadedChartInput = true;
-		}
+		const savedInput = localStorage.getItem('chartInput_v1');
+		if (savedInput) Object.assign(chartInput, JSON.parse(savedInput));
 	});
 
-	const saveChartData = debounce(() => {
-		if (typeof localStorage === 'undefined') return;
-		try {
-			localStorage.setItem('chartData_v2', JSON.stringify(chartData));
-		} catch (e) {
-			console.warn('Failed to persist chartData:', e);
-		}
-	}, 150);
-
-	const saveChartInput = debounce(() => {
-		if (typeof localStorage === 'undefined') return;
-		try {
-			localStorage.setItem('chartInput_v1', JSON.stringify(chartInput));
-		} catch (e) {
-			console.warn('Failed to persist chartInput:', e);
-		}
-	}, 150);
-
+	//–– Persist whenever chartData/meta changes ––
 	$effect(() => {
-		const saveChartInput = debounce(() => {
-			if (typeof localStorage === 'undefined') return;
-			try {
-				localStorage.setItem('chartInput_v1', JSON.stringify(chartInput));
-			} catch (e) {
-				console.warn('Failed to persist chartInput:', e);
-			}
-		}, 150);
+		if (!browser) return;
+		// reading `chartData` here makes this effect re-run on any change
+		localStorage.setItem('chartData_v2', JSON.stringify(chartData));
+	});
+
+	//–– Persist whenever the input object changes ––
+	$effect(() => {
+		if (!browser) return;
+		// reading `chartInput` here makes this effect re-run on any change
+		localStorage.setItem('chartInput_v1', JSON.stringify(chartInput));
 	});
 </script>
 

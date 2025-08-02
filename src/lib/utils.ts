@@ -170,6 +170,7 @@ export async function loadEphemeris(
 	});
 	if (!res.ok) throw new Error(await res.text());
 	const eph = await res.json();
+	console.log(eph);
 
 	// 2) sync the main chart into your store
 	syncEphToChartData(eph);
@@ -195,7 +196,6 @@ export function syncEphToChartData(input: SyncChartInput) {
 		usedTimezone,
 		prenatalSyzygy
 	} = input;
-	const { name, city, country, date, time, utcTime } = meta;
 
 	// ——————————————————————————————
 	// 1) Meta
@@ -330,4 +330,6 @@ export function syncEphToChartData(input: SyncChartInput) {
 		usedCoordinates: usedCoordinates!,
 		usedTimezone: usedTimezone!
 	};
+
+	console.log(chartData);
 }
