@@ -47,9 +47,7 @@
 		usedTimezone,
 		dayNight,
 		dayRuler,
-		hourRuler,
-		labelOffsetStep = 4, // degrees to push each additional clustered planet
-		clusterSpacingThreshold = 5 // max° gap to consider “clustered”
+		hourRuler
 	} = $props();
 
 	//–– Geometry constants
@@ -70,6 +68,9 @@
 	const clearRadiusInner = size / 6;
 	const houseNumberRadius = clearRadiusInner + 20;
 	const houseNumbers = Array.from({ length: 12 }, (_, i) => (i + 1).toString());
+
+	const labelOffsetStep = 4; // degrees to push each additional clustered planet
+	const clusterSpacingThreshold = 5; // max° gap to consider “clustered”
 
 	//–– Helpers
 	function midpointAngle(a: number, b: number): number {
