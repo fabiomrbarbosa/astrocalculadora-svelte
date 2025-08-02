@@ -1,3 +1,51 @@
+/** Chart Data type **/
+
+export type ChartData = {
+	meta: {
+		name: string;
+		year: number;
+		month: number;
+		day: number;
+		hour: number;
+		minute: number;
+		second: number;
+		utcOffset: string; // '+02:00'
+		timezone: string; // 'Europe/Berlin'
+		latitude: number;
+		longitude: number;
+		city: string;
+		country: string;
+		utcTime?: string; // ISO string if needed
+	};
+	dayNight: string;
+	maleFemale: string;
+	rulerOfDay: string;
+	rulerOfHour: string;
+	planets: Record<string, any>; // Allow flexibility
+	points: Record<string, any>;
+	houses: Record<string, any>;
+	results: Record<string, any>; // Loose typing for deep nesting
+	partFortuneDispositor: string;
+	partSubstanceDispositor: string;
+	syzygy?: {
+		label: string;
+		type: string;
+		degrees: number;
+		minutes: number;
+		sign: string;
+	};
+	rawEphemeris?: {
+		planetPositions: Record<string, any>;
+		ascendant: any;
+		houses: number[];
+		dayNight: 'day' | 'night';
+		dayRuler: string;
+		hourRuler: string;
+		usedCoordinates: Record<string, any>;
+		usedTimezone: Record<string, any>;
+	} | null;
+};
+
 /** Dignities (Rulership, Exaltation, Triplicity, Terms, and Faces) */
 export interface Dignities {
 	domicile: string;

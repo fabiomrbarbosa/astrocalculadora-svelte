@@ -1,6 +1,6 @@
 <script lang="ts">
 	import DarkModeToggle from './../lib/components/DarkModeToggle.svelte';
-	import { chartData } from './../lib/chartData.svelte';
+	import { chartData, chartInput } from './../lib/chartData.svelte';
 	import '../app.css';
 	import { page } from '$app/state';
 	let { children } = $props();
@@ -22,15 +22,60 @@
 	];
 
 	// Implement data persistence via localStorage
+
+	// minimal persistence: load once and debounce saves
+	function debounce<T extends (...args: any[]) => void>(fn: T, ms: number) {
+		let timeout: number | null = null;
+		return (...args: Parameters<T>) => {
+			if (timeout !== null) clearTimeout(timeout);
+			timeout = window.setTimeout(() => fn(...args), ms) as unknown as number;
+		};
+	}
+
+	let _loadedChartData = false;
+	let _loadedChartInput = false;
+
 	$effect(() => {
-		const savedChartData = localStorage.getItem('chartData_v2');
-		if (savedChartData) {
-			Object.assign(chartData, JSON.parse(savedChartData));
+		if (typeof localStorage === 'undefined') return; // guard for SSR
+		if (!_loadedChartData) {
+			const saved = localStorage.getItem('chartData_v2');
+			if (saved) Object.assign(chartData, JSON.parse(saved));
+			_loadedChartData = true;
+		}
+		if (!_loadedChartInput) {
+			const savedInput = localStorage.getItem('chartInput_v1');
+			if (savedInput) Object.assign(chartInput, JSON.parse(savedInput));
+			_loadedChartInput = true;
 		}
 	});
 
+	const saveChartData = debounce(() => {
+		if (typeof localStorage === 'undefined') return;
+		try {
+			localStorage.setItem('chartData_v2', JSON.stringify(chartData));
+		} catch (e) {
+			console.warn('Failed to persist chartData:', e);
+		}
+	}, 150);
+
+	const saveChartInput = debounce(() => {
+		if (typeof localStorage === 'undefined') return;
+		try {
+			localStorage.setItem('chartInput_v1', JSON.stringify(chartInput));
+		} catch (e) {
+			console.warn('Failed to persist chartInput:', e);
+		}
+	}, 150);
+
 	$effect(() => {
-		localStorage.setItem('chartData_v2', JSON.stringify(chartData));
+		const saveChartInput = debounce(() => {
+			if (typeof localStorage === 'undefined') return;
+			try {
+				localStorage.setItem('chartInput_v1', JSON.stringify(chartInput));
+			} catch (e) {
+				console.warn('Failed to persist chartInput:', e);
+			}
+		}, 150);
 	});
 </script>
 
