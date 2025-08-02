@@ -37,6 +37,7 @@
 	let {
 		name,
 		date,
+		weekday,
 		time,
 		city,
 		country,
@@ -84,6 +85,14 @@
 			x: cx + r * Math.cos(rad),
 			y: cy + r * Math.sin(rad)
 		};
+	}
+
+	function toDMS(deg: number, isLat: boolean): string {
+		const abs = Math.abs(deg);
+		const degrees = Math.floor(abs);
+		const minutes = Math.round((abs - degrees) * 60);
+		const direction = isLat ? (deg >= 0 ? 'N' : 'S') : deg >= 0 ? 'E' : 'W';
+		return `${degrees}°${direction}${minutes}'`;
 	}
 
 	//–– Base rotation so ascendant is at 0°
@@ -183,13 +192,14 @@
 	<!-- Chart info -->
 	<g id="chart-info" class="fill-current text-xs" transform={`translate(${center}, ${center})`}>
 		<text text-anchor="middle" class="font-bold" dy="-40">{name}</text>
-		<text text-anchor="middle" dy="-24">{date} {time}</text>
-		<text text-anchor="middle" dy="-8">{city}</text>
-		<text text-anchor="middle" dy="8">{country}</text>
-		<text text-anchor="middle" dy="24">{usedCoordinates.latitude}, {usedCoordinates.longitude}</text
+		<text text-anchor="middle" dy="-24">{date}, {weekday}</text>
+		<text text-anchor="middle" dy="-8">{time} (GMT {usedTimezone.offset})</text>
+		<text text-anchor="middle" dy="8">{city}, {country}</text>
+		<text text-anchor="middle" dy="24"
+			>{toDMS(usedCoordinates.latitude, true)} {toDMS(usedCoordinates.longitude, false)}</text
 		>
-		<text text-anchor="middle" dy="40">{usedTimezone}</text>
-		<text text-anchor="middle" dy="56">Alcabitius</text>
+		<text class="italic" text-anchor="middle" dy="40">Tropical</text>
+		<text class="italic" text-anchor="middle" dy="56">Alcabitius</text>
 	</g>
 
 	<!-- Zodiac outer/inner rings -->

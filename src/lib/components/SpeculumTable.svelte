@@ -73,7 +73,7 @@
 	};
 </script>
 
-<div class="table-container table-speculum">
+<div class="table-container table-speculum lg:col-span-3">
 	<table class="table text-center">
 		<thead>
 			<tr>

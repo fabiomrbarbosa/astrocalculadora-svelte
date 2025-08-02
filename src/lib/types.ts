@@ -20,13 +20,13 @@ export type ChartData = {
 		hour: number;
 		minute: number;
 		second: number;
+		utcTime?: string; // ISO string if needed
 		utcOffset: string; // '+02:00'
 		timezone: string; // 'Europe/Berlin'
 		latitude: number;
 		longitude: number;
 		city: string;
 		country: string;
-		utcTime?: string; // ISO string if needed
 	};
 	dayNight: string;
 	maleFemale: string;
@@ -53,8 +53,13 @@ export type ChartData = {
 		dayRuler: string;
 		hourRuler: string;
 		usedCoordinates: Record<string, any>;
-		usedTimezone: Record<string, any>;
+		usedTimezone: TimezoneInfo;
 	} | null;
+};
+
+export type TimezoneInfo = {
+	name: string; // timezone identifier, e.g. 'Europe/Berlin'
+	offset: string; // offset from UTC in hours, e.g. +02:00 or -05:00
 };
 
 /** Dignities (Rulership, Exaltation, Triplicity, Terms, and Faces) */
@@ -129,6 +134,6 @@ export type SyncChartInput = {
 	dayRuler?: string;
 	hourRuler?: string;
 	usedCoordinates?: Record<string, any>;
-	usedTimezone?: Record<string, any>;
+	usedTimezone?: TimezoneInfo;
 	prenatalSyzygy?: { type: string; degrees: number; minutes: number; sign: string };
 };

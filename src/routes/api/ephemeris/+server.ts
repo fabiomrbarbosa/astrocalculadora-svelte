@@ -285,8 +285,9 @@ export async function POST({ request }) {
 			nextSunrise
 		);
 
-		// Planetary positions: call  main ephemeris
+		// Planetary positions: call main ephemeris
 		const mainEph = computeEphAtJd(jdUT, lat, lng);
+		const timezoneOffsetString = localTime.format('Z'); // e.g. "+02:00"
 
 		// Houses & Ascendant
 		const houseData = sweph.houses_ex2(jdUT, flags, lat, lng, 'B');
@@ -320,7 +321,7 @@ export async function POST({ request }) {
 			dayRuler: dayRuler.toLowerCase(),
 			hourRuler: hourRuler.toLowerCase(),
 			planetaryHour: hourNumber,
-			usedTimezone: tz,
+			usedTimezone: { name: tz, offset: timezoneOffsetString },
 			usedCoordinates: { latitude: lat, longitude: lng },
 			prenatalSyzygy: {
 				type: isFull ? 'Lua Cheia' : 'Lua Nova',

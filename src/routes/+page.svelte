@@ -14,6 +14,12 @@
 		return Number.isNaN(num) || num < 0 ? '0000' : String(num).padStart(4, '0');
 	}
 
+	function weekdayName(dateStr: string, locale = 'pt-PT'): string {
+		const d = new Date(dateStr);
+		if (isNaN(d.valueOf())) return ''; // invalid
+		return new Intl.DateTimeFormat(locale, { weekday: 'long' }).format(d);
+	}
+
 	let isLoading = $state(false);
 
 	let date = $derived(
@@ -23,6 +29,11 @@
 	let ISODate = $derived(
 		`${safeYear(chartData.meta.year)}-${safePad(chartData.meta.month, 1, 12)}-${safePad(chartData.meta.day, 1, 31)}`
 	);
+
+	let weekday = $derived.by(() => {
+		if (!ISODate) return '';
+		return weekdayName(ISODate); // expects "YYYY-MM-DD"
+	});
 
 	let time = $derived(
 		`${safePad(chartData.meta.hour, 0, 23)}:${safePad(chartData.meta.minute, 0, 59)}:${safePad(chartData.meta.second, 0, 59)}`
@@ -49,9 +60,9 @@
 		class="bg-base-100 rounded-box p-4 shadow-sm print:hidden"
 		onsubmit={handleSubmit}
 	>
-		<h2 class="text-xl font-bold">Dados do Mapa</h2>
+		<h2 class="mb-4 text-xl font-bold">Dados a Calcular</h2>
 
-		<fieldset class="fieldset mt-4 flex space-x-2 lg:col-span-2">
+		<fieldset class="fieldset flex space-x-2 lg:col-span-2">
 			<legend class="fieldset-legend">Nome</legend>
 			<input
 				type="text"
@@ -60,7 +71,7 @@
 				class="input input-bordered w-full"
 			/>
 		</fieldset>
-		<fieldset class="fieldset mt-4 flex space-x-2">
+		<fieldset class="fieldset flex space-x-2">
 			<legend class="fieldset-legend">Local</legend>
 			<input
 				type="text"
@@ -84,9 +95,9 @@
 				max="31"
 				placeholder="Dia"
 				bind:value={chartInput.day}
-				class="input input-bordered w-full"
+				class="input input-bordered"
 			/>
-			<select class="select" bind:value={chartInput.month}>
+			<select class="select grow" bind:value={chartInput.month}>
 				<option value={1}>Janeiro</option>
 				<option value={2}>Fevereiro</option>
 				<option value={3}>Março</option>
@@ -106,7 +117,7 @@
 				max="9999"
 				placeholder="Ano"
 				bind:value={chartInput.year}
-				class="input input-bordered w-full"
+				class="input input-bordered"
 			/>
 		</fieldset>
 
@@ -158,6 +169,7 @@
 				name={chartData.meta.name}
 				{date}
 				{time}
+				{weekday}
 				city={chartData.meta.city}
 				country={chartData.meta.country}
 				usedCoordinates={chartData.rawEphemeris.usedCoordinates}

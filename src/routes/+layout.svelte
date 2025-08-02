@@ -94,12 +94,14 @@
 						{/each}
 					</ul>
 				</div>
-				<a href="/" class="btn btn-ghost text-xl">AstroCalculadora<sup>β</sup></a>
+				<a href="/" class=" pr-4 pl-4 text-xl font-bold">AstroCalculadora<sup>β</sup></a>
+			</div>
+			<div class="navbar-end">
 				<DarkModeToggle />
 			</div>
 		</div>
 	</div>
-	<div id="sidebar" class="lg:row-start-2 lg:block print:hidden">
+	<div id="sidebar" class="hidden lg:row-start-2 lg:block print:hidden">
 		<div class="bg-base-100 rounded-box sticky top-4 shadow-sm">
 			<ul class="menu sticky top-0 w-full">
 				{#each menuItems as { href, label }}
