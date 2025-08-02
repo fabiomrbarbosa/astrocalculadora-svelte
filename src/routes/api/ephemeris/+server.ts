@@ -85,10 +85,11 @@ function computeEphAtJd(jdUT: number, lat: number, lng: number) {
 	}
 
 	const housesData = sweph.houses_ex2(jdUT, flags, lat, lng, 'B');
-	console.log('Houses', housesData);
+
 	const ascLon = housesData.data.houses[0];
 	const asc = degreesToDms(ascLon);
 	const ascInfo = getZodiacInfo(ascLon);
+
 	const mcLon = housesData.data.houses[9];
 	const mc = degreesToDms(mcLon);
 	const mcInfo = getZodiacInfo(mcLon);

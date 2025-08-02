@@ -170,7 +170,6 @@ export async function loadEphemeris(
 	});
 	if (!res.ok) throw new Error(await res.text());
 	const eph = await res.json();
-	console.log(eph);
 
 	// 2) sync the main chart into your store
 	syncEphToChartData(eph);
@@ -341,6 +340,4 @@ export function syncEphToChartData(input: SyncChartInput) {
 		usedCoordinates: usedCoordinates!,
 		usedTimezone: usedTimezone!
 	};
-
-	console.log(chartData);
 }

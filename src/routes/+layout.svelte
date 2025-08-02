@@ -101,6 +101,7 @@
 			</div>
 		</div>
 	</div>
+	<a href="#main" class="skip-to-content-link"> Saltar para o conteúdo principal </a>
 	<div id="sidebar" class="hidden lg:row-start-2 lg:block print:hidden">
 		<div class="bg-base-100 rounded-box sticky top-4 shadow-sm">
 			<ul class="menu sticky top-0 w-full">
@@ -118,5 +119,5 @@
 			</ul>
 		</div>
 	</div>
-	<div id="body" class="lg:col-span-4 lg:row-start-2">{@render children()}</div>
+	<div id="main" class="lg:col-span-4 lg:row-start-2">{@render children()}</div>
 </div>

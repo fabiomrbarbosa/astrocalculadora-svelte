@@ -40,6 +40,20 @@ body {
 	@apply bg-base-300 p-5 pb-20;
 }
 
+.skip-to-content-link {
+	position: absolute;
+	z-index: 99999;
+	padding: 1em;
+	left: -90001px;
+	opacity: 0;
+	margin: 1em;
+}
+
+.skip-to-content-link:focus {
+	left: 0;
+	opacity: 1;
+}
+
 .panel {
 	@apply -mt-4 flex flex-col gap-6;
 }
