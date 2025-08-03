@@ -140,43 +140,55 @@
 	);
 
 	//–– Compute a bumped‐angle for each planet label to avoid overlap
+	function isNearCusp(deg: number, cuspDeg: number, threshold = 3) {
+		const diff = Math.abs((deg - cuspDeg + 360) % 360);
+		return diff < threshold || 360 - diff < threshold;
+	}
+
 	const adjustedPlanetAngles = $derived.by(() => {
-		// 1. build list of actual longitudes
-		const list = Object.entries(planetPositions)
+		const processed = Object.entries(planetPositions)
 			.filter(([, pt]) => pt.position)
-			.map(([name, pt]) => ({
-				name,
-				orig: (pt.position.longitude + rotationOffset) % 360
-			}));
+			.map(([name, pt]) => {
+				const raw = pt.position.longitude;
+				const angle = (raw + rotationOffset) % 360;
+				const sign = Math.floor(raw / 30);
+				const houseIndex = houses.findIndex((h, i) => {
+					const next = houses[(i + 1) % 12];
+					return (h <= raw && raw < next) || (next < h && (raw >= h || raw < next));
+				});
+				return { name, raw, angle, sign, houseIndex };
+			});
 
-		// 2. sort ascending
-		list.sort((a, b) => a.orig - b.orig);
-
-		// 3. handle wrap‐around cluster at 360°→0°
-		if (list.length) {
-			const first = list[0].orig;
-			const last = list[list.length - 1].orig;
-			if (first + 360 - last < clusterSpacingThreshold) {
-				list[0].orig += 360;
-				list.sort((a, b) => a.orig - b.orig);
-			}
+		const sectorMap = new Map<string, typeof processed>();
+		for (const p of processed) {
+			const key = `${p.sign}-${p.houseIndex}`;
+			if (!sectorMap.has(key)) sectorMap.set(key, []);
+			sectorMap.get(key)!.push(p);
 		}
 
-		// 4. walk and bump tightly spaced neighbors
 		const result: Record<string, number> = {};
-		let prevOrig: number | null = null;
-		let clusterCount = 0;
+		for (const [_, group] of sectorMap) {
+			group.sort((a, b) => a.angle - b.angle);
+			let clusterCount = 0;
+			let prev: number | null = null;
+			for (let i = 0; i < group.length; i++) {
+				const { name, angle, raw, houseIndex } = group[i];
+				let bumped = angle;
 
-		for (const { name, orig } of list) {
-			if (prevOrig !== null && orig - prevOrig < clusterSpacingThreshold) {
-				clusterCount += 1;
-			} else {
-				clusterCount = 0;
+				const cusp = houses[houseIndex];
+				const nextCusp = houses[(houseIndex + 1) % 12];
+				if (isNearCusp(raw, cusp)) bumped += 3;
+				else if (isNearCusp(raw, nextCusp)) bumped -= 3;
+
+				if (prev !== null && angle - prev < clusterSpacingThreshold) {
+					clusterCount++;
+				} else {
+					clusterCount = 0;
+				}
+				bumped += clusterCount * labelOffsetStep;
+				result[name] = ((bumped % 360) + 360) % 360;
+				prev = angle;
 			}
-			const bumped = orig + clusterCount * labelOffsetStep;
-			// mod back into [0,360)
-			result[name] = ((bumped % 360) + 360) % 360;
-			prevOrig = orig;
 		}
 
 		return result;
