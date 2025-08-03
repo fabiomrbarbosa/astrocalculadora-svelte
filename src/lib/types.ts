@@ -38,13 +38,6 @@ export type ChartData = {
 	results: Record<string, any>; // Loose typing for deep nesting
 	partFortuneDispositor: string;
 	partSubstanceDispositor: string;
-	syzygy?: {
-		label: string;
-		type: string;
-		degrees: number;
-		minutes: number;
-		sign: string;
-	};
 	rawEphemeris?: {
 		planetPositions: Record<string, any>;
 		ascendant: any;
@@ -71,6 +64,27 @@ export interface Dignities {
 	terms: Record<number, string>;
 	faces: Record<number, string>;
 }
+
+/** Planet Object */
+export interface Planet {
+	value: string;
+	label: string;
+	icon: string;
+	iconReplacement: string;
+	orb: number;
+}
+
+/** Planet Dictionary */
+export type Planets = Record<string, Planet>;
+
+/** Other points */
+
+export interface Point {
+	label: string;
+}
+
+/** Points Dictionary */
+export type Points = Record<string, Point>;
 
 /** Zodiac Sign Object */
 export interface Sign {

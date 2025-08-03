@@ -17,9 +17,9 @@
 			</select>
 		</fieldset>
 
-		<AstroInput keyName="sun" data={chartData.planets.sun} />
-		<AstroInput keyName="moon" data={chartData.planets.moon} />
-		<AstroInput keyName="ascendant" data={chartData.points.ascendant} />
+		<AstroInput keyName="sun" bind:data={chartData.planets.sun} />
+		<AstroInput keyName="moon" bind:data={chartData.planets.moon} />
+		<AstroInput keyName="ascendant" bind:data={chartData.points.ascendant} />
 
 		<button class="submit">Calcular Parte da Fortuna </button>
 	</form>

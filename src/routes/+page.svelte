@@ -46,6 +46,7 @@
 
 		try {
 			await loadEphemeris(chartInput.name, ISODate, time, chartInput.city, chartInput.country);
+			console.log(chartData);
 		} catch (err) {
 			console.error('Error loading full chart:', err);
 		} finally {
@@ -60,7 +61,7 @@
 		class="bg-base-100 rounded-box p-4 shadow-sm print:hidden"
 		onsubmit={handleSubmit}
 	>
-		<h2 class="mb-4 text-xl font-bold">Dados a Calcular</h2>
+		<h2 class="mb-4 text-xl font-bold">Novo Mapa</h2>
 
 		<fieldset class="fieldset flex space-x-2 lg:col-span-2">
 			<legend class="fieldset-legend">Nome</legend>

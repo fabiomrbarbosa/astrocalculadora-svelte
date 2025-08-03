@@ -1,5 +1,5 @@
 <script lang="ts">
-	const { keyName, data } = $props();
+	let { keyName, data = $bindable() } = $props();
 </script>
 
 <label class="select w-full md:w-1/3">

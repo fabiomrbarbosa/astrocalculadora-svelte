@@ -68,7 +68,7 @@
 		class="bg-base-100 rounded-box flex flex-col p-4 shadow-sm lg:col-span-2 print:hidden"
 		onsubmit={handleSubmit}
 	>
-		<h2 class="mb-4 text-xl font-bold">Dados a Calcular</h2>
+		<h2 class="mb-4 text-xl font-bold">Novo Mapa</h2>
 
 		<div class="grid grow lg:grid-cols-2 lg:gap-4">
 			<div class="lg:col-span-1">

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { calculateAlmutemSubstance } from '$lib/calcs';
 	import { chartData } from '$lib/chartData.svelte';
-	import { resourceSignifiers, signs } from '$lib/staticData';
+	import { planets, resourceSignifiers, signs } from '$lib/staticData';
 
 	import AstroInput from '$lib/components/AstroInput.svelte';
 	import usePreventDefault from '$lib/actions/usePreventDefault';
@@ -14,14 +14,14 @@
 <!-- Almutem of Substance Form -->
 <div class="panel">
 	<form class="form" onsubmit={calculateAlmutemSubstance} use:usePreventDefault>
-		<AstroInput keyName="house2Cusp" data={chartData.houses.house2.cusp} />
-		<AstroInput keyName="house2Ruler" data={chartData.houses.house2.ruler} />
-		<AstroInput keyName="house2Planets" data={chartData.houses.house2.planets} />
-		<AstroInput keyName="partFortune" data={chartData.points.partFortune} />
-		<AstroInput keyName="partFortuneDispositor" data={chartData.partFortuneDispositor} />
-		<AstroInput keyName="partSubstance" data={chartData.points.partSubstance} />
-		<AstroInput keyName="partSubstanceDispositor" data={chartData.partSubstanceDispositor} />
-		<AstroInput keyName="jupiter" data={chartData.planets.jupiter} />
+		<AstroInput keyName="house2Cusp" bind:data={chartData.houses.house2.cusp} />
+		<AstroInput keyName="house2Ruler" bind:data={chartData.houses.house2.ruler} />
+		<AstroInput keyName="house2Planets" bind:data={chartData.houses.house2.planets} />
+		<AstroInput keyName="partFortune" bind:data={chartData.points.partFortune} />
+		<AstroInput keyName="partFortuneDispositor" bind:data={chartData.partFortuneDispositor} />
+		<AstroInput keyName="partSubstance" bind:data={chartData.points.partSubstance} />
+		<AstroInput keyName="partSubstanceDispositor" bind:data={chartData.partSubstanceDispositor} />
+		<AstroInput keyName="jupiter" bind:data={chartData.planets.jupiter} />
 
 		<button class="submit">Calcular Almutem da Substância</button>
 	</form>
@@ -34,9 +34,7 @@
 					<tr>
 						<th>Significadores</th>
 						{#each planetKeys as planetKey}
-							<th class="font-astronomicon text-lg"
-								>{chartData.planets[planetKey].iconReplacement}</th
-							>
+							<th class="font-astronomicon text-lg">{planets[planetKey].iconReplacement}</th>
 						{/each}
 					</tr>
 				</thead>
@@ -47,7 +45,7 @@
 							<!-- Special handling for multiple planets in House 2 -->
 							{#each chartData.houses.house2.planets as planet}
 								<tr>
-									<td>{chartData.planets[planet].label} (Casa 2)</td>
+									<td>{planets[planet].label} (Casa 2)</td>
 									{#each planetKeys as planetKey}
 										<td
 											>{getBreakdownScores(

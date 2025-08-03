@@ -17,9 +17,9 @@
 			</select>
 		</fieldset>
 
-		<AstroInput keyName="jupiter" data={chartData.planets.jupiter} />
-		<AstroInput keyName="saturn" data={chartData.planets.saturn} />
-		<AstroInput keyName="ascendant" data={chartData.points.ascendant} />
+		<AstroInput keyName="jupiter" bind:data={chartData.planets.jupiter} />
+		<AstroInput keyName="saturn" bind:data={chartData.planets.saturn} />
+		<AstroInput keyName="ascendant" bind:data={chartData.points.ascendant} />
 
 		<button class="submit">Calcular Parte dos Filhos</button>
 	</form>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { calculateAlmutemFiguris } from '$lib/calcs';
 	import { chartData } from '$lib/chartData.svelte';
-	import { hylegicPoints } from '$lib/staticData';
+	import { hylegicPoints, planets } from '$lib/staticData';
 
 	import AstroInput from '$lib/components/AstroInput.svelte';
 	import usePreventDefault from '$lib/actions/usePreventDefault';
@@ -14,11 +14,11 @@
 <!-- Almutem Figuris Form -->
 <div class="panel">
 	<form class="form" onsubmit={calculateAlmutemFiguris} use:usePreventDefault>
-		<AstroInput keyName="sun" data={chartData.planets.sun} />
-		<AstroInput keyName="moon" data={chartData.planets.moon} />
-		<AstroInput keyName="ascendant" data={chartData.points.ascendant} />
-		<AstroInput keyName="partFortune" data={chartData.points.partFortune} />
-		<AstroInput keyName="syzygy" data={chartData.points.syzygy} />
+		<AstroInput keyName="sun" bind:data={chartData.planets.sun} />
+		<AstroInput keyName="moon" bind:data={chartData.planets.moon} />
+		<AstroInput keyName="ascendant" bind:data={chartData.points.ascendant} />
+		<AstroInput keyName="partFortune" bind:data={chartData.points.partFortune} />
+		<AstroInput keyName="syzygy" bind:data={chartData.points.syzygy} />
 
 		<!-- Positions per House -->
 		<fieldset class="fieldset">
@@ -75,7 +75,7 @@
 						<th>Pontos Hilégicos</th>
 						{#each planetKeys as planetKey}
 							<th class="font-astronomicon text-lg">
-								{chartData.planets[planetKey].iconReplacement}
+								{planets[planetKey].iconReplacement}
 							</th>
 						{/each}
 					</tr>

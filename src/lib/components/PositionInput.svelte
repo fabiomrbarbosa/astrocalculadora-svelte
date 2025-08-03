@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { signs } from '$lib/staticData';
-	const { keyName, data } = $props();
+	let { keyName, data = $bindable() } = $props();
 
 	// Function to handle input (allows typing freely)
 	function handleInput(event: Event, type: keyof typeof data) {

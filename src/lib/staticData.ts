@@ -1,4 +1,28 @@
-import type { Signs, Aspects, HylegicPoints, ResourceSignifiers } from '$lib/types';
+import type {
+	Planets,
+	Signs,
+	Points,
+	Aspects,
+	HylegicPoints,
+	ResourceSignifiers
+} from '$lib/types';
+
+export const planets: Planets = {
+	moon: {
+		value: 'Moon',
+		label: 'Lua',
+		icon: '☽',
+		iconReplacement: 'R',
+		orb: 12
+	},
+	mercury: { value: 'Mercury', label: 'Mercúrio', icon: '☿', iconReplacement: 'S', orb: 7 },
+	venus: { value: 'Venus', label: 'Vénus', icon: '♀', iconReplacement: 'T', orb: 7 },
+	sun: { value: 'Sun', label: 'Sol', icon: '☉', iconReplacement: 'Q', orb: 15 },
+	mars: { value: 'Mars', label: 'Marte', icon: '♂', iconReplacement: 'U', orb: 8 },
+	jupiter: { value: 'Jupiter', label: 'Júpiter', icon: '♃', iconReplacement: 'V', orb: 9 },
+	saturn: { value: 'Saturn', label: 'Saturno', icon: '♄', iconReplacement: 'W', orb: 9 }
+};
+
 export const signs: Signs = {
 	aries: {
 		value: 'Aries',
@@ -282,6 +306,39 @@ export const signs: Signs = {
 	}
 };
 
+export const points: Points = {
+	ascendant: {
+		label: 'Ascendente'
+	},
+	midheaven: {
+		label: 'Meio-do-Céu'
+	},
+	partFortune: {
+		label: 'Parte da Fortuna'
+	},
+	partSubstance: {
+		label: 'Parte da Substância'
+	},
+	syzygy: {
+		label: 'Sizígia Pré-Natal'
+	}
+};
+
+export const houses = {
+	house1: { label: '1.ª Casa', cusp: { label: 'Cúspide da 1.ª Casa' } },
+	house2: { label: '2.ª Casa', cusp: { label: 'Cúspide da 2.ª Casa' } },
+	house3: { label: '3.ª Casa', cusp: { label: 'Cúspide da 3.ª Casa' } },
+	house4: { label: '4.ª Casa', cusp: { label: 'Cúspide da 4.ª Casa' } },
+	house5: { label: '5.ª Casa', cusp: { label: 'Cúspide da 5.ª Casa' } },
+	house6: { label: '6.ª Casa', cusp: { label: 'Cúspide da 6.ª Casa' } },
+	house7: { label: '6.ª Casa', cusp: { label: 'Cúspide da 7.ª Casa' } },
+	house8: { label: '8.ª Casa', cusp: { label: 'Cúspide da 8.ª Casa' } },
+	house9: { label: '9.ª Casa', cusp: { label: 'Cúspide da 9.ª Casa' } },
+	house10: { label: '10.ª Casa', cusp: { label: 'Cúspide da 10.ª Casa' } },
+	house11: { label: '11.ª Casa', cusp: { label: 'Cúspide da 11.ª Casa' } },
+	house12: { label: '12.ª Casa', cusp: { label: 'Cúspide da 12.ª Casa' } }
+};
+
 export const aspects: Aspects = {
 	conjunction: { name: 'Conjunção', angle: 0, signsApart: [0], icon: '☌' }, // Same sign
 	sextile: { name: 'Sextil', angle: 60, signsApart: [2, 10], icon: '⚹' }, // Two signs apart (aries-Gemini, aries-Aquarius)
@@ -289,6 +346,7 @@ export const aspects: Aspects = {
 	trine: { name: 'Trígono', angle: 120, signsApart: [4, 8], icon: '△' }, // Four signs apart (aries-Leo, aries-Sagittarius)
 	opposition: { name: 'Oposição', angle: 180, signsApart: [6], icon: '☍' } // Six signs apart (aries-Libra)
 };
+
 export const hylegicPoints: HylegicPoints = {
 	sun: { source: 'planets.sun', label: 'Sol' },
 	moon: { source: 'planets.moon', label: 'Lua' },
@@ -305,6 +363,7 @@ export const hylegicPoints: HylegicPoints = {
 		label: 'Sizígia Pré-Natal'
 	}
 };
+
 export const resourceSignifiers: ResourceSignifiers = {
 	house2Cusp: {
 		source: 'houses.house2.cusp',

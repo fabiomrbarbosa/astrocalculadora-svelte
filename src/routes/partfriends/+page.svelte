@@ -8,9 +8,9 @@
 <!-- Part of Friends Form -->
 <div class="panel">
 	<form class="form" onsubmit={calculatePartFriends} use:usePreventDefault>
-		<AstroInput keyName="moon" data={chartData.planets.moon} />
-		<AstroInput keyName="mercury" data={chartData.planets.mercury} />
-		<AstroInput keyName="ascendant" data={chartData.points.ascendant} />
+		<AstroInput keyName="moon" bind:data={chartData.planets.moon} />
+		<AstroInput keyName="mercury" bind:data={chartData.planets.mercury} />
+		<AstroInput keyName="ascendant" bind:data={chartData.points.ascendant} />
 
 		<button class="submit">Calcular Parte dos Amigos</button>
 	</form>

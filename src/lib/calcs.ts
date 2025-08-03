@@ -1,5 +1,5 @@
 import { chartData } from './chartData.svelte';
-import { aspects, signs, hylegicPoints, resourceSignifiers } from './staticData';
+import { aspects, signs, hylegicPoints, resourceSignifiers, planets } from './staticData';
 import {
 	calculatePosition,
 	convertPositionToSignAndDegrees,
@@ -27,6 +27,14 @@ export function calculateAspects() {
 			const fastPlanet = chartData.planets[planetKeys[i]];
 			const slowPlanet = chartData.planets[planetKeys[j]];
 
+			const fastMeta = planets[planetKeys[i]];
+			const slowMeta = planets[planetKeys[j]];
+			const fastLabel = fastMeta?.label || fastPlanet.label;
+			const fastIcon = fastMeta?.icon || '';
+			const slowLabel = slowMeta?.label || slowPlanet.label;
+			const slowIcon = slowMeta?.icon || '';
+			const orb = Math.max(fastMeta?.orb || fastPlanet.orb, slowMeta?.orb || slowPlanet.orb);
+
 			const fastPos = calculatePosition(fastPlanet.sign, fastPlanet.degrees, fastPlanet.minutes);
 			const slowPos = calculatePosition(slowPlanet.sign, slowPlanet.degrees, slowPlanet.minutes);
 
@@ -35,7 +43,6 @@ export function calculateAspects() {
 			if (angle > 180) angle = 360 - angle;
 
 			for (const aspect of Object.values(aspects)) {
-				const orb = Math.max(fastPlanet.orb, slowPlanet.orb);
 				let orbDiff = Math.abs(angle - aspect.angle);
 
 				if (orbDiff <= orb) {
@@ -66,8 +73,8 @@ export function calculateAspects() {
 
 					// Add the aspect to results
 					chartData.results.aspects.push({
-						planet1: fastPlanet.label + (fastPlanet.retrograde ? ' ℞' : ''),
-						planet2: slowPlanet.label + (slowPlanet.retrograde ? ' ℞' : ''),
+						planet1: fastLabel + (fastPlanet.retrograde ? ' ℞' : ''),
+						planet2: slowLabel + (slowPlanet.retrograde ? ' ℞' : ''),
 						aspect: aspect.name,
 						icon: aspect.icon,
 						orb: `${Math.floor(orbDiff)}°${Math.round((orbDiff - Math.floor(orbDiff)) * 60)}'`,
@@ -78,6 +85,53 @@ export function calculateAspects() {
 					// Store aspect in table
 					chartData.results.aspectTable[planetKeys[j]][planetKeys[i]] =
 						`${aspect.icon} ${Math.floor(orbDiff)}°${Math.round((orbDiff - Math.floor(orbDiff)) * 60)}' ${isApplying}${outOfSign ? 'D' : ''}`;
+				}
+			}
+		}
+	}
+
+	// ——————————————————————————————————————————
+	// Add aspects to ASC and MC (listed last)
+	// ——————————————————————————————————————————
+	const anglePoints = [
+		{ key: 'ascendant', label: 'ASC', data: chartData.points.ascendant },
+		{ key: 'midheaven', label: 'MC', data: chartData.points.midheaven }
+	];
+
+	for (const { label, data } of anglePoints) {
+		const anglePos = calculatePosition(data.sign, data.degrees, data.minutes);
+
+		for (const planetKey of planetKeys) {
+			const planet = chartData.planets[planetKey];
+			const meta = planets[planetKey];
+			const planetLabel = meta?.label || planet.label;
+			const planetIcon = meta?.icon || '';
+			const orb = meta?.orb || planet.orb;
+			const planetPos = calculatePosition(planet.sign, planet.degrees, planet.minutes);
+
+			let angle = (anglePos - planetPos + 360) % 360;
+			if (angle > 180) angle = 360 - angle;
+
+			for (const aspect of Object.values(aspects)) {
+				const orbDiff = Math.abs(angle - aspect.angle);
+
+				if (orbDiff <= orb) {
+					const signDiff =
+						(signKeys.indexOf(data.sign.toLowerCase()) -
+							signKeys.indexOf(planet.sign.toLowerCase()) +
+							12) %
+						12;
+					const outOfSign = !aspect.signsApart.includes(signDiff);
+
+					chartData.results.aspects.push({
+						planet1: planetLabel + (planet.retrograde ? ' ℞' : ''),
+						planet2: label,
+						aspect: aspect.name,
+						icon: aspect.icon,
+						orb: `${Math.floor(orbDiff)}°${Math.round((orbDiff - Math.floor(orbDiff)) * 60)}'`,
+						applying: '', // Not applicable
+						outOfSign
+					});
 				}
 			}
 		}

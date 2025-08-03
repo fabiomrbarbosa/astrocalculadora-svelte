@@ -37,109 +37,76 @@ export let chartData: ChartData = $state({
 
 	planets: {
 		moon: {
-			label: 'Lua',
-			icon: '☽',
-			iconReplacement: 'R',
 			degrees: 0,
 			minutes: 0,
 			sign: 'aries',
-			house: 1,
-			orb: 12
+			house: 1
 		},
 		mercury: {
-			label: 'Mercúrio',
-			icon: '☿',
-			iconReplacement: 'S',
 			degrees: 0,
 			minutes: 0,
 			sign: 'aries',
 			house: 1,
-			orb: 7,
 			retrograde: false
 		},
 		venus: {
-			label: 'Vénus',
-			icon: '♀',
-			iconReplacement: 'T',
 			degrees: 0,
 			minutes: 0,
 			sign: 'aries',
 			house: 1,
-			orb: 7,
 			retrograde: false
 		},
 		sun: {
-			label: 'Sol',
-			icon: '☉',
-			iconReplacement: 'Q',
 			degrees: 0,
 			minutes: 0,
 			sign: 'aries',
-			house: 1,
-			orb: 15
+			house: 1
 		},
 		mars: {
-			label: 'Marte',
-			icon: '♂',
-			iconReplacement: 'U',
 			degrees: 0,
 			minutes: 0,
 			sign: 'aries',
 			house: 1,
-			orb: 8,
 			retrograde: false
 		},
 		jupiter: {
-			label: 'Júpiter',
-			icon: '♃',
-			iconReplacement: 'V',
 			degrees: 0,
 			minutes: 0,
 			sign: 'aries',
 			house: 1,
-			orb: 9,
 			retrograde: false
 		},
 		saturn: {
-			label: 'Saturno',
-			icon: '♄',
-			iconReplacement: 'W',
 			degrees: 0,
 			minutes: 0,
 			sign: 'aries',
 			house: 1,
-			orb: 9,
 			retrograde: false
 		}
 	},
 
 	points: {
 		ascendant: {
-			label: 'Ascendente',
 			degrees: 0,
 			minutes: 0,
 			sign: 'aries'
 		},
 		midheaven: {
-			label: 'Meio-Céu',
 			degrees: 0,
 			minutes: 0,
 			sign: 'aries'
 		},
 		partFortune: {
-			label: 'Parte da Fortuna',
 			degrees: 0,
 			minutes: 0,
 			sign: 'aries'
 		},
 		partSubstance: {
-			label: 'Parte da Substância',
 			degrees: 0,
 			minutes: 0,
 			sign: 'aries'
 		},
 		syzygy: {
-			label: 'Sizígia Pré-Natal',
 			type: '',
 			degrees: 0,
 			minutes: 0,
@@ -148,73 +115,65 @@ export let chartData: ChartData = $state({
 	},
 	houses: {
 		house1: {
-			cusp: { label: 'Cúspide da 1ª Casa', degrees: 0, minutes: 0, sign: 'aries' },
+			cusp: { degrees: 0, minutes: 0, sign: 'aries' },
 			ruler: 'moon',
 			planets: []
 		},
 		house2: {
-			cusp: { label: 'Cúspide da 2ª Casa', degrees: 0, minutes: 0, sign: 'aries' },
+			cusp: { degrees: 0, minutes: 0, sign: 'aries' },
 			ruler: 'moon',
 			planets: []
 		},
 		house3: {
-			cusp: { label: 'Cúspide da 3ª Casa', degrees: 0, minutes: 0, sign: 'aries' },
+			cusp: { degrees: 0, minutes: 0, sign: 'aries' },
 			ruler: 'moon',
 			planets: []
 		},
 		house4: {
-			cusp: { label: 'Cúspide da 4ª Casa', degrees: 0, minutes: 0, sign: 'aries' },
+			cusp: { degrees: 0, minutes: 0, sign: 'aries' },
 			ruler: 'moon',
 			planets: []
 		},
 		house5: {
-			cusp: { label: 'Cúspide da 5ª Casa', degrees: 0, minutes: 0, sign: 'aries' },
+			cusp: { degrees: 0, minutes: 0, sign: 'aries' },
 			ruler: 'moon',
 			planets: []
 		},
 		house6: {
-			cusp: { label: 'Cúspide da 6ª Casa', degrees: 0, minutes: 0, sign: 'aries' },
+			cusp: { degrees: 0, minutes: 0, sign: 'aries' },
 			ruler: 'moon',
 			planets: []
 		},
 		house7: {
-			cusp: { label: 'Cúspide da 7ª Casa', degrees: 0, minutes: 0, sign: 'aries' },
+			cusp: { degrees: 0, minutes: 0, sign: 'aries' },
 			ruler: 'moon',
 			planets: []
 		},
 		house8: {
-			cusp: { label: 'Cúspide da 8ª Casa', degrees: 0, minutes: 0, sign: 'aries' },
+			cusp: { degrees: 0, minutes: 0, sign: 'aries' },
 			ruler: 'moon',
 			planets: []
 		},
 		house9: {
-			cusp: { label: 'Cúspide da 9ª Casa', degrees: 0, minutes: 0, sign: 'aries' },
+			cusp: { degrees: 0, minutes: 0, sign: 'aries' },
 			ruler: 'moon',
 			planets: []
 		},
 		house10: {
-			cusp: { label: 'Cúspide da 10ª Casa', degrees: 0, minutes: 0, sign: 'aries' },
+			cusp: { degrees: 0, minutes: 0, sign: 'aries' },
 			ruler: 'moon',
 			planets: []
 		},
 		house11: {
-			cusp: { label: 'Cúspide da 11ª Casa', degrees: 0, minutes: 0, sign: 'aries' },
+			cusp: { degrees: 0, minutes: 0, sign: 'aries' },
 			ruler: 'moon',
 			planets: []
 		},
 		house12: {
-			cusp: { label: 'Cúspide da 12ª Casa', degrees: 0, minutes: 0, sign: 'aries' },
+			cusp: { degrees: 0, minutes: 0, sign: 'aries' },
 			ruler: 'moon',
 			planets: []
 		}
-	},
-
-	syzygy: {
-		label: '',
-		type: '',
-		degrees: 0,
-		minutes: 0,
-		sign: 'aries'
 	},
 
 	get partFortuneDispositor() {

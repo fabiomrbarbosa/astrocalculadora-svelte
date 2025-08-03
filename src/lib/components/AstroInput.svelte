@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { chartData } from '$lib/chartData.svelte';
+	import { planets, points } from '$lib/staticData';
 	import PositionInput from './PositionInput.svelte';
 	import PlanetInput from './PlanetInput.svelte';
 
-	const { keyName, showRetrograde = false, data } = $props();
+	let { keyName, showRetrograde = false, data = $bindable() } = $props();
 
 	// Check what kind of data we're dealing with based on the `keyName`
 	const isCusp = keyName.includes('Cusp'); // House cusps
@@ -29,9 +30,9 @@
 		{:else if isPlanetArray}Planetas na {keyName.replace('Planets', '').replace('house', '')}ª Casa
 		{:else if isDispositor}Dispositor da {chartData.points[keyName.replace('Dispositor', '')].label}
 		{:else if isPoint}
-			{chartData.points[keyName].label}
+			{points[keyName].label}
 		{:else if isPlanet}
-			{chartData.planets[keyName].label}
+			{planets[keyName].label}
 		{/if}
 	</legend>
 
@@ -45,7 +46,7 @@
 				bind:value={chartData.houses[keyName.replace('Ruler', '')].ruler}
 			>
 				<option value="" disabled selected>Selecione um planeta</option>
-				{#each Object.entries(chartData.planets) as [planetKey, planet]}
+				{#each Object.entries(planets) as [planetKey, planet]}
 					<option value={planetKey}>{planet.icon} {planet.label}</option>
 				{/each}
 			</select>
@@ -55,7 +56,7 @@
 		{#if chartData.houses[keyName.replace('Ruler', '')]?.ruler}
 			<PlanetInput
 				keyName={chartData.houses[keyName.replace('Ruler', '')].ruler}
-				data={chartData.planets[chartData.houses[keyName.replace('Ruler', '')]?.ruler]}
+				bind:data={chartData.planets[chartData.houses[keyName.replace('Ruler', '')]?.ruler]}
 			/>
 		{/if}
 	{:else if isPlanetArray}
@@ -64,10 +65,10 @@
 			<div class="flex w-full flex-col gap-2">
 				<!-- 🪐 Planet name header -->
 				<div class="planet-name mb-1 font-semibold">
-					{chartData.planets[planetKey].label}
+					{planets[planetKey].label}
 				</div>
 				<div class="flex gap-2 md:flex-row">
-					<PlanetInput keyName={planetKey} data={chartData.planets[planetKey]} />
+					<PlanetInput keyName={planetKey} bind:data={chartData.planets[planetKey]} />
 					<button type="button" class="submit--danger w-full" onclick={() => data.splice(index, 1)}>
 						✕
 					</button>
@@ -79,7 +80,7 @@
 		<div class="flex flex-col gap-2 md:flex-row">
 			<select bind:value={selectedPlanet} class="select w-full">
 				<option value="" disabled selected>Adicionar um planeta</option>
-				{#each Object.entries(chartData.planets) as [planetKey, planet]}
+				{#each Object.entries(planets) as [planetKey, planet]}
 					{#if !data.includes(planetKey)}
 						<option value={planetKey}>{planet.icon} {planet.label}</option>
 					{/if}
@@ -103,10 +104,10 @@
 		<div class="planet-name mb-1 font-semibold">
 			{chartData.planets[dispositorKey].label}
 		</div>
-		<PlanetInput keyName={dispositorKey} data={chartData.planets[dispositorKey]} />
+		<PlanetInput keyName={dispositorKey} bind:data={chartData.planets[dispositorKey]} />
 	{:else if isPlanet}
-		<PlanetInput {showRetrograde} {keyName} {data} />
+		<PlanetInput {showRetrograde} {keyName} bind:data />
 	{:else}
-		<PositionInput {keyName} {data} />
+		<PositionInput {keyName} bind:data />
 	{/if}
 </fieldset>

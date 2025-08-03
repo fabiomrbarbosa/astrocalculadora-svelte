@@ -264,7 +264,6 @@ export function syncEphToChartData(input: SyncChartInput) {
 
 		chartData.houses[`house${houseNum}`] = {
 			cusp: {
-				label: `Cúspide da ${houseNum}ª Casa`,
 				degrees: deg,
 				minutes: min,
 				sign: signKey
