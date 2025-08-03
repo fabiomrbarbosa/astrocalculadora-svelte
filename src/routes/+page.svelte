@@ -124,7 +124,7 @@
 				bind:value={chartInput.year}
 				class="input input-bordered"
 				required
-			/>
+			 />
 		</fieldset>
 
 		<fieldset class="fieldset flex space-x-2">
