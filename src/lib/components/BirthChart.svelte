@@ -130,7 +130,7 @@
 			const signIndex = Math.floor(cusp / 30) % 12;
 			return {
 				angle,
-				degrees: `${degrees}°`,
+				degrees: `${degrees.toString().padStart(2, '0')}º`,
 				sign: signs[signIndex].glyph,
 				signName: signs[signIndex].name,
 				minutes: `${minutes.toString().padStart(2, '0')}'`,
@@ -402,7 +402,7 @@
 				text-anchor="middle"
 				dominant-baseline="central"
 			>
-				{point.position.degrees}°
+				{point.position.degrees.toString().padStart(2, '0')}°
 			</text>
 
 			<!-- Sign glyph -->
