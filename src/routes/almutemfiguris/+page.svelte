@@ -27,7 +27,7 @@
 				{#each Object.entries(chartData.planets) as [planet]}
 					<div class="house-field w-full">
 						<label class="select w-full">
-							<span class="label">{planets[planet].icon}</span>
+							<span class="label font-astronomicon">{planets[planet].iconReplacement}</span>
 							<select id="{planet}House" bind:value={chartData.planets[planet].house}>
 								{#each Array.from({ length: 12 }, (_, i) => i + 1) as n}
 									<option value={n} selected={n === chartData.planets[planet].house}
