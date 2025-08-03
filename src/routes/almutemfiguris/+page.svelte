@@ -27,7 +27,7 @@
 				{#each Object.entries(chartData.planets) as [planet]}
 					<div class="house-field w-full">
 						<label class="select w-full">
-							<span class="label">{chartData.planets[planet].icon}</span>
+							<span class="label">{planets[planet].icon}</span>
 							<select id="{planet}House" bind:value={chartData.planets[planet].house}>
 								{#each Array.from({ length: 12 }, (_, i) => i + 1) as n}
 									<option value={n} selected={n === chartData.planets[planet].house}
@@ -46,7 +46,7 @@
 			<fieldset class="fieldset">
 				<legend class="fieldset-legend">Regente do Dia/da Noite</legend>
 				<select bind:value={chartData.rulerOfDay} class="select w-full">
-					{#each Object.entries(chartData.planets) as [planetKey, planet]}
+					{#each Object.entries(planets) as [planetKey, planet]}
 						<option value={planetKey}>{planet.icon} {planet.label}</option>
 					{/each}
 				</select>
@@ -56,7 +56,7 @@
 			<fieldset class="fieldset">
 				<legend class="fieldset-legend">Regente da Hora</legend>
 				<select bind:value={chartData.rulerOfHour} class="select w-full">
-					{#each Object.entries(chartData.planets) as [planetKey, planet]}
+					{#each Object.entries(planets) as [planetKey, planet]}
 						<option value={planetKey}>{planet.icon} {planet.label}</option>
 					{/each}
 				</select>
