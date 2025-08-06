@@ -308,10 +308,14 @@ export const signs: Signs = {
 
 export const points: Points = {
 	ascendant: {
-		label: 'Ascendente'
+		label: 'Ascendente',
+		icon: 'ASC',
+		iconReplacement: 'c'
 	},
 	midheaven: {
-		label: 'Meio-do-Céu'
+		label: 'Meio-do-Céu',
+		icon: 'ASC',
+		iconReplacement: 'd'
 	},
 	partFortune: {
 		label: 'Parte da Fortuna',

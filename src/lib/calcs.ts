@@ -30,9 +30,7 @@ export function calculateAspects() {
 			const fastMeta = planets[planetKeys[i]];
 			const slowMeta = planets[planetKeys[j]];
 			const fastLabel = fastMeta?.label || fastPlanet.label;
-			const fastIcon = fastMeta?.icon || '';
 			const slowLabel = slowMeta?.label || slowPlanet.label;
-			const slowIcon = slowMeta?.icon || '';
 			const orb = Math.max(fastMeta?.orb || fastPlanet.orb, slowMeta?.orb || slowPlanet.orb);
 
 			const fastPos = calculatePosition(fastPlanet.sign, fastPlanet.degrees, fastPlanet.minutes);
@@ -105,7 +103,6 @@ export function calculateAspects() {
 			const planet = chartData.planets[planetKey];
 			const meta = planets[planetKey];
 			const planetLabel = meta?.label || planet.label;
-			const planetIcon = meta?.icon || '';
 			const orb = meta?.orb || planet.orb;
 			const planetPos = calculatePosition(planet.sign, planet.degrees, planet.minutes);
 

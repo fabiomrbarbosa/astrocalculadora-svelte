@@ -19,6 +19,7 @@ export let chartData: ChartData = $state({
 		name: '',
 		year: 2000,
 		month: 1,
+		weekday: 1,
 		day: 1,
 		hour: 12,
 		minute: 0,
