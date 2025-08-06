@@ -162,7 +162,7 @@
 						class="text-xs"
 						class:fill-stone-400={a.outOfSign}
 					>
-						{a.orb}
+						{a.orb}{a.applying?.[0] ?? ''}
 					</text>
 				{/if}
 			{/if}
