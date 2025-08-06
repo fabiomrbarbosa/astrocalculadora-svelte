@@ -4,7 +4,6 @@
 	import AstroInput from '$lib/components/AstroInput.svelte';
 	import AspectGrid from '$lib/components/AspectGrid.svelte';
 	import usePreventDefault from '$lib/actions/usePreventDefault';
-	$inspect(chartData.results.aspects);
 </script>
 
 <!-- Almutem Figuris Form -->
