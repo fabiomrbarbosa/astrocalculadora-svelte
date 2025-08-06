@@ -1,55 +1,27 @@
 <script lang="ts">
-	import { signs as signData } from '$lib/staticData';
+	import { planets, signs, aspects, points } from '$lib/staticData';
 
-	let { houses, planetPositions, ascendant } = $props();
+	let { houses, planetPositions, partOfFortune } = $props();
 
-	type Glyph = { name: string; label: string; glyph: string };
+	function toCamelCase(str: string): string {
+		return str.charAt(0).toLowerCase() + str.slice(1);
+	}
 
-	// Sign glyphs for table headers
-	const signGlyphs: Glyph[] = [
-		{ name: 'Aries', label: 'Carneiro', glyph: 'A' },
-		{ name: 'Taurus', label: 'Touro', glyph: 'B' },
-		{ name: 'Gemini', label: 'Gémeos', glyph: 'C' },
-		{ name: 'Cancer', label: 'Caranguejo', glyph: 'D' },
-		{ name: 'Leo', label: 'Leão', glyph: 'E' },
-		{ name: 'Virgo', label: 'Virgem', glyph: 'F' },
-		{ name: 'Libra', label: 'Balança', glyph: 'G' },
-		{ name: 'Scorpio', label: 'Escorpião', glyph: 'H' },
-		{ name: 'Sagittarius', label: 'Sagitário', glyph: 'I' },
-		{ name: 'Capricorn', label: 'Capricórnio', glyph: 'J' },
-		{ name: 'Aquarius', label: 'Aquário', glyph: 'K' },
-		{ name: 'Pisces', label: 'Peixes', glyph: 'L' }
-	];
+	// Values and derived
+	const getSignData = (key: keyof typeof signs) => signs[key];
 
-	const signList = Object.keys(signData); // For indexing and accessing term data
+	const signList = Object.entries(signs).map(([key, p]) => ({
+		key,
+		label: p.label,
+		glyph: p.iconReplacement
+	}));
 
-	export const planets: Glyph[] = [
-		{ name: 'Sun', label: 'Sol', glyph: 'Q' },
-		{ name: 'Moon', label: 'Lua', glyph: 'R' },
-		{ name: 'Mercury', label: 'Mercúrio', glyph: 'S' },
-		{ name: 'Venus', label: 'Vénus', glyph: 'T' },
-		{ name: 'Mars', label: 'Marte', glyph: 'U' },
-		{ name: 'Jupiter', label: 'Júpiter', glyph: 'V' },
-		{ name: 'Saturn', label: 'Saturno', glyph: 'W' },
-		{ name: 'NorthNode', label: 'Nodo Norte', glyph: 'g' },
-		{ name: 'SouthNode', label: 'Nodo Sul', glyph: 'i' },
-		{ name: 'Fortune', label: 'Parte da Fortuna', glyph: '?' },
-		{ name: 'ASC', label: 'Ascendente', glyph: '↑' }
-	];
-
-	type Aspect = {
-		name: string;
-		label: string;
-		offset: number;
-		glyph: string;
-	};
-
-	const aspects: Aspect[] = [
-		{ name: 'sextile', label: 'Sextil', offset: 2, glyph: '%' },
-		{ name: 'square', label: 'Quadratura', offset: 3, glyph: '#' },
-		{ name: 'trine', label: 'Trígono', offset: 4, glyph: '$' },
-		{ name: 'opposition', label: 'Oposição', offset: 6, glyph: '"' }
-	];
+	const aspectList = Object.entries(aspects).map(([key, a]) => ({
+		name: key,
+		label: a.name,
+		glyph: a.iconReplacement,
+		offset: a.signsApart
+	}));
 
 	const getAspectClass = (name: string): string =>
 		name === 'sextile' || name === 'trine'
@@ -58,14 +30,27 @@
 				? 'text-error'
 				: 'text-base-content';
 
-	const signIndex = (signName: string): number =>
-		signGlyphs.findIndex((s) => s.name.toLowerCase() === signName.toLowerCase());
+	const signIndex = (signName: string): number => {
+		return Object.values(signs).findIndex((s) => s.value.toLowerCase() === signName.toLowerCase());
+	};
 
-	const getPlanetGlyph = (planetName: string): string =>
-		planets.find((p) => p.name.toLowerCase() === planetName.toLowerCase())?.glyph ?? '';
+	const getPlanetGlyph = (name: string): string => {
+		const key = toCamelCase(name);
+		return (
+			planets[key as keyof typeof planets]?.iconReplacement ??
+			points[key as keyof typeof points]?.iconReplacement ??
+			''
+		);
+	};
 
-	const getPlanetLabel = (planetName: string): string =>
-		planets.find((p) => p.name.toLowerCase() === planetName.toLowerCase())?.label ?? '';
+	const getPlanetLabel = (name: string): string => {
+		const lower = name.toLowerCase();
+		return (
+			planets[lower as keyof typeof planets]?.label ??
+			points[lower as keyof typeof points]?.label ??
+			''
+		);
+	};
 
 	const getCuspMinutes = (cusp: number): number => {
 		let deg = Math.floor(cusp % 30);
@@ -78,7 +63,7 @@
 		<thead>
 			<tr>
 				<th>°</th>
-				{#each signGlyphs as sign}
+				{#each signList as sign}
 					<th class="font-astronomicon text-2xl font-normal" title={sign.label}>
 						{sign.glyph}
 					</th>
@@ -90,10 +75,10 @@
 			{#each Array.from({ length: 30 }, (_, deg) => deg) as degree}
 				<tr>
 					<td>{degree}º</td>
-					{#each signGlyphs as sign, sIdx}
+					{#each signList as sign, sIdx}
 						<td>
 							<!-- Term markers -->
-							{#each Object.entries(signData[signList[sIdx]].dignities.terms) as [termDeg, ruler]}
+							{#each Object.entries(getSignData(signList[sIdx].key).dignities.terms) as [termDeg, ruler]}
 								{#if +termDeg === degree}
 									<div class="speculum__term text-sm" title={`Termo de ${getPlanetLabel(ruler)}`}>
 										T. <span class="font-astronomicon text-lg">{getPlanetGlyph(ruler)}</span>
@@ -133,35 +118,54 @@
 								{/if}
 							{/each}
 
+							<!-- Part of Fortune -->
+							{#if partOfFortune && signIndex(partOfFortune.signName) === sIdx && Math.floor(partOfFortune.position.degrees) === degree}
+								<div class="text-accent" title={getPlanetLabel('partFortune')}>
+									<span class="font-astronomicon text-lg">! {getPlanetGlyph('partFortune')}</span>
+									<span class="text-xs">{partOfFortune.position.minutes}'</span>
+								</div>
+							{/if}
+
 							<!-- Aspects from planets -->
-							{#each Object.entries(planetPositions) as [planet, pos]}
-								{#if planet !== 'NorthNode' && planet !== 'SouthNode'}
-									{#each aspects as { name, label, offset, glyph }}
-										{#if Math.floor(pos.position.degrees) === degree && ((signIndex(pos.signName) + offset) % 12 === sIdx || (signIndex(pos.signName) - offset + 12) % 12 === sIdx)}
-											<div
-												class={`font-astronomicon text-lg ${getAspectClass(name)}`}
-												title={`${label} a ${getPlanetLabel(planet)}`}
-											>
-												{glyph}
-												{getPlanetGlyph(planet)}
-											</div>
-										{/if}
+							{#each [...Object.entries(planetPositions), ['partFortune', partOfFortune]] as [planet, pos]}
+								{#if pos && planet !== 'NorthNode' && planet !== 'SouthNode'}
+									{#each aspectList.filter((a) => a.name !== 'conjunction') as { name, label, offset: offsets, glyph }}
+										{#each offsets as offset}
+											{#if Math.floor(pos.position.degrees) === degree}
+												{@const signNum = signIndex(pos.signName)}
+												{#if (signNum + offset) % 12 === sIdx}
+													<div
+														class={`font-astronomicon text-lg ${getAspectClass(name)}`}
+														title={`${label} a ${getPlanetLabel(planet)}`}
+													>
+														<span>{glyph}</span>
+														<span>{getPlanetGlyph(planet)}</span>
+													</div>
+												{/if}
+											{/if}
+										{/each}
 									{/each}
 								{/if}
 							{/each}
 
 							<!-- Aspects to ASC and MC (no opposition) -->
 							{#each [0, 9] as houseIndex}
-								{#each aspects.filter((a) => a.name !== 'opposition') as { name, label, offset, glyph }}
-									{#if Math.floor(houses[houseIndex] % 30) === degree && ((Math.floor(houses[houseIndex] / 30) + offset) % 12 === sIdx || (Math.floor(houses[houseIndex] / 30) - offset + 12) % 12 === sIdx)}
-										<div
-											class={`${getAspectClass(name)}`}
-											title={`${label} a ${houseIndex === 0 ? 'ASC' : 'MC'}`}
-										>
-											<span class="font-astronomicon text-lg">{glyph} </span>
-											<span>{houseIndex === 0 ? 'ASC' : 'MC'}</span>
-										</div>
-									{/if}
+								{@const houseDeg = Math.floor(houses[houseIndex])}
+								{@const houseSign = Math.floor(houseDeg / 30)}
+								{@const houseDegInSign = houseDeg % 30}
+
+								{#each aspectList.filter((a) => a.name !== 'opposition' && a.name !== 'conjunction') as { name, label, offset: offsets, glyph }}
+									{#each offsets as offset}
+										{#if degree === houseDegInSign && (houseSign + offset) % 12 === sIdx}
+											<div
+												class={`${getAspectClass(name)}`}
+												title={`${label} a ${houseIndex === 0 ? 'ASC' : 'MC'}`}
+											>
+												<span class="font-astronomicon text-lg">{glyph} </span>
+												<span>{houseIndex === 0 ? 'ASC' : 'MC'}</span>
+											</div>
+										{/if}
+									{/each}
 								{/each}
 							{/each}
 						</td>

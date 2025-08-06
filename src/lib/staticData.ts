@@ -352,11 +352,11 @@ export const houses = {
 };
 
 export const aspects: Aspects = {
-	conjunction: { name: 'Conjunção', angle: 0, signsApart: [0], icon: '☌' }, // Same sign
-	sextile: { name: 'Sextil', angle: 60, signsApart: [2, 10], icon: '⚹' }, // Two signs apart (aries-Gemini, aries-Aquarius)
-	square: { name: 'Quadratura', angle: 90, signsApart: [3, 9], icon: '□' }, // Three signs apart (aries-Cancer, aries-Capricorn)
-	trine: { name: 'Trígono', angle: 120, signsApart: [4, 8], icon: '△' }, // Four signs apart (aries-Leo, aries-Sagittarius)
-	opposition: { name: 'Oposição', angle: 180, signsApart: [6], icon: '☍' } // Six signs apart (aries-Libra)
+	conjunction: { name: 'Conjunção', angle: 0, signsApart: [0], icon: '☌', iconReplacement: '!' }, // Same sign
+	sextile: { name: 'Sextil', angle: 60, signsApart: [2, 10], icon: '⚹', iconReplacement: '%' }, // Two signs apart (aries-Gemini, aries-Aquarius)
+	square: { name: 'Quadratura', angle: 90, signsApart: [3, 9], icon: '□', iconReplacement: '#' }, // Three signs apart (aries-Cancer, aries-Capricorn)
+	trine: { name: 'Trígono', angle: 120, signsApart: [4, 8], icon: '△', iconReplacement: '$' }, // Four signs apart (aries-Leo, aries-Sagittarius)
+	opposition: { name: 'Oposição', angle: 180, signsApart: [6], icon: '☍', iconReplacement: '"' } // Six signs apart (aries-Libra)
 };
 
 export const hylegicPoints: HylegicPoints = {

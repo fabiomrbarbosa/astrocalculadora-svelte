@@ -111,6 +111,7 @@ export interface Aspect {
 	angle: number;
 	signsApart: number[];
 	icon: string;
+	iconReplacement: string;
 }
 
 /** List of Aspects */
