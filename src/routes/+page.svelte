@@ -181,14 +181,7 @@
 				{weekday}
 				city={chartData.meta.city}
 				country={chartData.meta.country}
-				usedCoordinates={chartData.rawEphemeris.usedCoordinates}
-				usedTimezone={chartData.rawEphemeris.usedTimezone}
-				planetPositions={chartData.rawEphemeris.planetPositions}
-				ascendant={chartData.rawEphemeris.ascendant}
-				houses={chartData.rawEphemeris.houses}
-				dayNight={chartData.rawEphemeris.dayNight}
-				dayRuler={chartData.rawEphemeris.dayRuler}
-				hourRuler={chartData.rawEphemeris.hourRuler}
+				{...chartData.rawEphemeris}
 			/>
 		</div>
 	{/if}

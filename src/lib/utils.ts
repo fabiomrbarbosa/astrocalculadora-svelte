@@ -188,6 +188,7 @@ export function syncEphToChartData(input: SyncChartInput) {
 		planetPositions,
 		ascendant,
 		midheaven,
+		partOfFortune,
 		houses,
 		dayNight,
 		dayRuler,
@@ -329,10 +330,13 @@ export function syncEphToChartData(input: SyncChartInput) {
 	// ————————————————————————————
 
 	chartData.rawEphemeris = {
+		meta,
 		planetPositions,
+		partOfFortune,
 		ascendant,
 		midheaven,
 		houses,
+		prenatalSyzygy,
 		dayNight: dayNight!,
 		dayRuler: dayRuler!,
 		hourRuler: hourRuler!,

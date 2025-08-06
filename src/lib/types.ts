@@ -39,9 +39,12 @@ export type ChartData = {
 	partFortuneDispositor: string;
 	partSubstanceDispositor: string;
 	rawEphemeris?: {
+		meta: any;
 		planetPositions: Record<string, any>;
 		ascendant: any;
 		midheaven: any;
+		partOfFortune: any;
+		prenatalSyzygy: any;
 		houses: number[];
 		dayNight: 'day' | 'night';
 		dayRuler: string;
@@ -145,6 +148,16 @@ export type SyncChartInput = {
 	planetPositions: Record<string, PlanetPosition>;
 	ascendant: Angle;
 	midheaven: Angle;
+	partOfFortune: {
+		position: {
+			degrees: number;
+			minutes: number;
+			seconds: number;
+			longitude: number;
+		};
+		signNumber: number;
+		signName: string;
+	};
 	houses: number[]; // 12 cusp longitudes in absolute degrees [0–360)
 	dayNight?: 'day' | 'night';
 	dayRuler?: string;

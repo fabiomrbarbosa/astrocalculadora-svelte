@@ -33,7 +33,6 @@
 
 	const planetMap = Object.fromEntries(planets.map((p) => [p.name, p.glyph]));
 
-	//–– Props
 	let {
 		name,
 		date,
@@ -122,8 +121,9 @@
 		)
 	);
 
-	const houseCuspLabels = $derived(
-		houses.map((cusp: number, i) => {
+	const houseCuspLabels = $derived.by(() => {
+		if (!houses) return [];
+		return houses.map((cusp: number, i) => {
 			const angle = (cusp + rotationOffset) % 360;
 			const degrees = Math.floor(cusp % 30);
 			const minutes = Math.floor(((cusp % 30) - degrees) * 60);
@@ -136,8 +136,8 @@
 				minutes: `${minutes.toString().padStart(2, '0')}'`,
 				index: i
 			};
-		})
-	);
+		});
+	});
 
 	//–– Compute a bumped‐angle for each planet label to avoid overlap
 	function isNearCusp(deg: number, cuspDeg: number, threshold = 3) {

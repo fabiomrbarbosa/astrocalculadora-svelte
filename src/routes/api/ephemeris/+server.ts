@@ -52,6 +52,11 @@ function getZodiacInfo(deg: number) {
 	return { signNumber: idx + 1, signName: SIGNS[idx] };
 }
 
+// Utility: normalize degrees
+function normalizeDeg(deg: number) {
+	return ((deg % 360) + 360) % 360;
+}
+
 // Utility: DMS from degrees
 function degreesToDms(value: number) {
 	const { degree, minute, second } = sweph.split_deg(value, sweph.constants.SE_SPLIT_DEG_ZODIACAL);
@@ -64,7 +69,13 @@ function getOppositeLongitude(deg: number) {
 }
 
 // Direct ephemeris computation at given jdUT
-function computeEphAtJd(jdUT: number, lat: number, lng: number) {
+function computeEphAtJd(
+	jdUT: number,
+	lat: number,
+	lng: number,
+	withPOF?: boolean,
+	dayNight?: 'day' | 'night'
+) {
 	const flags = sweph.constants.SEFLG_TROPICAL | sweph.constants.SEFLG_SPEED;
 	const planetPositions: Record<string, any> = {};
 
@@ -94,11 +105,28 @@ function computeEphAtJd(jdUT: number, lat: number, lng: number) {
 	const mc = degreesToDms(mcLon);
 	const mcInfo = getZodiacInfo(mcLon);
 
+	let partOfFortune;
+	if (withPOF === true) {
+		const sunLon = sweph.calc_ut(jdUT, PLANETS.Sun, flags).data[0];
+		const moonLon = sweph.calc_ut(jdUT, PLANETS.Moon, flags).data[0];
+		const rawPoF = dayNight === 'day' ? ascLon + moonLon - sunLon : ascLon + sunLon - moonLon;
+
+		const fortuneLon = normalizeDeg(rawPoF);
+		const fortuneDMS = degreesToDms(fortuneLon);
+		const fortuneZodiac = getZodiacInfo(fortuneLon);
+
+		partOfFortune = {
+			position: fortuneDMS,
+			...fortuneZodiac
+		};
+	}
+
 	return {
 		planetPositions,
 		ascendant: { position: asc, ...ascInfo },
 		midheaven: { position: mc, ...mcInfo },
-		houses: housesData.data.houses
+		houses: housesData.data.houses,
+		partOfFortune
 	};
 }
 
@@ -290,15 +318,15 @@ export async function POST({ request }) {
 		);
 
 		// Planetary positions: call main ephemeris
-		const mainEph = computeEphAtJd(jdUT, lat, lng);
+		const mainEph = computeEphAtJd(jdUT, lat, lng, true, dayNight);
 		const timezoneOffsetString = localTime.format('Z'); // e.g. "+02:00"
 
 		// prenatal syzygy
 		const { jd: jdSyzygy, isFull } = await findPrenatalSyzygy(jdUT);
 		const syzEph = computeEphAtJd(jdSyzygy, lat, lng);
-		const moonLon = syzEph.planetPositions.Moon.position.longitude;
-		const dms = degreesToDms(moonLon);
-		const { signName } = getZodiacInfo(moonLon);
+		const syzLon = syzEph.planetPositions.Moon.position.longitude;
+		const syzDms = degreesToDms(syzLon);
+		const { signName: syzSignName } = getZodiacInfo(syzLon);
 
 		return json({
 			...mainEph,
@@ -318,9 +346,9 @@ export async function POST({ request }) {
 			usedCoordinates: { latitude: lat, longitude: lng },
 			prenatalSyzygy: {
 				type: isFull ? 'Lua Cheia' : 'Lua Nova',
-				degrees: dms.degrees,
-				minutes: dms.minutes,
-				sign: signName
+				degrees: syzDms.degrees,
+				minutes: syzDms.minutes,
+				sign: syzSignName
 			}
 		});
 	} catch (err: any) {
