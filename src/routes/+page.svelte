@@ -31,7 +31,6 @@
 
 		try {
 			await loadEphemeris(chartInput.name, date, time, chartInput.city, chartInput.country);
-			console.log(chartData);
 		} catch (err) {
 			console.error('Error loading full chart:', err);
 		} finally {
