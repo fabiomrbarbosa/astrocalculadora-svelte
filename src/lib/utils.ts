@@ -206,6 +206,7 @@ export function syncEphToChartData(input: SyncChartInput) {
 	chartData.meta.city = meta.city || '';
 	chartData.meta.country = meta.country || '';
 
+	chartData.meta.weekday = meta.weekday || 0;
 	chartData.meta.utcTime = meta.utcTime || '';
 	chartData.meta.utcOffset = usedTimezone?.offset || '+00:00';
 	chartData.meta.timezone = usedTimezone?.name || 'UTC';

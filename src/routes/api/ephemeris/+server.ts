@@ -334,6 +334,7 @@ export async function POST({ request }) {
 				name: name,
 				city: city,
 				country: country,
+				weekday: localTime.day(),
 				date: date,
 				time: time,
 				utcTime: utcTime.format()

@@ -1,46 +1,11 @@
 <script lang="ts">
-	//–– Glyph definitions
-	type Glyph = { name: string; glyph: string };
+	import { signs, planets, points } from '$lib/staticData';
 
-	export const signs: Glyph[] = [
-		{ name: 'Aries', glyph: 'A' },
-		{ name: 'Taurus', glyph: 'B' },
-		{ name: 'Gemini', glyph: 'C' },
-		{ name: 'Cancer', glyph: 'D' },
-		{ name: 'Leo', glyph: 'E' },
-		{ name: 'Virgo', glyph: 'F' },
-		{ name: 'Libra', glyph: 'G' },
-		{ name: 'Scorpio', glyph: 'H' },
-		{ name: 'Sagittarius', glyph: 'I' },
-		{ name: 'Capricorn', glyph: 'J' },
-		{ name: 'Aquarius', glyph: 'K' },
-		{ name: 'Pisces', glyph: 'L' }
-	];
-
-	export const planets: Glyph[] = [
-		{ name: 'Sun', glyph: 'Q' },
-		{ name: 'Moon', glyph: 'R' },
-		{ name: 'Mercury', glyph: 'S' },
-		{ name: 'Venus', glyph: 'T' },
-		{ name: 'Mars', glyph: 'U' },
-		{ name: 'Jupiter', glyph: 'V' },
-		{ name: 'Saturn', glyph: 'W' },
-		{ name: 'NorthNode', glyph: 'g' },
-		{ name: 'SouthNode', glyph: 'i' },
-		{ name: 'Fortune', glyph: '?' },
-		{ name: 'ASC', glyph: '↑' }
-	];
-
-	const planetMap = Object.fromEntries(planets.map((p) => [p.name, p.glyph]));
-
+	// Props and derived values
 	let {
-		name,
-		date,
-		weekday,
-		time,
-		city,
-		country,
+		meta,
 		planetPositions,
+		partOfFortune,
 		houses,
 		ascendant,
 		usedCoordinates,
@@ -49,6 +14,48 @@
 		dayRuler,
 		hourRuler
 	} = $props();
+
+	let dateObj = $derived.by(() => new Date(meta.utcTime));
+	let localizedWeekday = $derived.by(() =>
+		new Intl.DateTimeFormat('pt-PT', { weekday: 'long' }).format(dateObj)
+	);
+	let localizedDate = $derived.by(() =>
+		new Intl.DateTimeFormat('pt-PT', {
+			day: '2-digit',
+			month: '2-digit',
+			year: 'numeric'
+		}).format(dateObj)
+	);
+
+	// Glyph and position definitions
+	const unifiedPlanetPositions = $derived.by(() => {
+		return {
+			...planetPositions,
+			NorthNode: points.northNode && planetPositions?.NorthNode,
+			SouthNode: points.southNode && planetPositions?.SouthNode,
+			PartOfFortune: partOfFortune
+				? {
+						position: partOfFortune.position,
+						signNumber: partOfFortune.signNumber,
+						signName: partOfFortune.signName
+					}
+				: undefined
+		};
+	});
+
+	const signList = Object.values(signs);
+	const planetGlyphs = Object.entries(planets)
+		.map(([name, p]) => ({
+			name: p.value,
+			glyph: p.iconReplacement
+		}))
+		.concat([
+			{ name: 'NorthNode', glyph: points.northNode!.iconReplacement! },
+			{ name: 'SouthNode', glyph: points.southNode!.iconReplacement! },
+			{ name: 'PartOfFortune', glyph: points.partFortune!.iconReplacement! }
+		]);
+
+	const planetMap = Object.fromEntries(planetGlyphs.map((p) => [p.name, p.glyph]));
 
 	//–– Geometry constants
 	const size = 600;
@@ -101,9 +108,14 @@
 
 	//–– Zodiac markers, degree ticks, house‐cusp labels (unchanged) …
 	const zodiacMarkers = $derived(
-		signs.map((sign, i: number) => {
-			const start: number = (i * 30 + rotationOffset) % 360;
-			return { start, mid: (start + 15) % 360, glyph: sign.glyph, name: sign.name };
+		Object.entries(signs).map(([key, sign], i: number) => {
+			const start = (i * 30 + rotationOffset) % 360;
+			return {
+				start,
+				mid: (start + 15) % 360,
+				glyph: sign.iconReplacement,
+				name: sign.value
+			};
 		})
 	);
 
@@ -128,11 +140,13 @@
 			const degrees = Math.floor(cusp % 30);
 			const minutes = Math.floor(((cusp % 30) - degrees) * 60);
 			const signIndex = Math.floor(cusp / 30) % 12;
+			const signData = signList[signIndex];
+
 			return {
 				angle,
 				degrees: `${degrees.toString().padStart(2, '0')}º`,
-				sign: signs[signIndex].glyph,
-				signName: signs[signIndex].name,
+				sign: signData.iconReplacement,
+				signName: signData.label,
 				minutes: `${minutes.toString().padStart(2, '0')}'`,
 				index: i
 			};
@@ -146,7 +160,7 @@
 	}
 
 	const adjustedPlanetAngles = $derived.by(() => {
-		const processed = Object.entries(planetPositions)
+		const processed = Object.entries(unifiedPlanetPositions)
 			.filter(([, pt]) => pt.position)
 			.map(([name, pt]) => {
 				const raw = pt.position.longitude;
@@ -203,10 +217,10 @@
 >
 	<!-- Chart info -->
 	<g id="chart-info" class="fill-current text-xs" transform={`translate(${center}, ${center})`}>
-		<text text-anchor="middle" class="font-bold" dy="-40">{name}</text>
-		<text text-anchor="middle" dy="-24">{date}, {weekday}</text>
-		<text text-anchor="middle" dy="-8">{time} (GMT {usedTimezone.offset})</text>
-		<text text-anchor="middle" dy="8">{city}, {country}</text>
+		<text text-anchor="middle" class="font-bold" dy="-40">{meta.name}</text>
+		<text text-anchor="middle" dy="-24">{localizedDate}, {localizedWeekday}</text>
+		<text text-anchor="middle" dy="-8">{meta.time} (GMT {usedTimezone.offset})</text>
+		<text text-anchor="middle" dy="8">{meta.city}, {meta.country}</text>
 		<text text-anchor="middle" dy="24"
 			>{toDMS(usedCoordinates.latitude, true)} {toDMS(usedCoordinates.longitude, false)}</text
 		>
@@ -355,7 +369,7 @@
 	{/each}
 
 	<!-- Planet points & labels -->
-	{#each Object.entries(planetPositions) as [name, point]}
+	{#each Object.entries(unifiedPlanetPositions) as [name, point]}
 		{#if point.position}
 			{@const angle = (point.position.longitude + rotationOffset) % 360}
 			{@const labelAngle = adjustedPlanetAngles[name]}
@@ -414,7 +428,7 @@
 				text-anchor="middle"
 				dominant-baseline="central"
 			>
-				{signs[point.signNumber - 1].glyph}
+				{signList[point.signNumber - 1].iconReplacement}
 			</text>
 
 			<!-- Minutes -->

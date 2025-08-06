@@ -16,6 +16,7 @@ export type ChartData = {
 		name: string;
 		year: number;
 		month: number;
+		weekday: number;
 		day: number;
 		hour: number;
 		minute: number;
@@ -84,6 +85,8 @@ export type Planets = Record<string, Planet>;
 
 export interface Point {
 	label: string;
+	icon?: string;
+	iconReplacement?: string;
 }
 
 /** Points Dictionary */

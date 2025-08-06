@@ -314,13 +314,25 @@ export const points: Points = {
 		label: 'Meio-do-Céu'
 	},
 	partFortune: {
-		label: 'Parte da Fortuna'
+		label: 'Parte da Fortuna',
+		icon: '⊗',
+		iconReplacement: '?'
 	},
 	partSubstance: {
 		label: 'Parte da Substância'
 	},
 	syzygy: {
 		label: 'Sizígia Pré-Natal'
+	},
+	northNode: {
+		label: 'Nodo Norte',
+		icon: '☊',
+		iconReplacement: 'g'
+	},
+	southNode: {
+		label: 'Nodo Sul',
+		icon: '☋',
+		iconReplacement: 'i'
 	}
 };
 

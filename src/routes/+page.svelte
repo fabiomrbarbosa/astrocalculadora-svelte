@@ -14,26 +14,11 @@
 		return Number.isNaN(num) || num < 0 ? '0000' : String(num).padStart(4, '0');
 	}
 
-	function weekdayName(dateStr: string, locale = 'pt-PT'): string {
-		const d = new Date(dateStr);
-		if (isNaN(d.valueOf())) return ''; // invalid
-		return new Intl.DateTimeFormat(locale, { weekday: 'long' }).format(d);
-	}
-
 	let isLoading = $state(false);
 
 	let date = $derived(
-		`${safePad(chartData.meta.day, 1, 31)}/${safePad(chartData.meta.month, 1, 12)}/${safeYear(chartData.meta.year)}`
-	);
-
-	let ISODate = $derived(
 		`${safeYear(chartData.meta.year)}-${safePad(chartData.meta.month, 1, 12)}-${safePad(chartData.meta.day, 1, 31)}`
 	);
-
-	let weekday = $derived.by(() => {
-		if (!ISODate) return '';
-		return weekdayName(ISODate); // expects "YYYY-MM-DD"
-	});
 
 	let time = $derived(
 		`${safePad(chartData.meta.hour, 0, 23)}:${safePad(chartData.meta.minute, 0, 59)}:${safePad(chartData.meta.second, 0, 59)}`
@@ -45,7 +30,7 @@
 		isLoading = true;
 
 		try {
-			await loadEphemeris(chartInput.name, ISODate, time, chartInput.city, chartInput.country);
+			await loadEphemeris(chartInput.name, date, time, chartInput.city, chartInput.country);
 			console.log(chartData);
 		} catch (err) {
 			console.error('Error loading full chart:', err);
@@ -174,15 +159,7 @@
 			id="results"
 			class="bg-base-100 rounded-box flex justify-center p-4 shadow-sm lg:col-span-2 print:shadow-none"
 		>
-			<BirthChart
-				name={chartData.meta.name}
-				{date}
-				{time}
-				{weekday}
-				city={chartData.meta.city}
-				country={chartData.meta.country}
-				{...chartData.rawEphemeris}
-			/>
+			<BirthChart {...chartData.rawEphemeris} />
 		</div>
 	{/if}
 </div>

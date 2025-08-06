@@ -23,20 +23,30 @@
 	let isLoading = $state(false);
 
 	let date = $derived(
-		`${safePad(chartData.meta.day, 1, 31)}/${safePad(chartData.meta.month, 1, 12)}/${safeYear(chartData.meta.year)}`
-	);
-
-	let ISODate = $derived(
 		`${safeYear(chartData.meta.year)}-${safePad(chartData.meta.month, 1, 12)}-${safePad(chartData.meta.day, 1, 31)}`
 	);
 
-	let weekday = $derived.by(() => {
-		if (!ISODate) return '';
-		return weekdayName(ISODate); // expects "YYYY-MM-DD"
-	});
-
 	let time = $derived(
 		`${safePad(chartData.meta.hour, 0, 23)}:${safePad(chartData.meta.minute, 0, 59)}:${safePad(chartData.meta.second, 0, 59)}`
+	);
+
+	let dateObj = $derived.by(
+		() =>
+			chartData.rawEphemeris?.meta?.utcTime
+				? new Date(chartData.rawEphemeris.meta.utcTime)
+				: new Date() // fallback
+	);
+
+	let localizedWeekday = $derived.by(() =>
+		new Intl.DateTimeFormat('pt-PT', { weekday: 'long' }).format(dateObj)
+	);
+
+	let localizedDate = $derived.by(() =>
+		new Intl.DateTimeFormat('pt-PT', {
+			day: '2-digit',
+			month: '2-digit',
+			year: 'numeric'
+		}).format(dateObj)
 	);
 
 	async function handleSubmit(event?: Event) {
@@ -45,7 +55,7 @@
 		isLoading = true;
 
 		try {
-			await loadEphemeris(chartInput.name, ISODate, time, chartInput.city, chartInput.country);
+			await loadEphemeris(chartInput.name, date, time, chartInput.city, chartInput.country);
 		} catch (err) {
 			console.error('Error loading full chart:', err);
 		} finally {
@@ -188,10 +198,10 @@
 		>
 			<div class="content">
 				<h2 class="mb-4 text-xl font-bold">Mapa Actual</h2>
-				<p class="font-bold">{chartData.meta.name}</p>
-				<p>{date}, {weekday}</p>
+				<p class="font-bold">{chartData.rawEphemeris.meta.name}</p>
+				<p>{localizedDate}, {localizedWeekday}</p>
 				<p>{time} (GMT {chartData.rawEphemeris.usedTimezone.offset})</p>
-				<p>{chartData.meta.city}, {chartData.meta.country}</p>
+				<p>{chartData.rawEphemeris.meta.city}, {chartData.rawEphemeris.meta.country}</p>
 				<p>
 					{toDMS(chartData.rawEphemeris.usedCoordinates.latitude, true)}
 					{toDMS(chartData.rawEphemeris.usedCoordinates.longitude, false)}
@@ -204,10 +214,6 @@
 	{/if}
 
 	{#if chartData.rawEphemeris}
-		<SpeculumTable
-			planetPositions={chartData.rawEphemeris.planetPositions}
-			ascendant={chartData.rawEphemeris.ascendant}
-			houses={chartData.rawEphemeris.houses}
-		/>
+		<SpeculumTable {...chartData.rawEphemeris} />
 	{/if}
 </div>

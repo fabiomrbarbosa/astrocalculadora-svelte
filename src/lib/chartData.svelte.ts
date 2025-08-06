@@ -10,7 +10,8 @@ export let chartInput: ChartInput = $state({
 	day: 1,
 	hour: 12,
 	minute: 0,
-	second: 0
+	second: 0,
+	weekday: ''
 });
 
 export let chartData: ChartData = $state({
