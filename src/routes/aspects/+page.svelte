@@ -32,9 +32,9 @@
 			</div>
 			<div
 				id="aspects-results"
-				class="stats stats-vertical bg-base-100 shadow-xs md:col-span-2 print:shadow-none"
+				class="stats stats-vertical bg-base-100 shadow-xs md:col-span-2 md:flex md:flex-col print:shadow-none"
 			>
-				<div class="planetary-aspects stat lg:flex lg:grow lg:flex-col">
+				<div class="planetary-aspects stat lg:flex lg:flex-col">
 					<h3 class="mb-2 font-bold">Aspectos entre Planetas</h3>
 					<ul class="aspect-list">
 						{#each chartData.results.aspects.filter((a) => a.planet2 !== 'ASC' && a.planet2 !== 'MC') as aspect}
@@ -47,11 +47,11 @@
 					</ul>
 				</div>
 
-				<div class="asc-aspects stat lg:flex lg:grow lg:flex-col">
+				<div class="asc-aspects stat lg:flex lg:flex-col">
 					<h3 class="mb-2 font-bold">Aspectos ao ASC</h3>
 					<ul class="aspect-list">
 						{#each chartData.results.aspects.filter((a) => a.planet2 === 'ASC') as aspect}
-							<li class={aspect.outOfSign ? 'text-gray-500' : ''}>
+							<li class={aspect.outOfSign ? 'text-stone-400' : ''}>
 								<span>{aspect.icon}</span>
 								<span>{aspect.planet1} {aspect.aspect} ao {aspect.planet2}</span>
 								<span>({aspect.orb})</span>
@@ -60,7 +60,7 @@
 					</ul>
 				</div>
 
-				<div class="mc-aspects stat lg:flex lg:grow lg:flex-col">
+				<div class="mc-aspects stat lg:flex lg:flex-col">
 					<h3 class="mb-2 font-bold">Aspectos ao MC</h3>
 					<ul class="aspect-list">
 						{#each chartData.results.aspects.filter((a) => a.planet2 === 'MC') as aspect}

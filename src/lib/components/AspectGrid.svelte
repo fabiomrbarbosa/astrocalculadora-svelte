@@ -33,6 +33,14 @@
 		return map;
 	});
 
+	const aspectDefsByIcon = Object.values(aspectDefs).reduce(
+		(acc, def) => {
+			acc[def.icon] = def;
+			return acc;
+		},
+		{} as Record<string, (typeof aspectDefs)[keyof typeof aspectDefs]>
+	);
+
 	const iconToAspectNameMap: Record<string, string> = Object.values(aspectDefs).reduce(
 		(acc, def) => {
 			acc[def.icon] = def.name;
@@ -134,21 +142,27 @@
 			{#if j < i + 1}
 				{@const a = aspectMap.get(row.label)?.get(col.label)}
 				{#if a}
+					<!-- Aspect glyph -->
 					<text
 						x={j * cellSize + cellSize + cellSize / 2}
 						y={i * cellSize + cellSize + cellSize / 2}
 						text-anchor="middle"
-						dominant-baseline="central"
-						class:fill-gray-500={a.outOfSign}
+						class="font-astronomicon text-4xl"
+						class:fill-stone-400={a.outOfSign}
 					>
 						<title>{`${a.planet1} ${iconToAspectNameMap[a.icon]} a ${a.planet2}`}</title>
-						<tspan class="font-astronomicon text-4xl" dy="-0.2em">{a.icon}</tspan>
-						{#if a.outOfSign}
-							<tspan class="text-sm">(D)</tspan>
-						{/if}
-						<tspan x={j * cellSize + cellSize + cellSize / 2} dy="1.4em" class="text-xs"
-							>{a.orb}</tspan
-						>
+						{aspectDefsByIcon[a.icon]?.iconReplacement ?? a.icon}
+					</text>
+
+					<!-- Orb -->
+					<text
+						x={j * cellSize + cellSize + cellSize / 2}
+						y={i * cellSize + cellSize + cellSize / 2 + 16}
+						text-anchor="middle"
+						class="text-xs"
+						class:fill-stone-400={a.outOfSign}
+					>
+						{a.orb}
 					</text>
 				{/if}
 			{/if}
