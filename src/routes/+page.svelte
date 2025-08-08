@@ -162,5 +162,3 @@
 		</div>
 	{/if}
 </div>
-
-<button id="generate-pdf" onclick={generatePDF}>Generate PDF</button>
