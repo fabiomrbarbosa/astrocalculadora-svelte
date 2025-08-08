@@ -34,6 +34,8 @@
 		"daisyui": "^5.0.46",
 		"dayjs": "^1.11.13",
 		"geo-tz": "^8.1.4",
+		"html2canvas-pro": "^1.5.11",
+		"jspdf": "^3.0.1",
 		"opencage-api-client": "^2.0.0",
 		"path": "^0.12.7",
 		"suncalc": "^1.9.0",

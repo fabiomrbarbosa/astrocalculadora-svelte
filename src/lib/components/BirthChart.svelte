@@ -210,6 +210,7 @@
 </script>
 
 <svg
+	id="birth-chart"
 	class="color-base-content"
 	viewBox={`0 0 ${size} ${size}`}
 	preserveAspectRatio="xMidYMid meet"
