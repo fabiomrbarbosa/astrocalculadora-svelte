@@ -3,6 +3,16 @@
 	import { chartData, chartInput } from '$lib/chartData.svelte'; // persistent state
 	import { loadEphemeris } from '$lib/utils';
 
+	function printBirthChart() {
+		const printWindow = window.open('/print', '_blank');
+		if (!printWindow) return;
+
+		printWindow.addEventListener('load', () => {
+			printWindow.focus();
+			printWindow.print();
+		});
+	}
+
 	function safePad(value: number, min: number, max: number, fallback = '00') {
 		const num = Number(value);
 		if (Number.isNaN(num) || num < min || num > max) return fallback;
@@ -162,3 +172,5 @@
 		</div>
 	{/if}
 </div>
+
+<button onclick={printBirthChart} class="btn btn-secondary"> Imprimir PDF </button>
