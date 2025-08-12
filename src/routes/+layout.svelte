@@ -1,6 +1,6 @@
 <script lang="ts">
-	import DarkModeToggle from './../lib/components/DarkModeToggle.svelte';
-	import { chartData, chartInput } from './../lib/chartData.svelte';
+	import DarkModeToggle from '$lib/components/DarkModeToggle.svelte';
+	import { chartData, chartInput } from '$lib/chartData.svelte';
 	import '../app.css';
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
