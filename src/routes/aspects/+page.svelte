@@ -4,6 +4,7 @@
 	import AstroInput from '$lib/components/AstroInput.svelte';
 	import AspectGrid from '$lib/components/AspectGrid.svelte';
 	import usePreventDefault from '$lib/actions/usePreventDefault';
+	import type { AspectResult } from '$lib/types';
 </script>
 
 <!-- Almutem Figuris Form -->
@@ -36,7 +37,7 @@
 				<div class="planetary-aspects stat lg:flex lg:flex-col">
 					<h3 class="mb-2 font-bold">Aspectos entre Planetas</h3>
 					<ul class="aspect-list">
-						{#each chartData.results.aspects.filter((a) => a.planet2 !== 'ASC' && a.planet2 !== 'MC') as aspect}
+						{#each chartData.results.aspects.filter((a: AspectResult) => a.planet2 !== 'ASC' && a.planet2 !== 'MC') as aspect}
 							<li class={aspect.outOfSign ? 'text-stone-400' : ''}>
 								<span>{aspect.icon}</span>
 								<span>{aspect.planet1} {aspect.aspect} {aspect.planet2}</span>
@@ -49,7 +50,7 @@
 				<div class="asc-aspects stat lg:flex lg:flex-col">
 					<h3 class="mb-2 font-bold">Aspectos ao ASC</h3>
 					<ul class="aspect-list">
-						{#each chartData.results.aspects.filter((a) => a.planet2 === 'ASC') as aspect}
+						{#each chartData.results.aspects.filter((a: AspectResult) => a.planet2 === 'ASC') as aspect}
 							<li class={aspect.outOfSign ? 'text-stone-400' : ''}>
 								<span>{aspect.icon}</span>
 								<span>{aspect.planet1} {aspect.aspect} ao {aspect.planet2}</span>
@@ -62,7 +63,7 @@
 				<div class="mc-aspects stat lg:flex lg:flex-col">
 					<h3 class="mb-2 font-bold">Aspectos ao MC</h3>
 					<ul class="aspect-list">
-						{#each chartData.results.aspects.filter((a) => a.planet2 === 'MC') as aspect}
+						{#each chartData.results.aspects.filter((a: AspectResult) => a.planet2 === 'MC') as aspect}
 							<li class={aspect.outOfSign ? 'text-stone-400' : ''}>
 								<span>{aspect.icon}</span>
 								<span>{aspect.planet1} {aspect.aspect} ao {aspect.planet2}</span>

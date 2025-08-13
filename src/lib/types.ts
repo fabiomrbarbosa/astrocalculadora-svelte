@@ -135,6 +135,17 @@ export interface ResourceSignifier {
 /** List of Resource Signifiers */
 export type ResourceSignifiers = Record<string, ResourceSignifier>;
 
+/** Aspect Result */
+export interface AspectResult {
+	planet1: string;
+	planet2: string;
+	aspect: string;
+	icon: string;
+	orb: string;
+	applying: string;
+	outOfSign: boolean;
+}
+
 export type PlanetPosition = {
 	position: { degrees: number; minutes: number; longitude: number };
 	signName: string;
