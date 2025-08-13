@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { signs, planets, points } from '$lib/staticData';
+	import type { UnifiedPlanetPosition } from '$lib/types';
 
 	// Props and derived values
 	let {
@@ -28,20 +29,22 @@
 	);
 
 	// Glyph and position definitions
-	const unifiedPlanetPositions = $derived.by(() => {
-		return {
-			...planetPositions,
-			NorthNode: points.northNode && planetPositions?.NorthNode,
-			SouthNode: points.southNode && planetPositions?.SouthNode,
-			PartOfFortune: partOfFortune
-				? {
-						position: partOfFortune.position,
-						signNumber: partOfFortune.signNumber,
-						signName: partOfFortune.signName
-					}
-				: undefined
-		};
-	});
+	const unifiedPlanetPositions: Record<string, UnifiedPlanetPosition | undefined> = $derived.by(
+		() => {
+			return {
+				...planetPositions,
+				NorthNode: points.northNode && planetPositions?.NorthNode,
+				SouthNode: points.southNode && planetPositions?.SouthNode,
+				PartOfFortune: partOfFortune
+					? {
+							position: partOfFortune.position,
+							signNumber: partOfFortune.signNumber,
+							signName: partOfFortune.signName
+						}
+					: undefined
+			};
+		}
+	);
 
 	const signList = Object.values(signs);
 	const planetGlyphs = Object.entries(planets)
@@ -76,7 +79,7 @@
 	const houseNumberRadius = clearRadiusInner + 20;
 	const houseNumbers = Array.from({ length: 12 }, (_, i) => (i + 1).toString());
 
-	const labelOffsetStep = 4; // degrees to push each additional clustered planet
+	const labelOffsetStep = 2; // degrees to push each additional clustered planet
 	const clusterSpacingThreshold = 5; // max° gap to consider “clustered”
 
 	//–– Helpers
@@ -135,7 +138,7 @@
 
 	const houseCuspLabels = $derived.by(() => {
 		if (!houses) return [];
-		return houses.map((cusp: number, i) => {
+		return houses.map((cusp: number, i: number) => {
 			const angle = (cusp + rotationOffset) % 360;
 			const degrees = Math.floor(cusp % 30);
 			const minutes = Math.floor(((cusp % 30) - degrees) * 60);
@@ -161,12 +164,12 @@
 
 	const adjustedPlanetAngles = $derived.by(() => {
 		const processed = Object.entries(unifiedPlanetPositions)
-			.filter(([, pt]) => pt.position)
+			.filter((entry): entry is [string, UnifiedPlanetPosition] => entry[1]?.position !== undefined)
 			.map(([name, pt]) => {
 				const raw = pt.position.longitude;
 				const angle = (raw + rotationOffset) % 360;
 				const sign = Math.floor(raw / 30);
-				const houseIndex = houses.findIndex((h, i) => {
+				const houseIndex = houses.findIndex((h: number, i: number) => {
 					const next = houses[(i + 1) % 12];
 					return (h <= raw && raw < next) || (next < h && (raw >= h || raw < next));
 				});
@@ -371,8 +374,9 @@
 
 	<!-- Planet points & labels -->
 	{#each Object.entries(unifiedPlanetPositions) as [name, point]}
-		{#if point.position}
-			{@const angle = (point.position.longitude + rotationOffset) % 360}
+		{#if point?.position}
+			{@const p = point as UnifiedPlanetPosition}
+			{@const angle = (p.position.longitude + rotationOffset) % 360}
 			{@const labelAngle = adjustedPlanetAngles[name]}
 
 			<!-- Outer tick -->
@@ -417,7 +421,7 @@
 				text-anchor="middle"
 				dominant-baseline="central"
 			>
-				{point.position.degrees.toString().padStart(2, '0')}°
+				{p.position.degrees.toString().padStart(2, '0')}°
 			</text>
 
 			<!-- Sign glyph -->
@@ -429,7 +433,7 @@
 				text-anchor="middle"
 				dominant-baseline="central"
 			>
-				{signList[point.signNumber - 1].iconReplacement}
+				{signList[('signNumber' in p ? p.signNumber : 1) - 1].iconReplacement}
 			</text>
 
 			<!-- Minutes -->
@@ -441,11 +445,11 @@
 				text-anchor="middle"
 				dominant-baseline="central"
 			>
-				{point.position.minutes.toString().padStart(2, '0')}'
+				{p.position.minutes.toString().padStart(2, '0')}'
 			</text>
 
 			<!-- Retrograde marker -->
-			{#if point.retrograde}
+			{#if p.retrograde}
 				<text
 					class="fill-current"
 					x={rp.x}

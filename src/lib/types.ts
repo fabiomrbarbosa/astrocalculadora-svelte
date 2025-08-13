@@ -146,6 +146,14 @@ export interface AspectResult {
 	outOfSign: boolean;
 }
 
+/** Unified Planet Position for Birth Chart rendering */
+export type UnifiedPlanetPosition = PlanetPosition | {
+	position: { degrees: number; minutes: number; longitude: number };
+	signNumber: number;
+	signName: string;
+	retrograde?: boolean;
+};
+
 export type PlanetPosition = {
 	position: { degrees: number; minutes: number; longitude: number };
 	signName: string;
