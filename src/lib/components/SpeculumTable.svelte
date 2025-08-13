@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { planets, signs, aspects, points } from '$lib/staticData';
+	import type { PlanetPosition } from '$lib/types';
 
 	let { houses, planetPositions, partOfFortune } = $props();
 
@@ -110,10 +111,11 @@
 
 							<!-- Planets -->
 							{#each Object.entries(planetPositions) as [planet, pos]}
-								{#if signIndex(pos.signName) === sIdx && Math.floor(pos.position.degrees) === degree}
+								{@const p = pos as PlanetPosition}
+								{#if signIndex(p.signName) === sIdx && Math.floor(p.position.degrees) === degree}
 									<div class="text-accent" title={`${getPlanetLabel(planet)}`}>
 										<span class="font-astronomicon text-lg">! {getPlanetGlyph(planet)}</span>
-										<span class="text-xs">{pos.position.minutes}'</span>
+										<span class="text-xs">{p.position.minutes}'</span>
 									</div>
 								{/if}
 							{/each}

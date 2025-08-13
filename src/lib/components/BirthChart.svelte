@@ -79,7 +79,7 @@
 	const houseNumberRadius = clearRadiusInner + 20;
 	const houseNumbers = Array.from({ length: 12 }, (_, i) => (i + 1).toString());
 
-	const labelOffsetStep = 2; // degrees to push each additional clustered planet
+	const labelOffsetStep = 4; // degrees to push each additional clustered planet
 	const clusterSpacingThreshold = 5; // max° gap to consider “clustered”
 
 	//–– Helpers
