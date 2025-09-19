@@ -169,7 +169,7 @@
 			</svg>
 			<span class="text-xs"
 				>Esta calculadora usa os padrões atuais de fusos horários e, sempre que possível, considera
-				também as práticas antigas. Em datas anteriores a 1970 podem ocorrer desvios.</span
+				também as práticas antigas. Poderão ocorrer desvios em datas anteriores a 1970.</span
 			>
 		</div>
 	</form>
