@@ -319,7 +319,14 @@ export async function POST({ request }) {
 
 		// Planetary positions: call main ephemeris
 		const mainEph = computeEphAtJd(jdUT, lat, lng, true, dayNight);
-		const timezoneOffsetString = localTime.format('Z'); // e.g. "+02:00"
+		// Pretty timezone offset string rounded to the nearest minute
+		const offsetMinRaw = localTime.utcOffset(); // may be fractional for LMT
+		const roundedMin = Math.round(offsetMinRaw); // round to nearest minute for display
+		const sign = roundedMin >= 0 ? '+' : '-';
+		const abs = Math.abs(roundedMin);
+		const offHours = String(Math.floor(abs / 60)).padStart(2, '0');
+		const offMins = String(abs % 60).padStart(2, '0');
+		const timezoneOffsetString = `${sign}${offHours}:${offMins}`;
 
 		// prenatal syzygy
 		const { jd: jdSyzygy, isFull } = await findPrenatalSyzygy(jdUT);
