@@ -15,12 +15,6 @@
 		return Number.isNaN(num) || num < 0 ? '0000' : String(num).padStart(4, '0');
 	}
 
-	function weekdayName(dateStr: string, locale = 'pt-PT'): string {
-		const d = new Date(dateStr);
-		if (isNaN(d.valueOf())) return ''; // invalid
-		return new Intl.DateTimeFormat(locale, { weekday: 'long' }).format(d);
-	}
-
 	let isLoading = $state(false);
 
 	let date = $derived(
@@ -31,24 +25,23 @@
 		`${safePad(chartData.meta.hour, 0, 23)}:${safePad(chartData.meta.minute, 0, 59)}:${safePad(chartData.meta.second, 0, 59)}`
 	);
 
-	let dateObj = $derived.by(
-		() =>
-			chartData.rawEphemeris?.meta?.utcTime
-				? new Date(chartData.rawEphemeris.meta.utcTime)
-				: new Date() // fallback
-	);
+	// Format date according to pt-PT conventions
+	const PT_WEEKDAYS = [
+		'segunda-feira',
+		'terça-feira',
+		'quarta-feira',
+		'quinta-feira',
+		'sexta-feira',
+		'sábado',
+		'domingo'
+	] as const;
+	let localizedWeekday = $derived.by(() => PT_WEEKDAYS[chartData.meta.weekday]);
 
-	let localizedWeekday = $derived.by(() =>
-		new Intl.DateTimeFormat('pt-PT', { weekday: 'long' }).format(dateObj)
-	);
-
-	let localizedDate = $derived.by(() =>
-		new Intl.DateTimeFormat('pt-PT', {
-			day: '2-digit',
-			month: '2-digit',
-			year: 'numeric'
-		}).format(dateObj)
-	);
+	let localizedDate = $derived.by(() => {
+		// date is formatted in a previous function as  "YYYY-MM-DD"
+		const [Y, M, D] = date.split('-');
+		return `${D}/${M}/${Y}`;
+	});
 
 	async function handleSubmit(event?: Event) {
 		event?.preventDefault();
@@ -62,7 +55,8 @@
 				time,
 				chartInput.city,
 				chartInput.country,
-				chartInput.houseSystem
+				chartInput.houseSystem,
+				chartInput.calendar
 			);
 		} catch (err) {
 			console.error('Error loading full chart:', err);

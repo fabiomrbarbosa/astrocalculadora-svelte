@@ -16,17 +16,23 @@
 		hourRuler
 	} = $props();
 
-	let dateObj = $derived.by(() => new Date(meta.utcTime));
-	let localizedWeekday = $derived.by(() =>
-		new Intl.DateTimeFormat('pt-PT', { weekday: 'long' }).format(dateObj)
-	);
-	let localizedDate = $derived.by(() =>
-		new Intl.DateTimeFormat('pt-PT', {
-			day: '2-digit',
-			month: '2-digit',
-			year: 'numeric'
-		}).format(dateObj)
-	);
+	// Format date according to pt-PT conventions
+	const PT_WEEKDAYS = [
+		'segunda-feira',
+		'terça-feira',
+		'quarta-feira',
+		'quinta-feira',
+		'sexta-feira',
+		'sábado',
+		'domingo'
+	] as const;
+	let localizedWeekday = $derived.by(() => PT_WEEKDAYS[meta.weekday]);
+
+	let localizedDate = $derived.by(() => {
+		// meta.date is "YYYY-MM-DD"
+		const [Y, M, D] = meta.date.split('-');
+		return `${D}/${M}/${Y}`;
+	});
 
 	// Glyph and position definitions
 	const unifiedPlanetPositions: Record<string, UnifiedPlanetPosition | undefined> = $derived.by(
@@ -222,7 +228,9 @@
 	<!-- Chart info -->
 	<g id="chart-info" class="fill-current text-xs" transform={`translate(${center}, ${center})`}>
 		<text text-anchor="middle" class="font-bold" dy="-40">{meta.name}</text>
-		<text text-anchor="middle" dy="-24">{localizedDate}, {localizedWeekday}</text>
+		<text text-anchor="middle" dy="-24"
+			>{localizedDate}{meta.calendar == 'JUL' ? ' OS' : ''}, {localizedWeekday}</text
+		>
 		<text text-anchor="middle" dy="-8">{meta.time} (GMT {usedTimezone.offset})</text>
 		<text text-anchor="middle" dy="8">{meta.city}, {meta.country}</text>
 		<text text-anchor="middle" dy="24"

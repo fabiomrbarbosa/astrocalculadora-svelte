@@ -10,6 +10,7 @@ export type ChartInput = {
 	minute: number;
 	second: number;
 	houseSystem: string;
+	calendar: string;
 };
 
 export type ChartData = {
@@ -30,6 +31,7 @@ export type ChartData = {
 		city: string;
 		country: string;
 		houseSystem: string;
+		calendar: string;
 	};
 	dayNight: string;
 	maleFemale: string;

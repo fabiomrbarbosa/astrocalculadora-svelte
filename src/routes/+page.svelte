@@ -36,7 +36,8 @@
 				time,
 				chartInput.city,
 				chartInput.country,
-				chartInput.houseSystem
+				chartInput.houseSystem,
+				chartInput.calendar
 			);
 		} catch (err) {
 			console.error('Error loading full chart:', err);
@@ -153,8 +154,16 @@
 			<legend class="fieldset-legend">Sistema de Casas</legend>
 			<select class="select grow" bind:value={chartInput.houseSystem} required>
 				<option selected value={'B'}>Alcabitius</option>
-				<option value={'P'}>Placidus</option>
 				<option value={'R'}>Regiomontanus</option>
+				<option value={'P'}>Placidus</option>
+			</select>
+		</fieldset>
+
+		<fieldset class="fieldset flex space-x-2 lg:col-span-2">
+			<legend class="fieldset-legend">Calendário</legend>
+			<select class="select grow" bind:value={chartInput.calendar} required>
+				<option selected value={'GREG'}>Gregoriano</option>
+				<option value={'JUL'}>Juliano / Old Style</option>
 			</select>
 		</fieldset>
 

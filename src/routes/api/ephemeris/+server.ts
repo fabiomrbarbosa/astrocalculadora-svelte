@@ -45,6 +45,19 @@ const SIGNS = [
 	'pisces'
 ];
 
+// Type-safe calendar flag map
+const CAL_FLAG = {
+	GREG: sweph.constants.SE_GREG_CAL,
+	JUL: sweph.constants.SE_JUL_CAL
+} as const;
+
+const CAL_KEYS = ['GREG', 'JUL'] as const;
+type CalendarKey = (typeof CAL_KEYS)[number];
+
+function isCalendarKey(x: unknown): x is CalendarKey {
+	return typeof x === 'string' && (CAL_KEYS as readonly string[]).includes(x as CalendarKey);
+}
+
 // Utility: Zodiac info
 function getZodiacInfo(deg: number) {
 	const normalized = ((deg % 360) + 360) % 360;
@@ -206,11 +219,13 @@ function getPlanetaryHour(
 
 // Meeus-based syzygy calculation
 // Calculate lunation index K (Meeus ch.49)
-function calcK(jd: number): number {
+function calcK(jd: number, calendar: CalendarKey): number {
+	// set calendar flag
+	const calFlag = CAL_FLAG[calendar];
 	// approximate UTC date from JD
 	const dt = dayjs.utc((jd - 2440587.5) * 86400 * 1000);
 	const Y = dt.year();
-	const jdStartRes = sweph.utc_to_jd(Y, 1, 1, 0, 0, 0, sweph.constants.SE_GREG_CAL);
+	const jdStartRes = sweph.utc_to_jd(Y, 1, 1, 0, 0, 0, calFlag);
 	const jdStart = jdStartRes.data[1];
 	const daysInYear = jd - jdStart;
 	const yFrac = Y + daysInYear / 365.25;
@@ -259,8 +274,11 @@ function roundK(k: number): number {
 }
 
 // Find prenatal syzygy using Meeus formulas
-function findPrenatalSyzygy(jdBirth: number): { jd: number; isFull: boolean } {
-	const K0 = calcK(jdBirth);
+function findPrenatalSyzygy(
+	jdBirth: number,
+	calendar: CalendarKey
+): { jd: number; isFull: boolean } {
+	const K0 = calcK(jdBirth, calendar);
 	const Kbase = roundK(K0);
 	const jdNew = calcSyzygyJD(Kbase);
 	const jdFull = calcSyzygyJD(Kbase + 0.5);
@@ -273,10 +291,21 @@ function findPrenatalSyzygy(jdBirth: number): { jd: number; isFull: boolean } {
 // ── API Handler ─────────────────────────────────────────────────────────────
 export async function POST({ request }) {
 	try {
-		const { name, date, time, city, country, houseSystem } = await request.json();
+		const payload = await request.json();
+
+		const { name, date, time, city, country, houseSystem } = payload ?? {};
+		let { calendar } = payload ?? {};
+
 		if (!name || !date || !time || !city || !country) {
 			throw error(400, 'Missing required fields: name, date, time, city, or country');
 		}
+
+		// Validate and narrow calendar
+		if (!isCalendarKey(calendar)) {
+			throw error(400, `Invalid calendar. Expected one of: ${CAL_KEYS.join(', ')}`);
+		}
+		const calKey: CalendarKey = calendar;
+		const calFlag = CAL_FLAG[calKey];
 
 		// Geocode
 		const query = `${city}, ${country}`;
@@ -292,6 +321,7 @@ export async function POST({ request }) {
 		// UTC & Julian Day
 		const localTime = dayjs.tz(`${date}T${time}`, tz);
 		const utcTime = localTime.utc();
+
 		const jd = sweph.utc_to_jd(
 			utcTime.year(),
 			utcTime.month() + 1,
@@ -299,7 +329,7 @@ export async function POST({ request }) {
 			utcTime.hour(),
 			utcTime.minute(),
 			utcTime.second(),
-			sweph.constants.SE_GREG_CAL
+			calFlag
 		);
 		const jdUT = jd.data[1];
 
@@ -320,6 +350,7 @@ export async function POST({ request }) {
 
 		// Planetary positions: call main ephemeris
 		const mainEph = computeEphAtJd(jdUT, lat, lng, houseSystem, true, dayNight);
+
 		// Pretty timezone offset string rounded to the nearest minute
 		const offsetMinRaw = localTime.utcOffset(); // may be fractional for LMT
 		const roundedMin = Math.round(offsetMinRaw); // round to nearest minute for display
@@ -329,8 +360,11 @@ export async function POST({ request }) {
 		const offMins = String(abs % 60).padStart(2, '0');
 		const timezoneOffsetString = `${sign}${offHours}:${offMins}`;
 
+		// Get weekday using SwissEph
+		const weekday = sweph.day_of_week(jdUT);
+
 		// prenatal syzygy
-		const { jd: jdSyzygy, isFull } = await findPrenatalSyzygy(jdUT);
+		const { jd: jdSyzygy, isFull } = findPrenatalSyzygy(jdUT, calKey);
 		const syzEph = computeEphAtJd(jdSyzygy, lat, lng, houseSystem);
 		const syzLon = syzEph.planetPositions.Moon.position.longitude;
 		const syzDms = degreesToDms(syzLon);
@@ -342,11 +376,12 @@ export async function POST({ request }) {
 				name: name,
 				city: city,
 				country: country,
-				weekday: localTime.day(),
+				weekday: weekday,
 				date: date,
 				time: time,
 				utcTime: utcTime.format(),
-				houseSystem: houseSystem
+				houseSystem: houseSystem,
+				calendar: calKey
 			},
 			dayNight: dayNight,
 			dayRuler: dayRuler.toLowerCase(),
