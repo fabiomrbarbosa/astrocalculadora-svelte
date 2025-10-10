@@ -425,5 +425,9 @@ export const houseSystems: HouseSystems = {
 	P: {
 		code: 'P',
 		name: 'Placidus'
+	},
+	W: {
+		code: 'W',
+		name: 'Signos Inteiros'
 	}
 };
