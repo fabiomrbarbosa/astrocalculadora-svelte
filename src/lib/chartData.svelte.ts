@@ -11,7 +11,8 @@ export let chartInput: ChartInput = $state({
 	hour: 12,
 	minute: 0,
 	second: 0,
-	weekday: ''
+	weekday: '',
+	houseSystem: 'B'
 });
 
 export let chartData: ChartData = $state({
@@ -30,7 +31,8 @@ export let chartData: ChartData = $state({
 		city: '',
 		country: '',
 		latitude: 0,
-		longitude: 0
+		longitude: 0,
+		houseSystem: 'B'
 	},
 	dayNight: 'day',
 	maleFemale: 'male',

@@ -73,6 +73,7 @@ function computeEphAtJd(
 	jdUT: number,
 	lat: number,
 	lng: number,
+	houseSystem: string,
 	withPOF?: boolean,
 	dayNight?: 'day' | 'night'
 ) {
@@ -95,7 +96,7 @@ function computeEphAtJd(
 		};
 	}
 
-	const housesData = sweph.houses_ex2(jdUT, flags, lat, lng, 'B');
+	const housesData = sweph.houses_ex2(jdUT, flags, lat, lng, houseSystem);
 
 	const ascLon = housesData.data.houses[0];
 	const asc = degreesToDms(ascLon);
@@ -272,7 +273,7 @@ function findPrenatalSyzygy(jdBirth: number): { jd: number; isFull: boolean } {
 // ── API Handler ─────────────────────────────────────────────────────────────
 export async function POST({ request }) {
 	try {
-		const { name, date, time, city, country } = await request.json();
+		const { name, date, time, city, country, houseSystem } = await request.json();
 		if (!name || !date || !time || !city || !country) {
 			throw error(400, 'Missing required fields: name, date, time, city, or country');
 		}
@@ -318,7 +319,7 @@ export async function POST({ request }) {
 		);
 
 		// Planetary positions: call main ephemeris
-		const mainEph = computeEphAtJd(jdUT, lat, lng, true, dayNight);
+		const mainEph = computeEphAtJd(jdUT, lat, lng, houseSystem, true, dayNight);
 		// Pretty timezone offset string rounded to the nearest minute
 		const offsetMinRaw = localTime.utcOffset(); // may be fractional for LMT
 		const roundedMin = Math.round(offsetMinRaw); // round to nearest minute for display
@@ -330,7 +331,7 @@ export async function POST({ request }) {
 
 		// prenatal syzygy
 		const { jd: jdSyzygy, isFull } = await findPrenatalSyzygy(jdUT);
-		const syzEph = computeEphAtJd(jdSyzygy, lat, lng);
+		const syzEph = computeEphAtJd(jdSyzygy, lat, lng, houseSystem);
 		const syzLon = syzEph.planetPositions.Moon.position.longitude;
 		const syzDms = degreesToDms(syzLon);
 		const { signName: syzSignName } = getZodiacInfo(syzLon);
@@ -344,7 +345,8 @@ export async function POST({ request }) {
 				weekday: localTime.day(),
 				date: date,
 				time: time,
-				utcTime: utcTime.format()
+				utcTime: utcTime.format(),
+				houseSystem: houseSystem
 			},
 			dayNight: dayNight,
 			dayRuler: dayRuler.toLowerCase(),

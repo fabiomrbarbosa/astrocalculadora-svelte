@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { signs, planets, points } from '$lib/staticData';
+	import { signs, planets, points, houseSystems } from '$lib/staticData';
 	import type { UnifiedPlanetPosition } from '$lib/types';
 
 	// Props and derived values
@@ -229,7 +229,7 @@
 			>{toDMS(usedCoordinates.latitude, true)} {toDMS(usedCoordinates.longitude, false)}</text
 		>
 		<text class="italic" text-anchor="middle" dy="40">Tropical</text>
-		<text class="italic" text-anchor="middle" dy="56">Alcabitius</text>
+		<text class="italic" text-anchor="middle" dy="56">{houseSystems[meta.houseSystem].name}</text>
 	</g>
 
 	<!-- Zodiac outer/inner rings -->

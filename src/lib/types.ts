@@ -9,6 +9,7 @@ export type ChartInput = {
 	hour: number;
 	minute: number;
 	second: number;
+	houseSystem: string;
 };
 
 export type ChartData = {
@@ -28,6 +29,7 @@ export type ChartData = {
 		longitude: number;
 		city: string;
 		country: string;
+		houseSystem: string;
 	};
 	dayNight: string;
 	maleFemale: string;
@@ -146,13 +148,24 @@ export interface AspectResult {
 	outOfSign: boolean;
 }
 
+/** House Systems */
+export interface HouseSystem {
+	code: string;
+	name: string;
+}
+
+/** House Systems dictionary  */
+export type HouseSystems = Record<string, HouseSystem>;
+
 /** Unified Planet Position for Birth Chart rendering */
-export type UnifiedPlanetPosition = PlanetPosition | {
-	position: { degrees: number; minutes: number; longitude: number };
-	signNumber: number;
-	signName: string;
-	retrograde?: boolean;
-};
+export type UnifiedPlanetPosition =
+	| PlanetPosition
+	| {
+			position: { degrees: number; minutes: number; longitude: number };
+			signNumber: number;
+			signName: string;
+			retrograde?: boolean;
+	  };
 
 export type PlanetPosition = {
 	position: { degrees: number; minutes: number; longitude: number };
@@ -188,4 +201,5 @@ export type SyncChartInput = {
 	usedCoordinates?: Record<string, any>;
 	usedTimezone?: TimezoneInfo;
 	prenatalSyzygy?: { type: string; degrees: number; minutes: number; sign: string };
+	houseSystem: string;
 };

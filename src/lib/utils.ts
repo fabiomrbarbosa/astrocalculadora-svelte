@@ -154,7 +154,8 @@ export async function loadEphemeris(
 	date: string,
 	time: string,
 	city: string,
-	country: string
+	country: string,
+	houseSystem: string
 ) {
 	// 1) fetch the combined birth-chart + syzygy
 	const res = await fetch('/api/ephemeris', {
@@ -165,7 +166,8 @@ export async function loadEphemeris(
 			date,
 			time,
 			city,
-			country
+			country,
+			houseSystem
 		})
 	});
 	if (!res.ok) throw new Error(await res.text());
@@ -214,6 +216,8 @@ export function syncEphToChartData(input: SyncChartInput) {
 	chartData.dayNight = dayNight || '';
 	chartData.rulerOfDay = dayRuler || '';
 	chartData.rulerOfHour = hourRuler || '';
+
+	chartData.meta.houseSystem = meta.houseSystem;
 
 	// ——————————————————————————————
 	// 2) Sync raw planet positions (skip nodes)

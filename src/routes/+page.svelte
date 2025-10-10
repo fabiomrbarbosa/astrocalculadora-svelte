@@ -30,7 +30,14 @@
 		isLoading = true;
 
 		try {
-			await loadEphemeris(chartInput.name, date, time, chartInput.city, chartInput.country);
+			await loadEphemeris(
+				chartInput.name,
+				date,
+				time,
+				chartInput.city,
+				chartInput.country,
+				chartInput.houseSystem
+			);
 		} catch (err) {
 			console.error('Error loading full chart:', err);
 		} finally {
@@ -140,6 +147,15 @@
 				class="input input-bordered w-full"
 				required
 			/>
+		</fieldset>
+
+		<fieldset class="fieldset flex space-x-2 lg:col-span-2">
+			<legend class="fieldset-legend">Sistema de Casas</legend>
+			<select class="select grow" bind:value={chartInput.houseSystem} required>
+				<option selected value={'B'}>Alcabitius</option>
+				<option value={'P'}>Placidus</option>
+				<option value={'R'}>Regiomontanus</option>
+			</select>
 		</fieldset>
 
 		<button type="submit" class="btn btn-primary mt-4 w-full">

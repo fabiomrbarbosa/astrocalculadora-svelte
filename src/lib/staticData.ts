@@ -4,7 +4,8 @@ import type {
 	Points,
 	Aspects,
 	HylegicPoints,
-	ResourceSignifiers
+	ResourceSignifiers,
+	HouseSystems
 } from '$lib/types';
 
 export const planets: Planets = {
@@ -410,4 +411,19 @@ export const resourceSignifiers: ResourceSignifiers = {
 		label: 'Dispositor da Parte da Substância'
 	},
 	jupiter: { source: 'planets.jupiter', label: 'Júpiter' }
+};
+
+export const houseSystems: HouseSystems = {
+	B: {
+		code: 'B',
+		name: 'Alcabitius'
+	},
+	R: {
+		code: 'R',
+		name: 'Regiomontanus'
+	},
+	P: {
+		code: 'P',
+		name: 'Placidus'
+	}
 };

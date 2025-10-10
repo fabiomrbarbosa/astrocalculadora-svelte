@@ -1,6 +1,7 @@
 <script lang="ts">
 	import SpeculumTable from '$lib/components/SpeculumTable.svelte';
-	import { chartData, chartInput } from '$lib/chartData.svelte'; // persistent state
+	import { houseSystems } from '$lib/staticData';
+	import { chartData, chartInput } from '$lib/chartData.svelte';
 	import { loadEphemeris } from '$lib/utils';
 
 	function safePad(value: number, min: number, max: number, fallback = '00') {
@@ -55,7 +56,14 @@
 		isLoading = true;
 
 		try {
-			await loadEphemeris(chartInput.name, date, time, chartInput.city, chartInput.country);
+			await loadEphemeris(
+				chartInput.name,
+				date,
+				time,
+				chartInput.city,
+				chartInput.country,
+				chartInput.houseSystem
+			);
 		} catch (err) {
 			console.error('Error loading full chart:', err);
 		} finally {
@@ -207,7 +215,7 @@
 					{toDMS(chartData.rawEphemeris.usedCoordinates.longitude, false)}
 				</p>
 				<p>Tropical</p>
-				<p>Alcabitius</p>
+				<p>{houseSystems[chartData.rawEphemeris.meta.houseSystem].name}</p>
 			</div>
 			<a href="/" class="btn btn-primary mt-4 w-full">Ver Mapa</a>
 		</div>
