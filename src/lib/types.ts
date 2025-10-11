@@ -48,6 +48,8 @@ export type ChartData = {
 		planetPositions: Record<string, any>;
 		ascendant: any;
 		midheaven: any;
+		descendant: any;
+		imumcoeli: any;
 		partOfFortune: any;
 		prenatalSyzygy: any;
 		houses: number[];
@@ -186,6 +188,8 @@ export type SyncChartInput = {
 	planetPositions: Record<string, PlanetPosition>;
 	ascendant: Angle;
 	midheaven: Angle;
+	descendant: Angle;
+	imumcoeli: Angle;
 	partOfFortune: {
 		position: {
 			degrees: number;

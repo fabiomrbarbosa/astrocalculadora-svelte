@@ -10,6 +10,8 @@
 		houses,
 		ascendant,
 		midheaven,
+		descendant,
+		imumcoeli,
 		usedCoordinates,
 		usedTimezone,
 		dayNight,
@@ -55,7 +57,9 @@
 
 				// Only show these as points when Whole Signs
 				Ascendant: isWholeSigns ? ascendant : undefined,
-				Midheaven: isWholeSigns ? midheaven : undefined
+				Midheaven: isWholeSigns ? midheaven : undefined,
+				Descendant: isWholeSigns ? descendant : undefined,
+				ImumCoeli: isWholeSigns ? imumcoeli : undefined
 			};
 		}
 	);
@@ -69,6 +73,8 @@
 		.concat([
 			{ name: 'Ascendant', glyph: points.ascendant!.iconReplacement! },
 			{ name: 'Midheaven', glyph: points.midheaven!.iconReplacement! },
+			{ name: 'Descendant', glyph: points.descendant!.iconReplacement! },
+			{ name: 'ImumCoeli', glyph: points.imumcoeli!.iconReplacement! },
 			{ name: 'NorthNode', glyph: points.northNode!.iconReplacement! },
 			{ name: 'SouthNode', glyph: points.southNode!.iconReplacement! },
 			{ name: 'PartOfFortune', glyph: points.partFortune!.iconReplacement! }

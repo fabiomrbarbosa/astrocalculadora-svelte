@@ -192,6 +192,8 @@ export function syncEphToChartData(input: SyncChartInput) {
 		planetPositions,
 		ascendant,
 		midheaven,
+		descendant,
+		imumcoeli,
 		partOfFortune,
 		houses,
 		dayNight,
@@ -242,7 +244,7 @@ export function syncEphToChartData(input: SyncChartInput) {
 	}
 
 	// ——————————————————————————————
-	// 3) Sync Ascendant
+	// 3) Sync Angle Points
 	// ——————————————————————————————
 	chartData.points.ascendant ??= {};
 	chartData.points.ascendant.degrees = ascendant.position.degrees;
@@ -250,14 +252,23 @@ export function syncEphToChartData(input: SyncChartInput) {
 	chartData.points.ascendant.sign = findSignKey(ascendant.signName);
 	chartData.points.ascendant.longitude = ascendant.position.longitude;
 
-	// ——————————————————————————————
-	// 3) Sync Midheaven
-	// ——————————————————————————————
 	chartData.points.midheaven ??= {};
 	chartData.points.midheaven.degrees = midheaven.position.degrees;
 	chartData.points.midheaven.minutes = midheaven.position.minutes;
 	chartData.points.midheaven.sign = findSignKey(midheaven.signName);
 	chartData.points.midheaven.longitude = ascendant.position.longitude;
+
+	chartData.points.descendant ??= {};
+	chartData.points.descendant.degrees = descendant.position.degrees;
+	chartData.points.descendant.minutes = descendant.position.minutes;
+	chartData.points.descendant.sign = findSignKey(descendant.signName);
+	chartData.points.descendant.longitude = descendant.position.longitude;
+
+	chartData.points.imumcoeli ??= {};
+	chartData.points.imumcoeli.degrees = imumcoeli.position.degrees;
+	chartData.points.imumcoeli.minutes = imumcoeli.position.minutes;
+	chartData.points.imumcoeli.sign = findSignKey(imumcoeli.signName);
+	chartData.points.imumcoeli.longitude = imumcoeli.position.longitude;
 
 	// ——————————————————————————————
 	// 4) Initialize each house
@@ -345,6 +356,8 @@ export function syncEphToChartData(input: SyncChartInput) {
 		partOfFortune,
 		ascendant,
 		midheaven,
+		descendant,
+		imumcoeli,
 		houses,
 		prenatalSyzygy,
 		dayNight: dayNight!,

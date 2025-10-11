@@ -2,7 +2,16 @@
 	import { planets, signs, aspects, points } from '$lib/staticData';
 	import type { PlanetPosition } from '$lib/types';
 
-	let { houses, planetPositions, ascendant, midheaven, partOfFortune, meta } = $props();
+	let {
+		houses,
+		planetPositions,
+		ascendant,
+		midheaven,
+		descendant,
+		imumcoeli,
+		partOfFortune,
+		meta
+	} = $props();
 
 	function toCamelCase(str: string): string {
 		return str.charAt(0).toLowerCase() + str.slice(1);
@@ -90,11 +99,11 @@
 							<!-- House cusps (skip 1 and 10; ASC/MC come from props below) -->
 							{#if meta.houseSystem !== 'W'}
 								{#each houses as cusp, index}
-									{#if index !== 0 && index !== 9}
+									{#if index !== 0 && index !== 3 && index !== 6 && index !== 9}
 										{#if Math.floor(cusp % 30) === degree && Math.floor(cusp / 30) === sIdx}
 											<div class="text-primary text-xs">
 												<span class="speculum__house-cusp font-bold">
-													{index === 3 ? 'IC' : index === 6 ? 'DES' : `C${index + 1}`}
+													{`C${index + 1}`}
 												</span>
 												<span class="speculum__house-minutes">
 													{'• ' + getCuspMinutes(cusp) + "'"}
@@ -121,6 +130,26 @@
 									<span class="speculum__house-cusp font-bold">MC</span>
 									<span class="speculum__house-minutes"
 										>{'• ' + midheaven.position.minutes + "'"}</span
+									>
+								</div>
+							{/if}
+
+							<!-- DES from prop -->
+							{#if descendant && signIndex(descendant.signName) === sIdx && Math.floor(descendant.position.degrees) === degree}
+								<div class="text-primary text-xs">
+									<span class="speculum__house-cusp font-bold">DES</span>
+									<span class="speculum__house-minutes"
+										>{'• ' + descendant.position.minutes + "'"}</span
+									>
+								</div>
+							{/if}
+
+							<!-- IC from prop -->
+							{#if imumcoeli && signIndex(imumcoeli.signName) === sIdx && Math.floor(imumcoeli.position.degrees) === degree}
+								<div class="text-primary text-xs">
+									<span class="speculum__house-cusp font-bold">IC</span>
+									<span class="speculum__house-minutes"
+										>{'• ' + imumcoeli.position.minutes + "'"}</span
 									>
 								</div>
 							{/if}

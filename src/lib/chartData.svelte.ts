@@ -102,6 +102,16 @@ export let chartData: ChartData = $state({
 			minutes: 0,
 			sign: 'aries'
 		},
+		descendant: {
+			degrees: 0,
+			minutes: 0,
+			sign: 'aries'
+		},
+		imumcoeli: {
+			degrees: 0,
+			minutes: 0,
+			sign: 'aries'
+		},
 		partFortune: {
 			degrees: 0,
 			minutes: 0,

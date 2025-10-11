@@ -119,6 +119,14 @@ function computeEphAtJd(
 	const mc = degreesToDms(mcLon);
 	const mcInfo = getZodiacInfo(mcLon);
 
+	const desLon = getOppositeLongitude(ascLon);
+	const des = degreesToDms(desLon);
+	const desInfo = getZodiacInfo(desLon);
+
+	const icLon = getOppositeLongitude(mcLon);
+	const ic = degreesToDms(icLon);
+	const icInfo = getZodiacInfo(icLon);
+
 	let partOfFortune;
 	if (withPOF === true) {
 		const sunLon = sweph.calc_ut(jdUT, PLANETS.Sun, flags).data[0];
@@ -136,10 +144,12 @@ function computeEphAtJd(
 	}
 
 	return {
-		planetPositions,
 		ascendant: { position: asc, ...ascInfo },
 		midheaven: { position: mc, ...mcInfo },
+		descendant: { position: des, ...desInfo },
+		imumcoeli: { position: ic, ...icInfo },
 		houses: housesData.data.houses,
+		planetPositions,
 		partOfFortune
 	};
 }

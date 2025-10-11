@@ -318,6 +318,16 @@ export const points: Points = {
 		icon: 'ASC',
 		iconReplacement: 'd'
 	},
+	descendant: {
+		label: 'Descendente',
+		icon: 'DES',
+		iconReplacement: 'f'
+	},
+	imumcoeli: {
+		label: 'Fundo-do-Céu',
+		icon: 'IC',
+		iconReplacement: 'e'
+	},
 	partFortune: {
 		label: 'Parte da Fortuna',
 		icon: '⊗',

@@ -34,15 +34,15 @@
 	}
 
 	// Current data versions:
-	// ChartData v5
-	// ChartInput v2
+	// ChartData v20251011
+	// ChartInput v20251011
 
 	//–– Load once, on client ––
 	onMount(() => {
-		const saved = localStorage.getItem('chartData_v5');
+		const saved = localStorage.getItem('chartData_v20251011');
 		if (saved) Object.assign(chartData, JSON.parse(saved));
 
-		const savedInput = localStorage.getItem('chartInput_v2');
+		const savedInput = localStorage.getItem('chartInput_v20251011');
 		if (savedInput) Object.assign(chartInput, JSON.parse(savedInput));
 	});
 
@@ -50,14 +50,14 @@
 	$effect(() => {
 		if (!browser) return;
 		// reading `chartData` here makes this effect re-run on any change
-		localStorage.setItem('chartData_v5', JSON.stringify(chartData));
+		localStorage.setItem('chartData_v20251011', JSON.stringify(chartData));
 	});
 
 	//–– Persist whenever the input object changes ––
 	$effect(() => {
 		if (!browser) return;
 		// reading `chartInput` here makes this effect re-run on any change
-		localStorage.setItem('chartInput_v2', JSON.stringify(chartInput));
+		localStorage.setItem('chartInput_v20251011', JSON.stringify(chartInput));
 	});
 </script>
 
