@@ -177,7 +177,7 @@ export type PlanetPosition = {
 };
 
 export type Angle = {
-	position: { degrees: number; minutes: number };
+	position: { degrees: number; minutes: number; longitude: number };
 	signName: string;
 };
 

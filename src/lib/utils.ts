@@ -248,6 +248,7 @@ export function syncEphToChartData(input: SyncChartInput) {
 	chartData.points.ascendant.degrees = ascendant.position.degrees;
 	chartData.points.ascendant.minutes = ascendant.position.minutes;
 	chartData.points.ascendant.sign = findSignKey(ascendant.signName);
+	chartData.points.ascendant.longitude = ascendant.position.longitude;
 
 	// ——————————————————————————————
 	// 3) Sync Midheaven
@@ -256,6 +257,7 @@ export function syncEphToChartData(input: SyncChartInput) {
 	chartData.points.midheaven.degrees = midheaven.position.degrees;
 	chartData.points.midheaven.minutes = midheaven.position.minutes;
 	chartData.points.midheaven.sign = findSignKey(midheaven.signName);
+	chartData.points.midheaven.longitude = ascendant.position.longitude;
 
 	// ——————————————————————————————
 	// 4) Initialize each house

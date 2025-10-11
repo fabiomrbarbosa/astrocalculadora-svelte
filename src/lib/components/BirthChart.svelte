@@ -9,6 +9,7 @@
 		partOfFortune,
 		houses,
 		ascendant,
+		midheaven,
 		usedCoordinates,
 		usedTimezone,
 		dayNight,
@@ -34,6 +35,9 @@
 		return `${D}/${M}/${Y}`;
 	});
 
+	// Quadrant or whole sign?
+	const isWholeSigns = $derived(meta.houseSystem === 'W');
+
 	// Glyph and position definitions
 	const unifiedPlanetPositions: Record<string, UnifiedPlanetPosition | undefined> = $derived.by(
 		() => {
@@ -47,7 +51,11 @@
 							signNumber: partOfFortune.signNumber,
 							signName: partOfFortune.signName
 						}
-					: undefined
+					: undefined,
+
+				// Only show these as points when Whole Signs
+				Ascendant: isWholeSigns ? ascendant : undefined,
+				Midheaven: isWholeSigns ? midheaven : undefined
 			};
 		}
 	);
@@ -59,6 +67,8 @@
 			glyph: p.iconReplacement
 		}))
 		.concat([
+			{ name: 'Ascendant', glyph: points.ascendant!.iconReplacement! },
+			{ name: 'Midheaven', glyph: points.midheaven!.iconReplacement! },
 			{ name: 'NorthNode', glyph: points.northNode!.iconReplacement! },
 			{ name: 'SouthNode', glyph: points.southNode!.iconReplacement! },
 			{ name: 'PartOfFortune', glyph: points.partFortune!.iconReplacement! }
@@ -376,7 +386,7 @@
 			x2={pOuter.x}
 			y2={pOuter.y}
 			class="stroke-current"
-			stroke-width={i % 3 === 0 ? 2.5 : 0.5}
+			stroke-width={isWholeSigns ? 0.5 : i % 3 === 0 ? 2.5 : 0.5}
 		/>
 	{/each}
 

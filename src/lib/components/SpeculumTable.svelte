@@ -2,7 +2,7 @@
 	import { planets, signs, aspects, points } from '$lib/staticData';
 	import type { PlanetPosition } from '$lib/types';
 
-	let { houses, planetPositions, partOfFortune } = $props();
+	let { houses, planetPositions, ascendant, midheaven, partOfFortune, meta } = $props();
 
 	function toCamelCase(str: string): string {
 		return str.charAt(0).toLowerCase() + str.slice(1);
@@ -87,27 +87,43 @@
 								{/if}
 							{/each}
 
-							<!-- House cusps -->
-							{#each houses as cusp, index}
-								{#if Math.floor(cusp % 30) === degree && Math.floor(cusp / 30) === sIdx}
-									<div class="text-primary text-xs">
-										<span class="speculum__house-cusp font-bold">
-											{index === 0
-												? 'ASC'
-												: index === 3
-													? 'IC'
-													: index === 6
-														? 'DES'
-														: index === 9
-															? 'MC'
-															: `C${index + 1}`}</span
-										>
-										<span class="speculum__house-minutes">
-											{`• ` + getCuspMinutes(cusp) + `'`}
-										</span>
-									</div>
-								{/if}
-							{/each}
+							<!-- House cusps (skip 1 and 10; ASC/MC come from props below) -->
+							{#if meta.houseSystem !== 'W'}
+								{#each houses as cusp, index}
+									{#if index !== 0 && index !== 9}
+										{#if Math.floor(cusp % 30) === degree && Math.floor(cusp / 30) === sIdx}
+											<div class="text-primary text-xs">
+												<span class="speculum__house-cusp font-bold">
+													{index === 3 ? 'IC' : index === 6 ? 'DES' : `C${index + 1}`}
+												</span>
+												<span class="speculum__house-minutes">
+													{'• ' + getCuspMinutes(cusp) + "'"}
+												</span>
+											</div>
+										{/if}
+									{/if}
+								{/each}
+							{/if}
+
+							<!-- ASC from prop -->
+							{#if ascendant && signIndex(ascendant.signName) === sIdx && Math.floor(ascendant.position.degrees) === degree}
+								<div class="text-primary text-xs">
+									<span class="speculum__house-cusp font-bold">ASC</span>
+									<span class="speculum__house-minutes"
+										>{'• ' + ascendant.position.minutes + "'"}</span
+									>
+								</div>
+							{/if}
+
+							<!-- MC from prop -->
+							{#if midheaven && signIndex(midheaven.signName) === sIdx && Math.floor(midheaven.position.degrees) === degree}
+								<div class="text-primary text-xs">
+									<span class="speculum__house-cusp font-bold">MC</span>
+									<span class="speculum__house-minutes"
+										>{'• ' + midheaven.position.minutes + "'"}</span
+									>
+								</div>
+							{/if}
 
 							<!-- Planets -->
 							{#each Object.entries(planetPositions) as [planet, pos]}
@@ -150,26 +166,36 @@
 								{/if}
 							{/each}
 
-							<!-- Aspects to ASC and MC (no opposition) -->
-							{#each [0, 9] as houseIndex}
-								{@const houseDeg = Math.floor(houses[houseIndex])}
-								{@const houseSign = Math.floor(houseDeg / 30)}
-								{@const houseDegInSign = houseDeg % 30}
-
+							<!-- Aspects to ASC and MC (no opposition, no conjunction) -->
+							{#if ascendant}
+								{@const ascDegInSign = Math.floor(ascendant.position.degrees)}
+								{@const ascSign = signIndex(ascendant.signName)}
 								{#each aspectList.filter((a) => a.name !== 'opposition' && a.name !== 'conjunction') as { name, label, offset: offsets, glyph }}
 									{#each offsets as offset}
-										{#if degree === houseDegInSign && (houseSign + offset) % 12 === sIdx}
-											<div
-												class={`${getAspectClass(name)}`}
-												title={`${label} a ${houseIndex === 0 ? 'ASC' : 'MC'}`}
-											>
+										{#if degree === ascDegInSign && (ascSign + offset) % 12 === sIdx}
+											<div class={`${getAspectClass(name)}`} title={`${label} a ASC`}>
 												<span class="font-astronomicon text-lg">{glyph} </span>
-												<span>{houseIndex === 0 ? 'ASC' : 'MC'}</span>
+												<span>ASC</span>
 											</div>
 										{/if}
 									{/each}
 								{/each}
-							{/each}
+							{/if}
+
+							{#if midheaven}
+								{@const mcDegInSign = Math.floor(midheaven.position.degrees)}
+								{@const mcSign = signIndex(midheaven.signName)}
+								{#each aspectList.filter((a) => a.name !== 'opposition' && a.name !== 'conjunction') as { name, label, offset: offsets, glyph }}
+									{#each offsets as offset}
+										{#if degree === mcDegInSign && (mcSign + offset) % 12 === sIdx}
+											<div class={`${getAspectClass(name)}`} title={`${label} a MC`}>
+												<span class="font-astronomicon text-lg">{glyph} </span>
+												<span>MC</span>
+											</div>
+										{/if}
+									{/each}
+								{/each}
+							{/if}
 						</td>
 					{/each}
 					<td>{degree}º</td>

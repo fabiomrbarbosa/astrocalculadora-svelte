@@ -33,10 +33,13 @@
 		};
 	}
 
-	// We are currently on version 4 of chartData, version 2 of ChartInput
+	// Current data versions:
+	// ChartData v5
+	// ChartInput v2
+
 	//–– Load once, on client ––
 	onMount(() => {
-		const saved = localStorage.getItem('chartData_v4');
+		const saved = localStorage.getItem('chartData_v5');
 		if (saved) Object.assign(chartData, JSON.parse(saved));
 
 		const savedInput = localStorage.getItem('chartInput_v2');
@@ -47,7 +50,7 @@
 	$effect(() => {
 		if (!browser) return;
 		// reading `chartData` here makes this effect re-run on any change
-		localStorage.setItem('chartData_v4', JSON.stringify(chartData));
+		localStorage.setItem('chartData_v5', JSON.stringify(chartData));
 	});
 
 	//–– Persist whenever the input object changes ––

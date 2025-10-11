@@ -111,11 +111,11 @@ function computeEphAtJd(
 
 	const housesData = sweph.houses_ex2(jdUT, flags, lat, lng, houseSystem);
 
-	const ascLon = housesData.data.houses[0];
+	const ascLon = housesData.data.points[0];
 	const asc = degreesToDms(ascLon);
 	const ascInfo = getZodiacInfo(ascLon);
 
-	const mcLon = housesData.data.houses[9];
+	const mcLon = housesData.data.points[1];
 	const mc = degreesToDms(mcLon);
 	const mcInfo = getZodiacInfo(mcLon);
 
