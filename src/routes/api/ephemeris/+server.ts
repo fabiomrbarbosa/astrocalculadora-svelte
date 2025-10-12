@@ -467,8 +467,7 @@ export async function POST({ request }) {
 			planetaryHour: hourNumber,
 			usedTimezone: {
 				name: useGeographicLMT ? `LMT@${lng.toFixed(4)}°` : tz,
-				offset: timezoneOffsetString,
-				strategy: useGeographicLMT ? 'geographic-lmt' : 'iana-timezone'
+				offset: timezoneOffsetString
 			},
 			usedCoordinates: { latitude: lat, longitude: lng },
 			prenatalSyzygy: {
