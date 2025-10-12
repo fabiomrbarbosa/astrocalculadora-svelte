@@ -81,6 +81,36 @@ function getOppositeLongitude(deg: number) {
 	return (deg + 180) % 360;
 }
 
+// ── Time offset helpers (LMT + formatting) ─────────────────────────────────
+
+// Geographic Local Mean Time offset from longitude (seconds).
+function lmtOffsetSecondsFromLongitude(lngDeg: number): number {
+	// normalize to [-180, 180)
+	const L = ((lngDeg + 180) % 360) - 180;
+	// 1° = 4 minutes = 240 seconds
+	return Math.round(L * 240);
+}
+
+// Does the IANA-derived offset look like pre-standard LMT (odd minutes / has seconds)?
+function looksLikeLMTOffset(localTime: dayjs.Dayjs): boolean {
+	const seconds = Math.round(localTime.utcOffset() * 60);
+	const abs = Math.abs(seconds);
+	const mins = Math.floor((abs % 3600) / 60);
+	const secs = abs % 60;
+	return secs !== 0 || mins % 15 !== 0;
+}
+
+// Pretty print from a raw offset-in-seconds with label
+function prettyOffsetFromSeconds(offsetSeconds: number, label: 'LMT' | 'UTC') {
+	const sign = offsetSeconds >= 0 ? '+' : '-';
+	const abs = Math.abs(offsetSeconds);
+	const hours = Math.floor(abs / 3600);
+	const minutes = Math.floor((abs % 3600) / 60);
+	const seconds = abs % 60;
+	const pad = (n: number) => String(n).padStart(2, '0');
+	return `${label}${sign}${pad(hours)}:${pad(minutes)}${seconds ? `:${pad(seconds)}` : ''}`;
+}
+
 // Direct ephemeris computation at given jdUT
 function computeEphAtJd(
 	jdUT: number,
@@ -112,6 +142,7 @@ function computeEphAtJd(
 	const housesData = sweph.houses_ex2(jdUT, flags, lat, lng, houseSystem);
 
 	const ascLon = housesData.data.points[0];
+
 	const asc = degreesToDms(ascLon);
 	const ascInfo = getZodiacInfo(ascLon);
 
@@ -324,14 +355,43 @@ export async function POST({ request }) {
 		if (!geo.results.length) throw error(404, `No location: ${query}`);
 		const { lat, lng } = geo.results[0].geometry;
 
-		// Timezone
+		// Timezone (IANA zone from coordinates)
 		const [tz] = geoTz.find(lat, lng);
 		if (!tz) throw error(500, 'Could not determine timezone');
 
-		// UTC & Julian Day
-		const localTime = dayjs.tz(`${date}T${time}`, tz);
-		const utcTime = localTime.utc();
+		// Build Day.js instance using IANA tz to inspect offset characteristics
+		const localByIANA = dayjs.tz(`${date}T${time}`, tz);
 
+		// Optional switch from payload to prefer geographic LMT
+		const preferGeographicLMT = Boolean(payload?.preferGeographicLMT);
+
+		// Decide which strategy to use
+		const useGeographicLMT =
+			preferGeographicLMT || looksLikeLMTOffset(localByIANA) || localByIANA.year() < 1900;
+
+		// Compute offset + establish local/utc instants according to the chosen strategy
+		let offsetSeconds: number;
+		let offsetLabel: 'LMT' | 'UTC';
+		let localTime: dayjs.Dayjs;
+		let utcTime: dayjs.Dayjs;
+
+		if (useGeographicLMT) {
+			// Geographic LMT from longitude
+			offsetSeconds = lmtOffsetSecondsFromLongitude(lng);
+			offsetLabel = 'LMT';
+			// Interpret provided civil time as LMT; convert to UTC by subtracting offset
+			const naiveLocal = dayjs.utc(`${date}T${time}`); // treat string as civil time baseline
+			utcTime = naiveLocal.subtract(offsetSeconds, 'second');
+			localTime = utcTime.add(offsetSeconds, 'second'); // equals naive civil time
+		} else {
+			// Use IANA rules (standard/DST)
+			offsetSeconds = Math.round(localByIANA.utcOffset() * 60);
+			offsetLabel = 'UTC';
+			localTime = localByIANA;
+			utcTime = localByIANA.utc();
+		}
+
+		// Julian Day from UTC
 		const jd = sweph.utc_to_jd(
 			utcTime.year(),
 			utcTime.month() + 1,
@@ -343,10 +403,24 @@ export async function POST({ request }) {
 		);
 		const jdUT = jd.data[1];
 
-		// Sunrise/Sunset
-		const { sunrise, sunset } = getSunriseSunsetLocal(date, lat, lng, tz);
-		const tomorrow = dayjs.tz(`${date}T00:00:00`, tz).add(1, 'day').format('YYYY-MM-DD');
-		const { sunrise: nextSunrise } = getSunriseSunsetLocal(tomorrow, lat, lng, tz);
+		// Sunrise/Sunset aligned to chosen civil frame
+		let sunrise: dayjs.Dayjs;
+		let sunset: dayjs.Dayjs;
+		let nextSunrise: dayjs.Dayjs;
+		if (useGeographicLMT) {
+			// Compute SunCalc times on a UTC baseline then shift into LMT civil frame
+			const noonUTC = dayjs.utc(`${date}T12:00:00`).toDate();
+			const times = SunCalc.getTimes(noonUTC, lat, lng);
+			sunrise = dayjs.utc(times.sunrise).add(offsetSeconds, 'second');
+			sunset = dayjs.utc(times.sunset).add(offsetSeconds, 'second');
+			const tomorrowUTC = dayjs.utc(`${date}T00:00:00`).add(1, 'day').toDate();
+			const timesNext = SunCalc.getTimes(tomorrowUTC, lat, lng);
+			nextSunrise = dayjs.utc(timesNext.sunrise).add(offsetSeconds, 'second');
+		} else {
+			({ sunrise, sunset } = getSunriseSunsetLocal(date, lat, lng, tz));
+			const tomorrow = dayjs.tz(`${date}T00:00:00`, tz).add(1, 'day').format('YYYY-MM-DD');
+			({ sunrise: nextSunrise } = getSunriseSunsetLocal(tomorrow, lat, lng, tz));
+		}
 
 		const dayNight = localTime.isAfter(sunrise) && localTime.isBefore(sunset) ? 'day' : 'night';
 
@@ -361,19 +435,13 @@ export async function POST({ request }) {
 		// Planetary positions: call main ephemeris
 		const mainEph = computeEphAtJd(jdUT, lat, lng, houseSystem, true, dayNight);
 
-		// Pretty timezone offset string rounded to the nearest minute
-		const offsetMinRaw = localTime.utcOffset(); // may be fractional for LMT
-		const roundedMin = Math.round(offsetMinRaw); // round to nearest minute for display
-		const sign = roundedMin >= 0 ? '+' : '-';
-		const abs = Math.abs(roundedMin);
-		const offHours = String(Math.floor(abs / 60)).padStart(2, '0');
-		const offMins = String(abs % 60).padStart(2, '0');
-		const timezoneOffsetString = `${sign}${offHours}:${offMins}`;
+		// Pretty timezone offset string using chosen strategy
+		const timezoneOffsetString = prettyOffsetFromSeconds(offsetSeconds, offsetLabel);
 
 		// Get weekday using SwissEph
 		const weekday = sweph.day_of_week(jdUT);
 
-		// prenatal syzygy
+		// Prenatal syzygy
 		const { jd: jdSyzygy, isFull } = findPrenatalSyzygy(jdUT, calKey);
 		const syzEph = computeEphAtJd(jdSyzygy, lat, lng, houseSystem);
 		const syzLon = syzEph.planetPositions.Moon.position.longitude;
@@ -397,7 +465,11 @@ export async function POST({ request }) {
 			dayRuler: dayRuler.toLowerCase(),
 			hourRuler: hourRuler.toLowerCase(),
 			planetaryHour: hourNumber,
-			usedTimezone: { name: tz, offset: timezoneOffsetString },
+			usedTimezone: {
+				name: useGeographicLMT ? `LMT@${lng.toFixed(4)}°` : tz,
+				offset: timezoneOffsetString,
+				strategy: useGeographicLMT ? 'geographic-lmt' : 'iana-timezone'
+			},
 			usedCoordinates: { latitude: lat, longitude: lng },
 			prenatalSyzygy: {
 				type: isFull ? 'Lua Cheia' : 'Lua Nova',

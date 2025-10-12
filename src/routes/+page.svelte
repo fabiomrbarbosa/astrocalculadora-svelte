@@ -156,7 +156,7 @@
 				<option selected value={'B'}>Alcabitius</option>
 				<option value={'R'}>Regiomontanus</option>
 				<option value={'P'}>Placidus</option>
-				<option value={'W'}>Signos Inteiros</option>
+				<option value={'W'}>Signo Inteiro</option>
 			</select>
 		</fieldset>
 
