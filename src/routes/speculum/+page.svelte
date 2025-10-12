@@ -202,7 +202,7 @@
 				<h2 class="mb-4 text-xl font-bold">Mapa Actual</h2>
 				<p class="font-bold">{chartData.rawEphemeris.meta.name}</p>
 				<p>{localizedDate}{chartData.meta.calendar == 'JUL' ? ' OS' : ''}, {localizedWeekday}</p>
-				<p>{time} (GMT {chartData.rawEphemeris.usedTimezone.offset})</p>
+				<p>{time} ({chartData.rawEphemeris.usedTimezone.offset})</p>
 				<p>{chartData.rawEphemeris.meta.city}, {chartData.rawEphemeris.meta.country}</p>
 				<p>
 					{toDMS(chartData.rawEphemeris.usedCoordinates.latitude, true)}

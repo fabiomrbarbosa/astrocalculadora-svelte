@@ -6,7 +6,7 @@ import timezone from 'dayjs/plugin/timezone.js';
 import SunCalc from 'suncalc';
 import { json, error } from '@sveltejs/kit';
 import opencage from 'opencage-api-client';
-import geoTz from 'geo-tz';
+import geoTz from 'geo-tz/all';
 import { env } from '$env/dynamic/private';
 
 // Initialize Day.js plugins

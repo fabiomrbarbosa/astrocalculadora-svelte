@@ -247,7 +247,7 @@
 		<text text-anchor="middle" dy="-24"
 			>{localizedDate}{meta.calendar == 'JUL' ? ' OS' : ''}, {localizedWeekday}</text
 		>
-		<text text-anchor="middle" dy="-8">{meta.time} (GMT {usedTimezone.offset})</text>
+		<text text-anchor="middle" dy="-8">{meta.time} ({usedTimezone.offset})</text>
 		<text text-anchor="middle" dy="8">{meta.city}, {meta.country}</text>
 		<text text-anchor="middle" dy="24"
 			>{toDMS(usedCoordinates.latitude, true)} {toDMS(usedCoordinates.longitude, false)}</text
