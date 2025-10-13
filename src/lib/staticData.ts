@@ -309,42 +309,51 @@ export const signs: Signs = {
 
 export const points: Points = {
 	ascendant: {
+		value: 'Ascendant',
 		label: 'Ascendente',
 		icon: 'ASC',
 		iconReplacement: 'c'
 	},
 	midheaven: {
+		value: 'Midheaven',
 		label: 'Meio-do-Céu',
 		icon: 'ASC',
 		iconReplacement: 'd'
 	},
 	descendant: {
+		value: 'Descendant',
 		label: 'Descendente',
 		icon: 'DES',
 		iconReplacement: 'f'
 	},
 	imumcoeli: {
+		value: 'ImumCoeli',
 		label: 'Fundo-do-Céu',
 		icon: 'IC',
 		iconReplacement: 'e'
 	},
 	partFortune: {
+		value: 'PartOfFortune',
 		label: 'Parte da Fortuna',
 		icon: '⊗',
 		iconReplacement: '?'
 	},
 	partSubstance: {
+		value: 'PartOfSubstance',
 		label: 'Parte da Substância'
 	},
 	syzygy: {
+		value: 'PrenatalSyzygy',
 		label: 'Sizígia Pré-Natal'
 	},
 	northNode: {
+		value: 'NorthNode',
 		label: 'Nodo Norte',
 		icon: '☊',
 		iconReplacement: 'g'
 	},
 	southNode: {
+		value: 'SouthNode',
 		label: 'Nodo Sul',
 		icon: '☋',
 		iconReplacement: 'i'

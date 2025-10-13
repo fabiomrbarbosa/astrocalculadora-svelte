@@ -65,22 +65,20 @@
 	);
 
 	const signList = Object.values(signs);
-	const planetGlyphs = Object.entries(planets)
-		.map(([name, p]) => ({
+	const mapGlyphs = [
+		...Object.values(planets).map((p) => ({
 			name: p.value,
 			glyph: p.iconReplacement
-		}))
-		.concat([
-			{ name: 'Ascendant', glyph: points.ascendant!.iconReplacement! },
-			{ name: 'Midheaven', glyph: points.midheaven!.iconReplacement! },
-			{ name: 'Descendant', glyph: points.descendant!.iconReplacement! },
-			{ name: 'ImumCoeli', glyph: points.imumcoeli!.iconReplacement! },
-			{ name: 'NorthNode', glyph: points.northNode!.iconReplacement! },
-			{ name: 'SouthNode', glyph: points.southNode!.iconReplacement! },
-			{ name: 'PartOfFortune', glyph: points.partFortune!.iconReplacement! }
-		]);
+		})),
+		...Object.entries(points)
+			.filter(([, pt]) => !!pt.iconReplacement)
+			.map(([key, pt]) => ({
+				name: pt.value,
+				glyph: pt.iconReplacement
+			}))
+	];
 
-	const planetMap = Object.fromEntries(planetGlyphs.map((p) => [p.name, p.glyph]));
+	const planetMap = Object.fromEntries(mapGlyphs.map((p) => [p.name, p.glyph]));
 
 	//–– Geometry constants
 	const size = 600;
@@ -101,7 +99,7 @@
 	const houseNumberRadius = clearRadiusInner + 20;
 	const houseNumbers = Array.from({ length: 12 }, (_, i) => (i + 1).toString());
 
-	const labelOffsetStep = 4; // degrees to push each additional clustered planet
+	const labelOffsetStep = 2; // degrees to push each additional clustered planet
 	const clusterSpacingThreshold = 5; // max° gap to consider “clustered”
 
 	//–– Helpers

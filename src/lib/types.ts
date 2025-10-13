@@ -90,6 +90,7 @@ export type Planets = Record<string, Planet>;
 /** Other points */
 
 export interface Point {
+	value: string;
 	label: string;
 	icon?: string;
 	iconReplacement?: string;
