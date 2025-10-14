@@ -447,6 +447,6 @@ export const houseSystems: HouseSystems = {
 	},
 	W: {
 		code: 'W',
-		name: 'Signo Inteiro'
+		name: 'Signos Inteiros'
 	}
 };
