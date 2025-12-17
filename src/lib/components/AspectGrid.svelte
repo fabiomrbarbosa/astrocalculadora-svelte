@@ -16,7 +16,10 @@
 		{ label: 'MC', iconReplacement: points.midheaven.iconReplacement! }
 	);
 
-	const COL_PLANETS = PLANETS;
+	// Columns exclude MC so angles don't appear as a column-aspect target and the grid width matches cells
+	const COL_PLANETS = PLANETS.slice(0, -1);
+	// Headers include MC, but MC is rendered above the last real column (ASC)
+	const HEADER_PLANETS = PLANETS;
 	const ROW_PLANETS = PLANETS.slice(1); // exclude the Moon
 
 	let aspectMap = $derived.by(() => {
@@ -56,14 +59,15 @@
 
 <svg
 	id="aspects-grid"
-	viewBox={`0 0 ${PLANETS.length * cellSize + cellSize} ${PLANETS.length * cellSize + cellSize / 4}`}
+	viewBox={`0 0 ${COL_PLANETS.length * cellSize + cellSize} ${ROW_PLANETS.length * cellSize + cellSize + cellSize / 4}`}
 	preserveAspectRatio="xMidYMid meet"
 	class="h-auto w-full fill-current text-center"
 >
 	<!-- Column headers, staggered -->
-	{#each COL_PLANETS as planet, i}
+	{#each HEADER_PLANETS as planet, i}
+		{@const headerColIndex = Math.min(i, COL_PLANETS.length - 1)}
 		<text
-			x={i * cellSize + cellSize + cellSize / 2}
+			x={headerColIndex * cellSize + cellSize + cellSize / 2}
 			y={(i - 1) * cellSize + cellSize + cellSize / 2}
 			text-anchor="middle"
 			dominant-baseline="central"
@@ -88,7 +92,9 @@
 	<!-- Optimized cell gridlines for lower triangle -->
 	{#each ROW_PLANETS as row, i}
 		{#each COL_PLANETS as col, j}
-			{#if j < i + 1}
+			{@const cellEnabled = j < i + 1 && !(row.label === 'MC' && col.label === 'ASC')}
+			{@const lastEnabledJ = row.label === 'MC' ? i - 1 : i}
+			{#if cellEnabled}
 				<!-- Left line -->
 				<line
 					x1={j * cellSize + cellSize}
@@ -100,7 +106,7 @@
 				/>
 
 				<!-- Add right border only for last column in row -->
-				{#if j === i}
+				{#if j === lastEnabledJ}
 					<line
 						x1={j * cellSize + cellSize + cellSize}
 						y1={i * cellSize + cellSize}
@@ -139,7 +145,8 @@
 	<!-- Aspect glyphs -->
 	{#each ROW_PLANETS as row, i}
 		{#each COL_PLANETS as col, j}
-			{#if j < i + 1}
+			{@const cellEnabled = j < i + 1 && !(row.label === 'MC' && col.label === 'ASC')}
+			{#if cellEnabled}
 				{@const a = aspectMap.get(row.label)?.get(col.label)}
 				{#if a}
 					<!-- Aspect glyph -->
