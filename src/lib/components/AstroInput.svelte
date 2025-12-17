@@ -28,7 +28,7 @@
 		{#if isCusp}Cúspide da {keyName.replace('Cusp', '').replace('house', '')}ª Casa
 		{:else if isRuler}Regente da {keyName.replace('Ruler', '').replace('house', '')}ª Casa
 		{:else if isPlanetArray}Planetas na {keyName.replace('Planets', '').replace('house', '')}ª Casa
-		{:else if isDispositor}Dispositor da {chartData.points[keyName.replace('Dispositor', '')].label}
+		{:else if isDispositor}Dispositor da {points[keyName.replace('Dispositor', '')].label}
 		{:else if isPoint}
 			{points[keyName].label}
 		{:else if isPlanet}
