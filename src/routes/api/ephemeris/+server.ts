@@ -302,28 +302,28 @@ function calcSyzygyJD(K: number): number {
 	return JD;
 }
 
-// Round K to nearest half
-function roundK(k: number): number {
-	if (k >= 0) {
-		const f = k - Math.floor(k);
-		return f >= 0.5 ? Math.floor(k) + 0.5 : Math.floor(k);
-	} else {
-		const c = Math.ceil(k);
-		const f = c - k;
-		return f >= 0.5 ? c + 0.5 : c;
-	}
-}
-
 // Find prenatal syzygy using Meeus formulas
 function findPrenatalSyzygy(
 	jdBirth: number,
 	calendar: CalendarKey
 ): { jd: number; isFull: boolean } {
-	const K0 = calcK(jdBirth, calendar);
-	const Kbase = roundK(K0);
-	const jdNew = calcSyzygyJD(Kbase);
-	const jdFull = calcSyzygyJD(Kbase + 0.5);
-	if (jdFull <= jdBirth && jdFull > jdNew) {
+	// Approximate lunation number (Meeus), then anchor to an INTEGER K for New Moon cycle
+	let K = Math.floor(calcK(jdBirth, calendar));
+
+	// Compute the New Moon for this cycle
+	let jdNew = calcSyzygyJD(K);
+
+	// If our approximate cycle's New Moon is still after birth, step back one cycle
+	if (jdNew > jdBirth) {
+		K -= 1;
+		jdNew = calcSyzygyJD(K);
+	}
+
+	// Full Moon in the same lunation
+	const jdFull = calcSyzygyJD(K + 0.5);
+
+	// Prenatal syzygy = last syzygy before birth
+	if (jdBirth >= jdFull) {
 		return { jd: jdFull, isFull: true };
 	}
 	return { jd: jdNew, isFull: false };
