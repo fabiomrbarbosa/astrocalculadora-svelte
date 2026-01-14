@@ -91,7 +91,6 @@
 	// Label sizing knobs
 	const glyphFontSizePx = 24;
 	const approxGlyphWidthPx = glyphFontSizePx * 0.92; // good average for icon fonts
-	const radialTierStepPx = 12;
 
 	// Helpers
 	const norm360 = (a: number) => ((a % 360) + 360) % 360;
@@ -150,17 +149,14 @@
 
 		for (let i = 1; i < x.length; i++) x[i] = Math.max(x[i], x[i - 1] + minSep);
 
-		// Shift whole pack left if overflowed
 		const overflow = x[x.length - 1] - R;
 		if (overflow > 0) for (let i = 0; i < x.length; i++) x[i] -= overflow;
 
 		for (let i = x.length - 2; i >= 0; i--) x[i] = Math.min(x[i], x[i + 1] - minSep);
 
-		// Shift whole pack right if underflowed
 		const underflow = L - x[0];
 		if (underflow > 0) for (let i = 0; i < x.length; i++) x[i] += underflow;
 
-		// Safety forward pass
 		for (let i = 1; i < x.length; i++) x[i] = Math.max(x[i], x[i - 1] + minSep);
 
 		for (let i = 0; i < sorted.length; i++) out[sorted[i].name] = x[i];
@@ -212,139 +208,92 @@
 		});
 	});
 
-	// Per-house spacing with cusp buffer derived from glyph size,
-	// plus a quick cross-cusp "neighbor push" so end of house and start of next cannot collide.
-	type Layout = { angle: number; tier: number };
-	const adjustedPlanetLayout: Record<string, Layout> = $derived.by(() => {
+	// Label angles:
+	// - keep ticks true
+	// - compute label angles in an unwrapped monotonic frame to avoid 0°/360° seam bugs
+	// - merge consecutive houses into a sector when a house is too narrow
+	const adjustedPlanetAngles: Record<string, number> = $derived.by(() => {
 		if (!houses || houses.length !== 12) return {};
 
-		const baseGlyphRadius = planetRingOuter - 20;
-		const minSepDeg = pxToDeg(approxGlyphWidthPx, baseGlyphRadius);
-		const cuspBufferDeg = pxToDeg(approxGlyphWidthPx / 2 + 2, baseGlyphRadius); // shared buffer around cusps
+		const labelRadius = planetRingOuter - 20;
+		const minSepDegBase = pxToDeg(approxGlyphWidthPx, labelRadius);
+		const cuspBufferDeg = pxToDeg(approxGlyphWidthPx / 2 + 2, labelRadius);
 
-		// Collect draw targets
-		const items = Object.entries(unifiedPlanetPositions)
-			.filter((e): e is [string, UnifiedPlanetPosition] => e[1]?.position !== undefined)
-			.map(([name, pt]) => {
-				const raw = norm360(pt.position.longitude);
-				const angle = norm360(raw + rotationOffset);
-				const houseIndex = findHouseIndex(raw, houses);
-				return { name, angle, houseIndex };
-			});
+		// Build a monotonic cusp array in rotated space: cusps[0..12] increasing
+		const cusp0 = norm360(houses[0] + rotationOffset);
+		const C: number[] = [cusp0];
+		for (let i = 1; i < 12; i++) {
+			let a = norm360(houses[i] + rotationOffset);
+			while (a <= C[i - 1]) a += 360;
+			C[i] = a;
+		}
+		C[12] = C[0] + 360;
 
-		// Group by house
+		// Collect items in both wrapped (for display ticks) and unwrapped (for spacing) frames
 		const byHouse = Array.from({ length: 12 }, () => [] as Array<{ name: string; t: number }>);
-		for (const it of items) {
-			let t = it.angle;
-			byHouse[it.houseIndex].push({ name: it.name, t });
+		for (const [name, pt] of Object.entries(unifiedPlanetPositions)) {
+			if (!pt?.position) continue;
+
+			const raw = norm360(pt.position.longitude);
+			const houseIndex = findHouseIndex(raw, houses);
+
+			let t = norm360(raw + rotationOffset);
+			// unwrap into the [C0, C0+360) frame
+			if (t < C[0]) t += 360;
+
+			byHouse[houseIndex].push({ name, t });
 		}
 
-		// Solve each house into tiers, producing linear angles (possibly >360) then normalize
-		const placed: Record<string, { a: number; tier: number; house: number }> = {};
+		// Merge houses into sectors until the sector can fit the members at minSep.
+		const placedU: Record<string, number> = {};
 
-		for (let h = 0; h < 12; h++) {
-			const group = byHouse[h];
-			if (!group.length) continue;
+		let h = 0;
+		while (h < 12) {
+			let sh = h;
+			let eh = h;
 
-			let start = norm360(houses[h] + rotationOffset);
-			let end = norm360(houses[(h + 1) % 12] + rotationOffset);
-			if (end <= start) end += 360;
+			let members: Array<{ name: string; t: number }> = [];
+			const rebuild = () => {
+				members = [];
+				for (let k = sh; k <= eh; k++) members.push(...byHouse[k]);
+				members.sort((a, b) => a.t - b.t);
+			};
 
-			// unwrap targets into [start, end)
-			const unwrapped = group.map((g) => ({ name: g.name, t: g.t < start ? g.t + 360 : g.t }));
+			const fits = (minSep: number) => {
+				const L = C[sh] + cuspBufferDeg;
+				const R = C[eh + 1] - cuspBufferDeg;
+				if (members.length <= 1) return true;
+				const available = R - L;
+				const needed = (members.length - 1) * minSep;
+				return available > 0 && needed <= available;
+			};
 
-			const L = start + cuspBufferDeg;
-			const R = end - cuspBufferDeg;
-
-			// if extremely tight, don't fight it
-			if (R <= L) {
-				for (const u of unwrapped) placed[u.name] = { a: u.t, tier: 0, house: h };
-				continue;
+			rebuild();
+			while (!fits(minSepDegBase) && eh < 11) {
+				eh++;
+				rebuild();
 			}
 
-			const available = R - L;
-			const cap = Math.max(1, Math.floor(available / minSepDeg) + 1);
-			const tiers = Math.max(1, Math.ceil(unwrapped.length / cap));
+			const L = C[sh] + cuspBufferDeg;
+			const R = C[eh + 1] - cuspBufferDeg;
 
-			// round-robin into tiers (keeps neighbors apart)
-			const sorted = [...unwrapped].sort((a, b) => a.t - b.t);
-			const tierBuckets: Array<Array<{ name: string; t: number }>> = Array.from(
-				{ length: tiers },
-				() => []
-			);
-			for (let i = 0; i < sorted.length; i++) tierBuckets[i % tiers].push(sorted[i]);
-
-			for (let tier = 0; tier < tierBuckets.length; tier++) {
-				const solved = solvePacked(tierBuckets[tier], L, R, minSepDeg);
-				for (const it of tierBuckets[tier])
-					placed[it.name] = { a: solved[it.name] ?? it.t, tier, house: h };
+			// Always solve something; if even after merging it can't fit, relax minSep *within this sector*.
+			let minSep = minSepDegBase;
+			if (members.length > 1) {
+				const available = R - L;
+				const maxMinSep = available / (members.length - 1);
+				if (maxMinSep < minSep) minSep = Math.max(0.75, maxMinSep); // keep a small separation
 			}
+
+			const solved = R > L ? solvePacked(members, L, R, minSep) : {};
+			for (const m of members) placedU[m.name] = solved[m.name] ?? m.t;
+
+			h = eh + 1;
 		}
 
-		// Cross-cusp neighbor push:
-		// Ensure the last label in house h and first label in house h+1 are at least minSep apart across the cusp,
-		// by moving them inward within their houses (may escalate tier if already pinned).
-		function pushAcrossCusp(h: number) {
-			let start = norm360(houses[h] + rotationOffset);
-			let end = norm360(houses[(h + 1) % 12] + rotationOffset);
-			if (end <= start) end += 360;
-
-			const Lh = start + cuspBufferDeg;
-			const Rh = end - cuspBufferDeg;
-
-			// collect labels in house h & h+1 for tier 0 only (most likely to collide)
-			const left = Object.entries(placed)
-				.filter(([, v]) => v.house === h && v.tier === 0)
-				.map(([name, v]) => ({ name, a: v.a < start ? v.a + 360 : v.a }))
-				.sort((a, b) => a.a - b.a);
-
-			const rightHouse = (h + 1) % 12;
-
-			let start2 = norm360(houses[rightHouse] + rotationOffset);
-			let end2 = norm360(houses[(rightHouse + 1) % 12] + rotationOffset);
-			// unwrap right house interval so its start is end (shared cusp)
-			if (start2 <= start) start2 += 360;
-			if (end2 <= start2) end2 += 360;
-
-			const Lr = start2 + cuspBufferDeg;
-			const Rr = end2 - cuspBufferDeg;
-
-			const right = Object.entries(placed)
-				.filter(([, v]) => v.house === rightHouse && v.tier === 0)
-				.map(([name, v]) => {
-					let a = v.a;
-					while (a < start2) a += 360;
-					return { name, a };
-				})
-				.sort((a, b) => a.a - b.a);
-
-			if (!left.length || !right.length) return;
-
-			const lastLeft = left[left.length - 1];
-			const firstRight = right[0];
-
-			// distance across cusp in linear space:
-			// cusp is at end == start2, lastLeft is <= Rh, firstRight is >= Lr
-			const gap = firstRight.a - lastLeft.a;
-			if (gap >= minSepDeg) return;
-
-			const need = (minSepDeg - gap) / 2;
-
-			// Move left inward (down), right inward (up)
-			const newLeft = clamp(lastLeft.a - need, Lh, Rh);
-			const newRight = clamp(firstRight.a + need, Lr, Rr);
-
-			placed[lastLeft.name].a = newLeft;
-			placed[firstRight.name].a = newRight;
-		}
-
-		// Do a single pass across all cusps (keeps code small; good enough in practice)
-		for (let h = 0; h < 12; h++) pushAcrossCusp(h);
-
-		// Final normalize
-		const out: Record<string, Layout> = {};
-		for (const [name, v] of Object.entries(placed))
-			out[name] = { angle: norm360(v.a), tier: v.tier };
+		// Normalize back to 0..360 for SVG polar conversion
+		const out: Record<string, number> = {};
+		for (const [name, t] of Object.entries(placedU)) out[name] = norm360(t);
 		return out;
 	});
 </script>
@@ -517,9 +466,7 @@
 		{#if point?.position}
 			{@const p = point as UnifiedPlanetPosition}
 			{@const angle = (p.position.longitude + rotationOffset) % 360}
-			{@const layout = adjustedPlanetLayout[name]}
-			{@const labelAngle = layout?.angle ?? angle}
-			{@const tier = layout?.tier ?? 0}
+			{@const labelAngle = adjustedPlanetAngles[name] ?? angle}
 
 			<!-- Outer tick -->
 			{@const o1 = polarToCartesian(center, center, planetRingOuter, angle)}
@@ -531,9 +478,8 @@
 			{@const i2 = polarToCartesian(center, center, houseNumberRadius + 6, angle)}
 			<line x1={i1.x} y1={i1.y} x2={i2.x} y2={i2.y} class="stroke-current" stroke-width="0.5" />
 
-			<!-- Tiered radial staging -->
-			{@const baseGlyphRadius = planetRingOuter - 20}
-			{@const glyphRadius = baseGlyphRadius - tier * radialTierStepPx}
+			<!-- Labels at adjusted angle (no tiering) -->
+			{@const glyphRadius = planetRingOuter - 20}
 			{@const radialStep = 16}
 
 			{@const gp = polarToCartesian(center, center, glyphRadius, labelAngle)}
